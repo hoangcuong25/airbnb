@@ -24,6 +24,9 @@ export class User {
     gender: string;
 
     @Column({ nullable: true })
+    dob: string;
+
+    @Column({ nullable: true })
     address: string;
 
     @Column({ nullable: true })

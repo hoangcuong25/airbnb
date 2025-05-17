@@ -37,7 +37,7 @@ export class AuthService {
   }
 
   createRefreshToken = (payload: any) => {
-    const refreshExpire = this.configService.get<string>("JWT_REFRESH_EXPIRE") || "1d"
+    const refreshExpire = this.configService.get<string>("JWT_REFRESH_EXPIRE") || "7d"
     const refresh_token = this.jwtService.sign(payload, {
       secret: this.configService.get<string>("JWT_REFRESH_TOKEN_SECRET"),
       expiresIn: ms(refreshExpire as ms.StringValue) / 1000
@@ -51,10 +51,10 @@ export class AuthService {
 
   async login(user: any, response: Response) {
 
-    const userLogin = await this.userService.findById(user._id)
+    const userLogin = await this.userService.findById(user.id)
 
     const payload = {
-      sub: 'token',
+      sub: userLogin.email,
       iss: 'from server',
       _id: user._id,
       role: userLogin?.role
@@ -115,7 +115,7 @@ export class AuthService {
     const user = await this.userService.findById(decoded._id)
 
     const payload = {
-      sub: 'token',
+      sub: user.email,
       iss: 'from server',
       _id: decoded._id,
       role: user?.role
@@ -136,7 +136,7 @@ export class AuthService {
         text: 'welcome', // plaintext body
         template: "register",
         context: {
-          name: user?.firstName + ' ' + user?.lastName,
+          name: user?.name,
           activationCode: codeId
         }
       })
@@ -149,11 +149,11 @@ export class AuthService {
   async comfirmActive(req, codeId) {
     const user = await this.userService.findById(req._id)
 
-    if (user?.codeId !== codeId) {
+    if (user?.verificationOtp !== codeId) {
       throw new BadRequestException('Invalid activation code')
     }
 
-    if (user?.codeExpired && new Date() > user.codeExpired) {
+    if (user?.verificationOtpExpires && new Date() > user.verificationOtpExpires) {
       throw new BadRequestException('Activation code has expired');
     }
 
@@ -175,7 +175,7 @@ export class AuthService {
 
     const otp = Math.random().toString(36).substring(2, 8);
 
-    await this.userService.updateOptReset(user._id, otp)
+    await this.userService.updateOptReset(user.id, otp)
 
     this.mailerService
       .sendMail({
@@ -184,7 +184,7 @@ export class AuthService {
         text: 'Reset Your Password', // plaintext body
         template: "resetPassword",
         context: {
-          name: user?.firstName + ' ' + user?.lastName,
+          name: user?.name,
           activationCode: otp
         }
       })
@@ -203,17 +203,17 @@ export class AuthService {
       throw new BadRequestException('User not fount')
     }
 
-    if (user?.resetOpt === '' || user?.resetOpt !== otp) {
+    if (user?.resetOtp === '' || user?.resetOtp !== otp) {
       throw new BadRequestException('Invalid OTP')
     }
 
-    if (user?.resetOptExpireAt && new Date() > user.resetOptExpireAt) {
+    if (user?.resetOtpExpires && new Date() > user.resetOtpExpires) {
       throw new BadRequestException('OTP Expired')
     }
 
     const hashPassword = await hashPasswordHelper(newPassword)
 
-    this.userService.resetPassword(user._id, hashPassword)
+    this.userService.resetPassword(user.id, hashPassword)
 
     return 'ok'
   }
@@ -227,16 +227,16 @@ export class AuthService {
 
     if (user) {
       const payload = {
-        sub: 'token',
+        sub: user.email,
         iss: 'from server',
-        _id: user._id,
+        _id: user.id,
         role: user.role
       };
 
       const access_token = this.jwtService.sign(payload);
       const refresh_token = this.createRefreshToken(payload);
 
-      await this.storeRefreshToken(user._id, refresh_token)
+      await this.storeRefreshToken(user.id, refresh_token)
 
       return {
         access_token,
@@ -260,16 +260,16 @@ export class AuthService {
       const user = await this.userService.createWithGoole(userData)
 
       const payload = {
-        sub: 'token',
+        sub: user.email,
         iss: 'from server',
-        _id: user._id,
+        _id: user.id,
         role: user.role
       };
 
       const access_token = this.jwtService.sign(payload);
       const refresh_token = this.createRefreshToken(payload);
 
-      await this.storeRefreshToken(user._id, refresh_token)
+      await this.storeRefreshToken(user.id, refresh_token)
 
       return {
         access_token,

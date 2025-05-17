@@ -26,31 +26,31 @@ export class UserService {
 
   async updateCodeActive(id: string, codeId: string) {
     await this.userRepository.update(id, {
-      codeId,
-      codeExpired: new Date(Date.now() + 5 * 60 * 1000),
+      verificationOtp: codeId,
+      verificationOtpExpires: new Date(Date.now() + 5 * 60 * 1000),
     });
   }
 
   async activeAccount(id: string) {
     await this.userRepository.update(id, {
-      isActive: true,
-      codeId: '',
-      codeExpired: null,
+      isVerified: true,
+      verificationOtp: null,
+      verificationOtpExpires: null,
     });
   }
 
-  async updateOptReset(id: string, otp: string) {
+  async updateOptReset(id: number, otp: string) {
     await this.userRepository.update(id, {
-      resetOpt: otp,
-      resetOptExpireAt: new Date(Date.now() + 5 * 60 * 1000),
+      resetOtp: otp,
+      resetOtpExpires: new Date(Date.now() + 5 * 60 * 1000),
     });
   }
 
-  async resetPassword(id: string, password: string) {
+  async resetPassword(id: number, password: string) {
     await this.userRepository.update(id, {
       password,
-      resetOpt: '',
-      resetOptExpireAt: null,
+      resetOtp: null,
+      resetOtpExpires: null,
     });
   }
 
@@ -61,26 +61,19 @@ export class UserService {
 
   async create(createUserDto: CreateUserDto) {
     try {
-      const { firstName, lastName, email, password1, password2, dob, phone } = createUserDto;
+      const { name, email, password1, password2 } = createUserDto;
 
       if (await this.isEmailExist(email)) throw new BadRequestException('Email already exists');
       if (password1 !== password2) throw new BadRequestException('Password not match');
 
-      const isPhone = await this.userRepository.findOne({ where: { phone } });
-      if (isPhone) throw new BadRequestException('Phone already exists');
-      if (phone.length !== 10) throw new BadRequestException('Phone number must be 10 digits');
-
       const hashPassword = await hashPasswordHelper(password1);
 
       const user = this.userRepository.create({
-        firstName,
-        lastName,
+        name,
         email,
         password: hashPassword,
-        dob,
-        phone,
-        isActive: false,
-        codeExpired: dayjs().add(5, 'minute').toDate(),
+        isVerified: false,
+        // codeExpired: dayjs().add(5, 'minute').toDate(),
       });
 
       const savedUser = await this.userRepository.save(user);
@@ -95,30 +88,23 @@ export class UserService {
     return await this.userRepository.findOne({ where: { email } });
   }
 
-  async findById(id: string) {
+  async findById(id: number) {
     return await this.userRepository.findOne({ where: { id } });
   }
 
   async handleRegister(registerDto: CreateAuthDto) {
-    const { firstName, lastName, email, password1, password2, dob, phone } = registerDto;
+    const { name, email, password1, password2 } = registerDto;
 
     if (await this.isEmailExist(email)) throw new BadRequestException('Email already exists!');
     if (password1 !== password2) throw new BadRequestException('Password not match');
 
-    const isPhone = await this.userRepository.findOne({ where: { phone } });
-    if (isPhone) throw new BadRequestException('Phone already exists');
-    if (phone.length !== 10) throw new BadRequestException('Phone number must be 10 digits');
-
     const hashPassword = await hashPasswordHelper(password1);
 
     const user = this.userRepository.create({
-      firstName,
-      lastName,
+      name,
       email,
       password: hashPassword,
-      dob,
-      phone,
-      isActive: false,
+      isVerified: false,
     });
 
     const savedUser = await this.userRepository.save(user);
@@ -129,11 +115,11 @@ export class UserService {
     return await this.userRepository.find();
   }
 
-  async getProfile(req: { _id: string }) {
+  async getProfile(req: { _id: number }) {
     return await this.findById(req._id);
   }
 
-  async updateProfile(req: { _id: string }, updateUserDto: any, image?: Express.Multer.File) {
+  async updateProfile(req: { _id: number }, updateUserDto: any, image?: Express.Multer.File) {
     const user = await this.findById(req._id);
     if (!user) throw new BadRequestException('User not found');
 
@@ -153,7 +139,7 @@ export class UserService {
     return 'ok';
   }
 
-  async updatePassword(req: { _id: string }, reqBody: any) {
+  async updatePassword(req: { _id: number }, reqBody: any) {
     const { newPassword1, newPassword2, oldPassword } = reqBody;
     const user = await this.findById(req._id);
     if (!user) throw new BadRequestException('User not found');
