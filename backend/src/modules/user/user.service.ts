@@ -2,92 +2,77 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { CreateAuthDto } from '../auth/dto/create-auth.dto';
 import { comparePasswordHelper, hashPasswordHelper } from 'src/helpers/util';
-import { v4 as uuidv4 } from 'uuid';
 import { MailerService } from '@nestjs-modules/mailer';
 import dayjs from 'dayjs';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
-
   constructor(
-    // @InjectModel('User') private userModel: Model<User>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+
     private readonly mailerService: MailerService,
-    private readonly cloudinaryService: CloudinaryService
+    private readonly cloudinaryService: CloudinaryService,
   ) { }
 
-  isEmailExist = async (email: string) => {
-    const user = await this.userModel.exists({ email })
-
-    if (user) return true
-    return false
+  async isEmailExist(email: string) {
+    const user = await this.userRepository.findOne({ where: { email } });
+    return !!user;
   }
 
-  async updateCodeActive(_id, codeId) {
-    await this.userModel.findByIdAndUpdate(_id,
-      {
-        codeId: codeId,
-        codeExpired: new Date(Date.now() + 5 * 60 * 1000)
-      })
+  async updateCodeActive(id: string, codeId: string) {
+    await this.userRepository.update(id, {
+      codeId,
+      codeExpired: new Date(Date.now() + 5 * 60 * 1000),
+    });
   }
 
-  async activeAccount(_id) {
-    await this.userModel.findByIdAndUpdate(_id, {
+  async activeAccount(id: string) {
+    await this.userRepository.update(id, {
       isActive: true,
       codeId: '',
-      codeExpired: 0
-    })
+      codeExpired: null,
+    });
   }
 
-  async updateOptReset(_id, otp) {
-    await this.userModel.findByIdAndUpdate(_id,
-      {
-        resetOpt: otp,
-        resetOptExpireAt: new Date(Date.now() + 5 * 60 * 1000)
-      }
-    )
+  async updateOptReset(id: string, otp: string) {
+    await this.userRepository.update(id, {
+      resetOpt: otp,
+      resetOptExpireAt: new Date(Date.now() + 5 * 60 * 1000),
+    });
   }
 
-  async resetPassword(_id, password) {
-    await this.userModel.findByIdAndUpdate(_id, {
-      password: password,
+  async resetPassword(id: string, password: string) {
+    await this.userRepository.update(id, {
+      password,
       resetOpt: '',
-      resetOptExpireAt: 0
-    })
+      resetOptExpireAt: null,
+    });
   }
 
-  async createWithGoole(userData) {
-    const newUser = new this.userModel(userData)
-    await newUser.save()
-
-    return newUser
+  async createWithGoole(userData: Partial<User>) {
+    const newUser = this.userRepository.create(userData);
+    return await this.userRepository.save(newUser);
   }
 
   async create(createUserDto: CreateUserDto) {
     try {
-      const { firstName, lastName, email, password1, password2, dob, phone } = createUserDto
+      const { firstName, lastName, email, password1, password2, dob, phone } = createUserDto;
 
-      const isExist = await this.isEmailExist(email)
-      if (isExist) {
-        throw new BadRequestException('Email already exists')
-      }
+      if (await this.isEmailExist(email)) throw new BadRequestException('Email already exists');
+      if (password1 !== password2) throw new BadRequestException('Password not match');
 
-      if (password1 !== password2) {
-        throw new BadRequestException('Password not match')
-      }
+      const isPhone = await this.userRepository.findOne({ where: { phone } });
+      if (isPhone) throw new BadRequestException('Phone already exists');
+      if (phone.length !== 10) throw new BadRequestException('Phone number must be 10 digits');
 
-      const isPhone = await this.userModel.findOne({ phone })
-      if (isPhone) {
-        throw new BadRequestException('Phone already exists')
-      }
+      const hashPassword = await hashPasswordHelper(password1);
 
-      if (phone.length !== 10) {
-        throw new BadRequestException('Phone number must be 10 digits')
-      }
-
-      const hashPassword = await hashPasswordHelper(password1)
-
-      const user = await this.userModel.create({
+      const user = this.userRepository.create({
         firstName,
         lastName,
         email,
@@ -95,50 +80,38 @@ export class UserService {
         dob,
         phone,
         isActive: false,
-        codeExpired: dayjs().add(5, 'minute')
-      })
+        codeExpired: dayjs().add(5, 'minute').toDate(),
+      });
 
-      return {
-        _id: user._id,
-      }
+      const savedUser = await this.userRepository.save(user);
+      return { id: savedUser.id };
     } catch (error) {
-      console.log(error)
-      throw new BadRequestException('internal server error')
+      console.log(error);
+      throw new BadRequestException('Internal server error');
     }
   }
 
   async findByEmail(email: string) {
-    return await this.userModel.findOne({ email })
+    return await this.userRepository.findOne({ where: { email } });
   }
 
-  async findById(_id: string) {
-    return await this.userModel.findById(_id)
+  async findById(id: string) {
+    return await this.userRepository.findOne({ where: { id } });
   }
 
   async handleRegister(registerDto: CreateAuthDto) {
-    const { firstName, lastName, email, password1, password2, dob, phone } = registerDto
+    const { firstName, lastName, email, password1, password2, dob, phone } = registerDto;
 
-    const isExist = await this.isEmailExist(email)
-    if (isExist) {
-      throw new BadRequestException('Email already exists!')
-    }
+    if (await this.isEmailExist(email)) throw new BadRequestException('Email already exists!');
+    if (password1 !== password2) throw new BadRequestException('Password not match');
 
-    if (password1 !== password2) {
-      throw new BadRequestException('Password not match')
-    }
+    const isPhone = await this.userRepository.findOne({ where: { phone } });
+    if (isPhone) throw new BadRequestException('Phone already exists');
+    if (phone.length !== 10) throw new BadRequestException('Phone number must be 10 digits');
 
-    const isPhone = await this.userModel.findOne({ phone })
-    if (isPhone) {
-      throw new BadRequestException('Phone already exists')
-    }
+    const hashPassword = await hashPasswordHelper(password1);
 
-    if (phone.length !== 10) {
-      throw new BadRequestException('Phone number must be 10 digits')
-    }
-
-    const hashPassword = await hashPasswordHelper(password1)
-
-    const user = await this.userModel.create({
+    const user = this.userRepository.create({
       firstName,
       lastName,
       email,
@@ -146,76 +119,57 @@ export class UserService {
       dob,
       phone,
       isActive: false,
-    })
+    });
 
-    return {
-      _id: user._id,
-    }
+    const savedUser = await this.userRepository.save(user);
+    return { id: savedUser.id };
   }
 
   async findAll() {
-    return await this.userModel.find()
+    return await this.userRepository.find();
   }
 
-  async getProfile(req) {
-    return await this.userModel.findById(req._id)
+  async getProfile(req: { _id: string }) {
+    return await this.findById(req._id);
   }
 
-  async updateProfile(req, updateUserDto, image) {
-    const { firstName, lastName, dob, gender, address } = updateUserDto
-    const user = await this.userModel.findById(req._id)
+  async updateProfile(req: { _id: string }, updateUserDto: any, image?: Express.Multer.File) {
+    const user = await this.findById(req._id);
+    if (!user) throw new BadRequestException('User not found');
 
-    if (!user) {
-      throw new BadRequestException('User not found')
-    }
-
-    await this.userModel.findByIdAndUpdate(req._id, { firstName, lastName, dob, gender, address })
+    const updateData = { ...updateUserDto };
 
     if (image) {
-      // upload image to cloudinary
-      const imageUpload = await this.cloudinaryService.uploadFile(image)
-      const imageUrl = imageUpload.url
-
-      await this.userModel.findByIdAndUpdate(req._id, { image: imageUrl })
+      const imageUpload = await this.cloudinaryService.uploadFile(image);
+      updateData['image'] = imageUpload.url;
     }
 
-    return 'ok'
+    await this.userRepository.update(req._id, updateData);
+    return 'ok';
   }
 
-  async updatePhone(req, phone) {
-    await this.userModel.findByIdAndUpdate(req._id, { phone: phone })
-    return 'ok'
+  async updatePhone(req: { _id: string }, phone: string) {
+    await this.userRepository.update(req._id, { phone });
+    return 'ok';
   }
 
-  async updatePassword(req, reqBody) {
-    const { newPassword1, newPassword2, oldPassword } = reqBody
+  async updatePassword(req: { _id: string }, reqBody: any) {
+    const { newPassword1, newPassword2, oldPassword } = reqBody;
+    const user = await this.findById(req._id);
+    if (!user) throw new BadRequestException('User not found');
 
-    const user = await this.userModel.findById(req._id)
+    const isOldPasswordValid = await comparePasswordHelper(oldPassword, user.password);
+    if (!isOldPasswordValid) throw new BadRequestException('Incorrect old password');
+    if (newPassword1 !== newPassword2) throw new BadRequestException('New passwords do not match');
 
-    if (!user) {
-      throw new BadRequestException('User not found')
-    }
+    const hashedPassword = await hashPasswordHelper(newPassword1);
+    await this.userRepository.update(req._id, { password: hashedPassword });
 
-    const isOldPasswordValid = await comparePasswordHelper(oldPassword, user.password)
-
-    if (!isOldPasswordValid) {
-      throw new BadRequestException('Incorrect old password')
-    }
-
-    if (newPassword1 !== newPassword2) {
-      throw new BadRequestException('New passwords do not match')
-    }
-
-    const hashedPassword = await hashPasswordHelper(newPassword1)
-
-    await this.userModel.findByIdAndUpdate(req._id, { password: hashedPassword })
-
-    return 'ok'
+    return 'ok';
   }
 
-  async deleteUser(userId) {
-    await this.userModel.findByIdAndDelete(userId)
-
-    return 'ok'
+  async deleteUser(userId: string) {
+    await this.userRepository.delete(userId);
+    return 'ok';
   }
 }

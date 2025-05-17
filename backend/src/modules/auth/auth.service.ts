@@ -14,7 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 @Injectable()
 export class AuthService {
   constructor(
-    private usersService: UserService,
+    private userService: UserService,
     private jwtService: JwtService,
     private configService: ConfigService,
     private readonly mailerService: MailerService,
@@ -22,7 +22,7 @@ export class AuthService {
   ) { }
 
   async validateUser(email: string, pass: string): Promise<any> {
-    const user = await this.usersService.findByEmail(email);
+    const user = await this.userService.findByEmail(email);
     if (!user) {
       return null;
     }
@@ -51,7 +51,7 @@ export class AuthService {
 
   async login(user: any, response: Response) {
 
-    const userLogin = await this.usersService.findById(user._id)
+    const userLogin = await this.userService.findById(user._id)
 
     const payload = {
       sub: 'token',
@@ -64,14 +64,22 @@ export class AuthService {
 
     await this.storeRefreshToken(user._id, refresh_token)
 
+    // Đặt cookie refresh_token
+    response.cookie('refresh_token', refresh_token, {
+      httpOnly: true,            // Chỉ truy cập qua HTTP, không qua JS
+      secure: true,              // Chỉ gửi qua HTTPS
+      sameSite: 'strict',        // Tránh CSRF
+      maxAge: 7 * 24 * 60 * 60 * 1000, // Hết hạn sau 7 ngày
+      path: '/auth/refresh',     // Chỉ gửi khi gọi endpoint refresh
+    });
+
     return {
       access_token: this.jwtService.sign(payload),
-      refresh_token: refresh_token
     };
   }
 
   handleRegister = async (registerDto: CreateAuthDto) => {
-    return await this.usersService.handleRegister(registerDto)
+    return await this.userService.handleRegister(registerDto)
   }
 
   async logout(req) {
@@ -104,7 +112,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid refresh token')
     }
 
-    const user = await this.usersService.findById(decoded._id)
+    const user = await this.userService.findById(decoded._id)
 
     const payload = {
       sub: 'token',
@@ -119,7 +127,7 @@ export class AuthService {
   async sendEmailActive(req) {
     const codeId = Math.random().toString(36).substring(2, 8);
 
-    const user = await this.usersService.findById(req._id)
+    const user = await this.userService.findById(req._id)
 
     this.mailerService
       .sendMail({
@@ -133,13 +141,13 @@ export class AuthService {
         }
       })
 
-    await this.usersService.updateCodeActive(req._id, codeId)
+    await this.userService.updateCodeActive(req._id, codeId)
 
     return "ok";
   }
 
   async comfirmActive(req, codeId) {
-    const user = await this.usersService.findById(req._id)
+    const user = await this.userService.findById(req._id)
 
     if (user?.codeId !== codeId) {
       throw new BadRequestException('Invalid activation code')
@@ -149,7 +157,7 @@ export class AuthService {
       throw new BadRequestException('Activation code has expired');
     }
 
-    await this.usersService.activeAccount(req._id)
+    await this.userService.activeAccount(req._id)
 
     return 'ok'
   }
@@ -159,7 +167,7 @@ export class AuthService {
       throw new BadRequestException('Email is required')
     }
 
-    const user = await this.usersService.findByEmail(email)
+    const user = await this.userService.findByEmail(email)
 
     if (!user) {
       throw new BadRequestException('User not found')
@@ -167,7 +175,7 @@ export class AuthService {
 
     const otp = Math.random().toString(36).substring(2, 8);
 
-    await this.usersService.updateOptReset(user._id, otp)
+    await this.userService.updateOptReset(user._id, otp)
 
     this.mailerService
       .sendMail({
@@ -189,7 +197,7 @@ export class AuthService {
       throw new BadRequestException('Email, OTP, and password are required')
     }
 
-    const user = await this.usersService.findByEmail(email)
+    const user = await this.userService.findByEmail(email)
 
     if (!user) {
       throw new BadRequestException('User not fount')
@@ -205,7 +213,7 @@ export class AuthService {
 
     const hashPassword = await hashPasswordHelper(newPassword)
 
-    this.usersService.resetPassword(user._id, hashPassword)
+    this.userService.resetPassword(user._id, hashPassword)
 
     return 'ok'
   }
@@ -215,7 +223,7 @@ export class AuthService {
       throw new BadRequestException("Please Fill In All Information")
     }
 
-    const user = await this.usersService.findByEmail(email)
+    const user = await this.userService.findByEmail(email)
 
     if (user) {
       const payload = {
@@ -249,7 +257,7 @@ export class AuthService {
         isActive: true
       }
 
-      const user = await this.usersService.createWithGoole(userData)
+      const user = await this.userService.createWithGoole(userData)
 
       const payload = {
         sub: 'token',
