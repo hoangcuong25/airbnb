@@ -5,7 +5,7 @@ import { UserModule } from '../user/user.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import ms from 'ms';
+import * as ms from 'ms';
 
 @Module({
   imports: [
