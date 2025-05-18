@@ -13,7 +13,7 @@ export const RegisterApi = async (payload: RegisterPayload) => {
             throw new Error('Mật khẩu không khớp');
         }
 
-        const response = await axiosClient.post('/api/v1/auth/register', { payload });
+        const response = await axiosClient.post('/api/v1/auth/register', payload);
         return response.data;
     } catch (error) {
         throw error;

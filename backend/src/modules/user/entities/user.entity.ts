@@ -1,3 +1,4 @@
+import { UserRole } from 'src/enum/Enum';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity()
@@ -23,14 +24,14 @@ export class User {
     @Column({ nullable: true })
     gender: string;
 
-    @Column({ nullable: true })
+    @Column({ nullable: true, type: 'date' })
     dob: string;
 
     @Column({ nullable: true })
     address: string;
 
-    @Column({ nullable: true })
-    role: string;
+    @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
+    role: UserRole;
 
     @Column({ nullable: true })
     phone: string;
@@ -38,16 +39,16 @@ export class User {
     @Column({ default: false })
     isVerified: boolean;
 
-    @Column()
+    @Column({ nullable: true })
     resetOtp: string;
 
-    @Column()
+    @Column({ nullable: true })
     resetOtpExpires: Date;
 
-    @Column()
+    @Column({ nullable: true })
     verificationOtp: string;
 
-    @Column()
+    @Column({ nullable: true })
     verificationOtpExpires: Date;
 
     @CreateDateColumn()

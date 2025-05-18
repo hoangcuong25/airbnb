@@ -21,7 +21,10 @@ export class UserService {
 
   async isEmailExist(email: string) {
     const user = await this.userRepository.findOne({ where: { email } });
-    return !!user;
+    if (user) {
+      return user
+    }
+    return null;
   }
 
   async updateCodeActive(id: string, codeId: string) {
