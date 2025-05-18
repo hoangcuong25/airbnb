@@ -9,12 +9,15 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { registerSchema } from '@/hook/zod-schema/registerSchema';
+import { useRegister } from '@/hook/react-query/useAuth'
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
 export default function Register() {
     const router = useRouter();
     const [showPassword, setShowPassword] = useState(false);
+
+    const { mutate: registerUser } = useRegister();
 
     const {
         register,
@@ -24,16 +27,25 @@ export default function Register() {
         resolver: zodResolver(registerSchema),
     });
 
-    const onSubmit = async (data: RegisterFormData) => {
-        try {
-            // Gọi API ở đây
-            console.log('Form data submitted:', data);
-            toast.success('Đăng ký thành công!');
-            router.push('/login');
-        } catch (err) {
-            toast.error('Có lỗi xảy ra, vui lòng thử lại.');
-        }
-    };
+    const onSubmit = (data: z.infer<typeof registerSchema>) => {
+        registerUser(
+            {
+                name: data.name,
+                email: data.email,
+                password1: data.password1,
+                password2: data.password2
+            },
+            {
+                onSuccess: () => {
+                    toast.success('Đăng ký thành công');
+                    router.push('/login');
+                },
+                onError: (err: Error) => {
+                    toast.error(err.message);
+                },
+            }
+        );
+    }
 
     return (
         <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900">
