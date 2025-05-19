@@ -5,7 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
-import ms from 'ms';
+import * as ms from 'ms';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import Redis from 'ioredis';
 import { MailerService } from '@nestjs-modules/mailer';
@@ -73,8 +73,12 @@ export class AuthService {
       path: '/auth/refresh',     // Chỉ gửi khi gọi endpoint refresh
     });
 
+    // Xoá password khỏi userLogin
+    const { password, ...userWithoutPassword } = userLogin;
+
     return {
       access_token: this.jwtService.sign(payload),
+      user: userWithoutPassword,
     };
   }
 
