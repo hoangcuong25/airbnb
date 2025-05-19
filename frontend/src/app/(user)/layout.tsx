@@ -1,4 +1,4 @@
-import NavbarUser from "@/components/user/NavbarUser";
+import NavbarUser from "@/components/guest/NavbarGuest";
 
 export default function GuestLayout({
     children,

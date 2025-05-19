@@ -10,24 +10,54 @@ import {
 
 const NavbarUser = () => {
     return (
-        <div className='flex flex-col'>
-            <div className='flex items-center justify-between'>
+        <>
+            <div className='flex items-start justify-between'>
                 <Image src={air_bnb_logo} width={100} height={100} alt='Logo' />
 
-                <div className='flex items-center justify-between gap-8'>
-                    <div className='w-36 h-10 bg-red-500 rounded-full flex items-center justify-evenly px-2'>
-                        <House className='text-6xl text-white' />
-                        <p className='text-white'>Nơi lưu chú</p>
+                <div className='flex flex-col items-center justify-between'>
+                    <div className='flex items-center justify-between gap-8'>
+                        <div className='w-36 h-10 bg-red-500 rounded-full flex items-center justify-evenly px-2'>
+                            <House className='text-6xl text-white' />
+                            <p className='text-white'>Nơi lưu chú</p>
+                        </div>
+
+                        <div className='w-40 h-10 bg-red-500 rounded-full flex items-center justify-evenly px-2'>
+                            <FerrisWheel className='text-6xl text-white' />
+                            <p className='text-white'>Trải nghiệm mới</p>
+                        </div>
+
+                        <div className='w-40 h-10 bg-red-500 rounded-full flex items-center justify-evenly px-2'>
+                            <ConciergeBell className='text-6xl text-white' />
+                            <p className='text-white'>Dịch vụ</p>
+                        </div>
                     </div>
 
-                    <div className='w-40 h-10 bg-red-500 rounded-full flex items-center justify-evenly px-2'>
-                        <FerrisWheel className='text-6xl text-white' />
-                        <p className='text-white'>Trải nghiệm mới</p>
-                    </div>
+                    <div className='flex items-center justify-center mt-5 text-sm '>
+                        <div className='border border-gray-300 rounded-full px-5 py-2 flex items-center justify-between'>
+                            <div className='border-r border-gray-300 pr-5'>
+                                <p>Địa điểm</p>
+                                <p className='font-light'>Tìm kiếm theo địa điểm</p>
+                            </div>
 
-                    <div className='w-40 h-10 bg-red-500 rounded-full flex items-center justify-evenly px-2'>
-                        <ConciergeBell className='text-6xl text-white' />
-                        <p className='text-white'>Dịch vụ</p>
+                            <div className='border-r border-gray-300 px-5'>
+                                <p>Nhận Phòng</p>
+                                <p className='font-light'>Thêm ngày</p>
+                            </div>
+
+                            <div className='border-r border-gray-300 px-5'>
+                                <p>Trả Phòng</p>
+                                <p className='font-light'>Thêm ngày</p>
+                            </div>
+
+                            <div className=' px-5 pr-10'>
+                                <p>Khách</p>
+                                <p className='font-light'>Thêm khách</p>
+                            </div>
+
+                            <div className='flex items-center justify-center bg-red-500 rounded-full  p-2'>
+                                <Search className='text-white' />
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -69,35 +99,7 @@ const NavbarUser = () => {
                     </DropdownMenu>
                 </div>
             </div>
-
-            <div className='flex items-center justify-center mt-5 text-sm '>
-                <div className='border border-gray-300 rounded-full px-5 py-2 flex items-center justify-between'>
-                    <div className='border-r border-gray-300 pr-5'>
-                        <p>Địa điểm</p>
-                        <p className='font-light'>Tìm kiếm theo địa điểm</p>
-                    </div>
-
-                    <div className='border-r border-gray-300 px-5'>
-                        <p>Nhận Phòng</p>
-                        <p className='font-light'>Thêm ngày</p>
-                    </div>
-
-                    <div className='border-r border-gray-300 px-5'>
-                        <p>Trả Phòng</p>
-                        <p className='font-light'>Thêm ngày</p>
-                    </div>
-
-                    <div className=' px-5 pr-10'>
-                        <p>Khách</p>
-                        <p className='font-light'>Thêm khách</p>
-                    </div>
-
-                    <div className='flex items-center justify-center bg-red-500 rounded-full  p-2'>
-                        <Search className='text-white' />
-                    </div>
-                </div>
-            </div>
-        </div>
+        </>
     )
 }
 
