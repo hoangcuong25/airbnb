@@ -19,3 +19,18 @@ export const RegisterApi = async (payload: RegisterPayload) => {
         throw error;
     }
 }
+
+export type LoginPayload = {
+    email: string;
+    password: string;
+}
+
+export const LoginApi = async (payload: LoginPayload) => {
+    try {
+        const response = await axiosClient.post('/api/v1/auth/login', payload)
+        return response.data
+
+    } catch (error) {
+        throw error;
+    }
+}

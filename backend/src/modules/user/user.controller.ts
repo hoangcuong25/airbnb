@@ -6,7 +6,7 @@ import { Public, ResponseMessage, Roles } from 'src/decorator/customize';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
-@Controller('users')
+@Controller('user')
 export class UserController {
   constructor(
     private readonly userService: UserService,
