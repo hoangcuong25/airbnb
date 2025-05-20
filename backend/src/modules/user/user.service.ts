@@ -3,63 +3,66 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { CreateAuthDto } from '../auth/dto/create-auth.dto';
 import { comparePasswordHelper, hashPasswordHelper } from 'src/helpers/util';
 import { MailerService } from '@nestjs-modules/mailer';
-import dayjs from 'dayjs';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from './entities/user.entity';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { UserRole } from '@prisma/client';
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-
+    private readonly prisma: PrismaService,
     private readonly mailerService: MailerService,
     private readonly cloudinaryService: CloudinaryService,
   ) { }
 
   async isEmailExist(email: string) {
-    const user = await this.userRepository.findOne({ where: { email } });
-    if (user) {
-      return user
-    }
-    return null;
+    return await this.prisma.user.findUnique({ where: { email } });
   }
 
-  async updateCodeActive(id: string, codeId: string) {
-    await this.userRepository.update(id, {
-      verificationOtp: codeId,
-      verificationOtpExpires: new Date(Date.now() + 5 * 60 * 1000),
+  async updateCodeActive(id: number, codeId: string) {
+    await this.prisma.user.update({
+      where: { id },
+      data: {
+        verificationOtp: codeId,
+        verificationOtpExpires: new Date(Date.now() + 5 * 60 * 1000),
+      },
     });
   }
 
-  async activeAccount(id: string) {
-    await this.userRepository.update(id, {
-      isVerified: true,
-      verificationOtp: null,
-      verificationOtpExpires: null,
+  async activeAccount(id: number) {
+    await this.prisma.user.update({
+      where: { id },
+      data: {
+        isVerified: true,
+        verificationOtp: null,
+        verificationOtpExpires: null,
+      },
     });
   }
 
   async updateOptReset(id: number, otp: string) {
-    await this.userRepository.update(id, {
-      resetOtp: otp,
-      resetOtpExpires: new Date(Date.now() + 5 * 60 * 1000),
+    await this.prisma.user.update({
+      where: { id },
+      data: {
+        resetOtp: otp,
+        resetOtpExpires: new Date(Date.now() + 5 * 60 * 1000),
+      },
     });
   }
 
   async resetPassword(id: number, password: string) {
-    await this.userRepository.update(id, {
-      password,
-      resetOtp: null,
-      resetOtpExpires: null,
+    await this.prisma.user.update({
+      where: { id },
+      data: {
+        password,
+        resetOtp: null,
+        resetOtpExpires: null,
+      },
     });
   }
 
-  async createWithGoole(userData: Partial<User>) {
-    const newUser = this.userRepository.create(userData);
-    return await this.userRepository.save(newUser);
+  async createWithGoole(userData: any) {
+    return await this.prisma.user.create({ data: userData });
   }
 
   async create(createUserDto: CreateUserDto) {
@@ -71,16 +74,16 @@ export class UserService {
 
       const hashPassword = await hashPasswordHelper(password1);
 
-      const user = this.userRepository.create({
-        name,
-        email,
-        password: hashPassword,
-        isVerified: false,
-        // codeExpired: dayjs().add(5, 'minute').toDate(),
+      const user = await this.prisma.user.create({
+        data: {
+          name,
+          email,
+          password: hashPassword,
+          isVerified: false,
+        },
       });
 
-      const savedUser = await this.userRepository.save(user);
-      return { id: savedUser.id };
+      return { id: user.id };
     } catch (error) {
       console.log(error);
       throw new BadRequestException('Internal server error');
@@ -88,11 +91,11 @@ export class UserService {
   }
 
   async findByEmail(email: string) {
-    return await this.userRepository.findOne({ where: { email } });
+    return await this.prisma.user.findUnique({ where: { email } });
   }
 
   async findById(id: number) {
-    return await this.userRepository.findOne({ where: { id } });
+    return await this.prisma.user.findUnique({ where: { id } });
   }
 
   async handleRegister(registerDto: CreateAuthDto) {
@@ -103,19 +106,20 @@ export class UserService {
 
     const hashPassword = await hashPasswordHelper(password1);
 
-    const user = this.userRepository.create({
-      name,
-      email,
-      password: hashPassword,
-      isVerified: false,
+    const user = await this.prisma.user.create({
+      data: {
+        name,
+        email,
+        password: hashPassword,
+        isVerified: false,
+      },
     });
 
-    const savedUser = await this.userRepository.save(user);
-    return { id: savedUser.id };
+    return { id: user.id };
   }
 
   async findAll() {
-    return await this.userRepository.find();
+    return await this.prisma.user.findMany();
   }
 
   async getProfile(req: { _id: number }) {
@@ -130,15 +134,23 @@ export class UserService {
 
     if (image) {
       const imageUpload = await this.cloudinaryService.uploadFile(image);
-      updateData['image'] = imageUpload.url;
+      updateData.avatar = imageUpload.url;
     }
 
-    await this.userRepository.update(req._id, updateData);
+    await this.prisma.user.update({
+      where: { id: req._id },
+      data: updateData,
+    });
+
     return 'ok';
   }
 
-  async updatePhone(req: { _id: string }, phone: string) {
-    await this.userRepository.update(req._id, { phone });
+  async updatePhone(req: { _id: number }, phone: string) {
+    await this.prisma.user.update({
+      where: { id: req._id },
+      data: { phone },
+    });
+
     return 'ok';
   }
 
@@ -152,13 +164,17 @@ export class UserService {
     if (newPassword1 !== newPassword2) throw new BadRequestException('New passwords do not match');
 
     const hashedPassword = await hashPasswordHelper(newPassword1);
-    await this.userRepository.update(req._id, { password: hashedPassword });
+
+    await this.prisma.user.update({
+      where: { id: req._id },
+      data: { password: hashedPassword },
+    });
 
     return 'ok';
   }
 
-  async deleteUser(userId: string) {
-    await this.userRepository.delete(userId);
+  async deleteUser(userId: number) {
+    await this.prisma.user.delete({ where: { id: userId } });
     return 'ok';
   }
 }

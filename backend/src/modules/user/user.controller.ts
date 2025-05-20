@@ -67,7 +67,7 @@ export class UserController {
   @Delete('delete-user/:id')
   @Roles('admin')
   deleteUser(@Param('id') userId: string) {
-    return this.userService.deleteUser(userId)
+    return this.userService.deleteUser(+userId)
   }
 
 }
