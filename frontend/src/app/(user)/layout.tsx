@@ -1,4 +1,4 @@
-import NavbarUser from "@/components/guest/NavbarGuest";
+import NavbarGuest from "@/components/guest/NavbarGuest";
 
 export default function GuestLayout({
     children,
@@ -7,7 +7,7 @@ export default function GuestLayout({
 }) {
     return (
         <div>
-            <NavbarUser />
+            <NavbarGuest />
             {children}
         </div>
     );

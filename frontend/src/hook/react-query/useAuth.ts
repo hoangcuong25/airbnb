@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { LoginApi, LoginPayload, RegisterApi, RegisterPayload } from '@/api/auth.api';
-import axiosClient from '@/lib/axiosClient'
+import { getUser } from '@/api/user.api';
 
 // Đăng ký
 export function useRegister() {
@@ -25,10 +25,8 @@ export function useLogin() {
 export function useCurrentUser() {
     return useQuery({
         queryKey: ['currentUser'],
-        queryFn: async () => {
-            const response = await axiosClient.get('/api/v1/user/get-profile');
-            return response.data.user;
-        },
+        queryFn: getUser,
         staleTime: 1000 * 60 * 5, // 5 phút
+        retry: false,
     });
 }

@@ -34,3 +34,12 @@ export const LoginApi = async (payload: LoginPayload) => {
         throw error;
     }
 }
+
+export const Logout = async () => {
+    try {
+        await axiosClient.post('/api/v1/auth/logout')
+
+    } catch (error) {
+        throw error;
+    }
+}
