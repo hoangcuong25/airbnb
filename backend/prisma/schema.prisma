@@ -1,0 +1,34 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+model User {
+  id                     Int       @id @default(autoincrement())
+  name                   String    @db.VarChar(50)
+  email                  String    @unique
+  password               String    @db.VarChar(100)
+  avatar                 String    @default("https://res.cloudinary.com/dtaawt3ej/image/upload/v1706880635/default-avatar.jpg")
+  age                    Int?
+  gender                 String?
+  dob                    DateTime? @db.Date
+  address                String?
+  role                   UserRole  @default(USER)
+  phone                  String?
+  isVerified             Boolean   @default(false)
+  resetOtp               String?
+  resetOtpExpires        DateTime?
+  verificationOtp        String?
+  verificationOtpExpires DateTime?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+}

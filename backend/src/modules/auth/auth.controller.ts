@@ -48,7 +48,7 @@ export class AuthController {
     @Req() req,
     @Body() body
   ) {
-    return this.authService.comfirmActive(req.user, body.codeId)
+    return this.authService.confirmActive(req.user, body.codeId)
   }
 
   @Post('send-reset-otp')
@@ -69,7 +69,7 @@ export class AuthController {
   @Public()
   @ResponseMessage('login with goole')
   loginGoole(@Body() body) {
-    return this.authService.loginGoole(body.firstName, body.lastName, body.email, body.image)
+    return this.authService.loginGoogle(body.firstName, body.lastName, body.email, body.image)
   }
 
   @Post('logout')
