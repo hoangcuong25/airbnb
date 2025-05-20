@@ -29,8 +29,9 @@ const Login = () => {
 
     const onSubmit = (data: LoginFormData) => {
         loginUser(data, {
-            onSuccess: () => {
+            onSuccess: (responseData) => {  // nhận data trả về từ loginUser
                 toast.success('Đăng nhập thành công');
+                localStorage.setItem('access_token', responseData.data.access_token); // lưu token vào localStorage
                 router.push('/');
             },
             onError: (error: Error) => {
