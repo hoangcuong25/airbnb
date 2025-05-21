@@ -15,14 +15,14 @@ export class UserController {
 
   @Post('create')
   @ResponseMessage('create user')
-  @Roles('admin')
+  @Roles('ADMIN')
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
 
   @Get('get-all-user')
   @ResponseMessage('get all user')
-  @Roles('admin')
+  @Roles('ADMIN')
   findAll() {
     return this.userService.findAll();
   }
@@ -65,7 +65,7 @@ export class UserController {
   }
 
   @Delete('delete-user/:id')
-  @Roles('admin')
+  @Roles('ADMIN')
   deleteUser(@Param('id') userId: string) {
     return this.userService.deleteUser(+userId)
   }
