@@ -1,22 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { AppContext } from '@/context/AppContext';
+import { Eye, Pencil, Trash2 } from 'lucide-react';
+import { useContext, useState } from 'react';
 import { toast } from 'sonner';
 
-interface User {
-    id: string;
-    name: string;
-    email: string;
-    role: string;
-    status: 'active' | 'inactive';
-    createdAt: string;
-}
-
 const UserManagement = () => {
-    const [users, setUsers] = useState<User[]>([]);
+
+    const { allUsers, formatDateUTC } = useContext(AppContext)
+
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleStatusChange = async (userId: string, newStatus: 'active' | 'inactive') => {
+    const handleStatusChange = async (userId: number, newStatus: 'active' | 'inactive') => {
         try {
             setIsLoading(true);
             // Add your API call here to update user status
@@ -47,13 +42,8 @@ const UserManagement = () => {
                 <div className="flex gap-4">
                     <select className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
                         <option value="">Tất cả vai trò</option>
-                        <option value="admin">Admin</option>
+                        <option value="admin">Host</option>
                         <option value="user">User</option>
-                    </select>
-                    <select className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
-                        <option value="">Tất cả trạng thái</option>
-                        <option value="active">Đang hoạt động</option>
-                        <option value="inactive">Không hoạt động</option>
                     </select>
                 </div>
             </div>
@@ -73,14 +63,14 @@ const UserManagement = () => {
                             </tr>
                         </thead>
                         <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                            {users.length === 0 ? (
+                            {allUsers.length === 0 ? (
                                 <tr>
                                     <td colSpan={6} className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
                                         Không có dữ liệu
                                     </td>
                                 </tr>
                             ) : (
-                                users.map((user) => (
+                                allUsers.map((user) => (
                                     <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="text-sm font-medium text-gray-900 dark:text-white">{user.name}</div>
@@ -89,33 +79,45 @@ const UserManagement = () => {
                                             <div className="text-sm text-gray-500 dark:text-gray-400">{user.email}</div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                                user.role === 'admin' 
-                                                    ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200' 
-                                                    : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                                            }`}>
+                                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${user.role === 'admin'
+                                                ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
+                                                : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                                                }`}>
                                                 {user.role}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <button
-                                                onClick={() => handleStatusChange(user.id, user.status === 'active' ? 'inactive' : 'active')}
                                                 disabled={isLoading}
-                                                className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full cursor-pointer ${
-                                                    user.status === 'active'
-                                                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                                                        : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                                                }`}
+                                                className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full cursor-pointer ${'active' === 'active'
+                                                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                                                    : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                                                    }`}
                                             >
-                                                {user.status === 'active' ? 'Đang hoạt động' : 'Không hoạt động'}
+                                                {'active' === 'active' ? 'Đang hoạt động' : 'Không hoạt động'}
                                             </button>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                            {user.createdAt}
+                                            {user.createdAt ? formatDateUTC(user.createdAt) : ''}
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <button className="text-primary hover:text-primary/80 mr-3">Chi tiết</button>
-                                            <button className="text-red-600 hover:text-red-800">Xóa</button>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex gap-2">
+                                            <button
+                                                className="flex items-center gap-1 px-3 py-1 bg-yellow-100 text-yellow-700 hover:bg-yellow-200 rounded-full transition"
+                                                title="Chỉnh sửa"
+                                                onClick={() => console.log('Sửa người dùng', user.id)}
+                                            >
+                                                <Pencil size={16} />
+                                                <span className="hidden sm:inline">Sửa</span>
+                                            </button>
+
+                                            <button
+                                                className="flex items-center gap-1 px-3 py-1 bg-red-100 text-red-700  hover:bg-red-200 rounded-full transition"
+                                                title="Xóa"
+                                                onClick={() => console.log('Xóa người dùng', user.id)}
+                                            >
+                                                <Trash2 size={16} />
+                                                <span className="hidden sm:inline">Xóa</span>
+                                            </button>
                                         </td>
                                     </tr>
                                 ))
@@ -128,4 +130,4 @@ const UserManagement = () => {
     );
 };
 
-export default UserManagement; 
+export default UserManagement;
