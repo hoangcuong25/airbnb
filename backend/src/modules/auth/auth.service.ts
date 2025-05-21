@@ -110,7 +110,8 @@ export class AuthService {
   }
 
   async refreshToken(req) {
-    const refreshToken = req.headers.refreshtoken;
+    const refreshToken = req.cookies.refresh_token;
+
     if (!refreshToken) throw new UnauthorizedException('No refresh token provided!!!');
 
     const decoded = this.jwtService.verify(refreshToken, {

@@ -25,12 +25,12 @@ axiosClient.interceptors.response.use(
             originalRequest._retry = true;
 
             try {
-                const { data } = await axios.get(
+                const response = await axios.get(
                     `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/auth/refresh-token`,
                     { withCredentials: true }
                 );
 
-                const newAccessToken = data.data.access_token;
+                const newAccessToken = response.data.data;
 
                 console.log('newAccessToken', newAccessToken);
                 if (newAccessToken) {

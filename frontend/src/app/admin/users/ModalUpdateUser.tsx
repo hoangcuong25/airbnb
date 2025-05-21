@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Dialog,
     DialogContent,
@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 type Props = {
     open: boolean;
@@ -25,9 +26,32 @@ const ModalUpdateUser: React.FC<Props> = ({
     selectedUser,
     setSelectedUser,
 }) => {
+    const [previewImage, setPreviewImage] = useState<string | null>(null);
+
     const handleInputChange = (field: string, value: any) => {
         setSelectedUser({ ...selectedUser, [field]: value });
     };
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            handleInputChange('avatar', file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreviewImage(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    useEffect(() => {
+        // Nếu người dùng đã có ảnh (URL từ backend), hiển thị mặc định
+        if (selectedUser?.avatar && typeof selectedUser.avatar === 'string') {
+            setPreviewImage(selectedUser.avatar);
+        } else {
+            setPreviewImage(null);
+        }
+    }, [selectedUser]);
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -79,11 +103,25 @@ const ModalUpdateUser: React.FC<Props> = ({
                         type="tel"
                     />
 
-                    <Input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => handleInputChange('avatar', e.target.files?.[0])}
-                    />
+                    <div className="space-y-2">
+                        <Input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageChange}
+                        />
+                        {previewImage && (
+                            <div className="mt-2">
+                                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Ảnh xem trước:</p>
+                                <Image
+                                    src={previewImage}
+                                    alt="Ảnh người dùng"
+                                    width={120}
+                                    height={120}
+                                    className="rounded-md border"
+                                />
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 <DialogFooter className="mt-4">
