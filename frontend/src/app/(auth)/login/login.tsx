@@ -9,15 +9,13 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema } from '@/hook/zod-schema/loginSchema';
-import { useLogin } from '@/hook/react-query/useAuth';
+import { LoginApi } from '@/api/auth.api';
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
 const Login = () => {
     const router = useRouter();
     const [showPassword, setShowPassword] = useState(false);
-
-    const { mutate: loginUser } = useLogin();
 
     const {
         register,
@@ -27,17 +25,15 @@ const Login = () => {
         resolver: zodResolver(loginSchema),
     });
 
-    const onSubmit = (data: LoginFormData) => {
-        loginUser(data, {
-            onSuccess: (responseData) => {  // nhận data trả về từ loginUser
-                toast.success('Đăng nhập thành công');
-                localStorage.setItem('access_token', responseData.data.access_token); // lưu token vào localStorage
-                router.push('/');
-            },
-            onError: (error: Error) => {
-                toast.error('Đăng nhập thất bại');
-            },
-        });
+    const onSubmit = async (data: LoginFormData) => {
+        try {
+            const response = await LoginApi(data)
+
+            toast.success('Đăng nhập thành công');
+            router.push('/');
+        } catch (error) {
+            toast.error('Đăng nhập thất bại');
+        }
     };
 
     return (
