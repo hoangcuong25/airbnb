@@ -44,7 +44,6 @@ const Login = () => {
             fetchUser()
 
             toast.success('Đăng nhập thành công');
-            router.push('/');
         } catch (error) {
             toast.error('Đăng nhập thất bại');
         }
