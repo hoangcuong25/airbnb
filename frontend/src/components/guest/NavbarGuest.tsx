@@ -17,13 +17,12 @@ import {
     DropdownMenuContent,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useCurrentUser } from '@/hook/react-query/useAuth';
+import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 
 const NavbarGuest = () => {
-    // const { data: user, isLoading, isError } = useCurrentUser();
 
-    // if (isLoading) return <p>Đang tải...</p>;
-    // if (isError) return <p>Lỗi khi tải người dùng</p>;
+    const pathname = usePathname()
 
     return (
         <div className='flex items-start justify-between'>
@@ -32,19 +31,21 @@ const NavbarGuest = () => {
 
             {/* Center Navigation */}
             <div className='flex flex-col items-center justify-between'>
-                <div className='flex items-center justify-between gap-8'>
-                    <div className='w-36 h-10 bg-red-500 rounded-full flex items-center justify-evenly px-2'>
-                        <House className='text-6xl text-white' />
-                        <p className='text-white'>Nơi lưu trú</p>
-                    </div>
-                    <div className='w-40 h-10 bg-red-500 rounded-full flex items-center justify-evenly px-2'>
-                        <FerrisWheel className='text-6xl text-white' />
-                        <p className='text-white'>Trải nghiệm mới</p>
-                    </div>
-                    <div className='w-40 h-10 bg-red-500 rounded-full flex items-center justify-evenly px-2'>
-                        <ConciergeBell className='text-6xl text-white' />
-                        <p className='text-white'>Dịch vụ</p>
-                    </div>
+                <div className="flex items-center justify-between gap-4 flex-wrap">
+                    {[
+                        { icon: <House className="w-5 h-5" />, label: 'Nơi lưu trú', path: '/' },
+                        { icon: <FerrisWheel className="w-5 h-5 " />, label: 'Trải nghiệm mới', path: '/experience' },
+                        { icon: <ConciergeBell className="w-5 h-5 " />, label: 'Dịch vụ', path: '/service' },
+                    ].map((item, index) => (
+                        <Link
+                            key={index}
+                            href={item.path}
+                            className={`flex items-center gap-2 px-4 py-2 rounded-full shadow transition duration-200 cursor-pointer ${pathname === item.path ? 'bg-red-500 text-white' : 'text-gray-700 hover:bg-gray-100'}`}
+                        >
+                            {item.icon}
+                            <p className="text-sm font-medium whitespace-nowrap">{item.label}</p>
+                        </Link>
+                    ))}
                 </div>
 
                 <div className='flex items-center justify-center mt-5 text-sm '>
@@ -77,19 +78,26 @@ const NavbarGuest = () => {
                 <p>Trở thành Host</p>
 
                 {/* Hiển thị icon Globe nếu có user */}
-                {/* {user ?
-                    <div>
-                        <Image src={user.avatar} alt='Logo' width={80} height={80} />
-                        <p>{user.name}</p>
+                {/* {user ? (
+                    <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-300 shadow-md">
+                        <Image
+                            src={user.avatar}
+                            alt="User Avatar"
+                            width={80}
+                            height={80}
+                            className="object-cover w-full h-full"
+                        />
                     </div>
-                    : <div className='size-9 flex items-center justify-center rounded-full bg-gray-200 shadow-md'>
-                        <Globe className='text-6xl' />
+                ) : (
+                    <div className="w-20 h-20 flex items-center justify-center rounded-full bg-gray-200 shadow-md">
+                        <Globe className="text-gray-500 w-10 h-10" />
                     </div>
-                } */}
+                )} */}
 
-                <div className='size-9 flex items-center justify-center rounded-full bg-gray-200 shadow-md'>
-                    <Globe className='text-6xl' />
+                <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-200 shadow-md">
+                    <Globe className="text-gray-500" />
                 </div>
+
 
                 {/* Menu dropdown */}
                 <DropdownMenu>
@@ -116,16 +124,16 @@ const NavbarGuest = () => {
                             </div>
 
                             <div className='pt-5 cursor-pointer'>
-                                <div>
+                                <Link href='/login' >
                                     <p className='font-semibold'>Đăng nhập</p>
                                     <p className='text-xs'>Để xem thông tin tài khoản của bạn</p>
-                                </div>
+                                </Link>
                             </div>
                         </div>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
-        </div>
+        </div >
     );
 };
 

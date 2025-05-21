@@ -9,15 +9,13 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { registerSchema } from '@/hook/zod-schema/registerSchema';
-import { useRegister } from '@/hook/react-query/useAuth'
+import { RegisterApi } from '@/api/auth.api';
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
 export default function Register() {
     const router = useRouter();
     const [showPassword, setShowPassword] = useState(false);
-
-    const { mutate: registerUser } = useRegister();
 
     const {
         register,
@@ -27,24 +25,16 @@ export default function Register() {
         resolver: zodResolver(registerSchema),
     });
 
-    const onSubmit = (data: z.infer<typeof registerSchema>) => {
-        registerUser(
-            {
-                name: data.name,
-                email: data.email,
-                password1: data.password1,
-                password2: data.password2
-            },
-            {
-                onSuccess: () => {
-                    toast.success('Đăng ký thành công');
-                    router.push('/login');
-                },
-                onError: (err: Error) => {
-                    toast.error(err.message);
-                },
-            }
-        );
+    const onSubmit = async (data: z.infer<typeof registerSchema>) => {
+        try {
+            await RegisterApi(data);
+
+            toast.success('Đăng ký thành công');
+            router.push('/login');
+        } catch (error: any) {
+            const message = error?.response?.data?.message || 'Đăng ký thất bại. Vui lòng thử lại sau.';
+            toast.error(message);
+        }
     }
 
     return (
