@@ -19,3 +19,17 @@ export const getAllUser = async () => {
         throw error;
     }
 }
+
+export const updateProfile = async (data: FormData) => {
+    try {
+        const response = await axiosClient.patch('/api/v1/user/update-user', data, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+
+        return response.data.data;
+    } catch (error) {
+        throw error;
+    }
+}
