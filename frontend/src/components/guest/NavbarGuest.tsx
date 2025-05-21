@@ -133,7 +133,7 @@ const NavbarGuest = () => {
                                     <p>Hồ sơ</p>
                                 </div>
 
-                                <div className='flex items-center justify-start gap-2 py-5 w-full hover:bg-gray-100 cursor-pointer px-2 py-1 rounded'>
+                                <div className='flex items-center justify-start gap-2 py-5 w-full hover:bg-gray-100 cursor-pointer px-2 rounded'>
                                     <Bell className='w-5 h-5' />
                                     <p>Thông báo</p>
                                 </div>
@@ -153,7 +153,7 @@ const NavbarGuest = () => {
                                     <p>Trung tâm trợ giúp</p>
                                 </div>
 
-                                <div className='flex items-start justify-start gap-2 border-b border-gray-300 py-5 w-full hover:bg-gray-100 cursor-pointer px-2 py-2 rounded'>
+                                <div className='flex items-start justify-start gap-2 border-b border-gray-300 py-5 w-full hover:bg-gray-100 cursor-pointer px-2  rounded'>
                                     <div className='flex flex-col items-start justify-start'>
                                         <p className='font-semibold'>Trở thành host</p>
                                         <p className='text-xs'>

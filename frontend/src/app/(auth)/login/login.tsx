@@ -33,6 +33,13 @@ const Login = () => {
         try {
             const response = await LoginApi(data)
 
+            if (response.data.user.role == 'ADMIN') {
+                router.push('/admin/dashboard');
+            }
+            else {
+                router.push('/');
+            }
+
             localStorage.setItem('access_token', response.data.access_token);
             fetchUser()
 
