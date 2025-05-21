@@ -29,7 +29,7 @@ const AppContextProvider: React.FC<AppContextProviderProps> = ({ children }) => 
         try {
             const reponse = await getUser();
 
-            setUser(reponse.data);
+            setUser(reponse);
 
         } catch (error) {
             console.error("Error fetching user data:", error);
