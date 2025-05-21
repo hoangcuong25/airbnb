@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
@@ -10,10 +10,14 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema } from '@/hook/zod-schema/loginSchema';
 import { LoginApi } from '@/api/auth.api';
+import { AppContext } from '@/context/AppContext';
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
 const Login = () => {
+
+    const { fetchUser } = useContext(AppContext)
+
     const router = useRouter();
     const [showPassword, setShowPassword] = useState(false);
 
@@ -28,6 +32,9 @@ const Login = () => {
     const onSubmit = async (data: LoginFormData) => {
         try {
             const response = await LoginApi(data)
+
+            localStorage.setItem('access_token', response.data.access_token);
+            fetchUser()
 
             toast.success('Đăng nhập thành công');
             router.push('/');

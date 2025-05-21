@@ -24,7 +24,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
     handleRequest(err, user, info, context: ExecutionContext) {
         if (err || !user) {
-            throw err || new UnauthorizedException("Please login first");
+            throw err || new UnauthorizedException("Vui lòng đăng nhập trước.");
         }
 
         const requiredRoles = this.reflector.get<string[]>('roles', context.getHandler());
