@@ -70,4 +70,14 @@ export class UserController {
     return this.userService.deleteUser(+userId)
   }
 
+  @Patch('update-user')
+  @ResponseMessage('update user')
+  @Roles('ADMIN')
+  @UseInterceptors(FileInterceptor('image'))
+  updateUser(
+    @Body() updateUserDto: UpdateUserDto,
+    @UploadedFile() image: Express.Multer.File
+  ) {
+    return this.userService.updateUser(updateUserDto, image)
+  }
 }
