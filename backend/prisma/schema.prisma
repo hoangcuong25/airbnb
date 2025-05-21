@@ -13,6 +13,12 @@ enum UserRole {
   HOST
 }
 
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
 model User {
   id                     Int       @id @default(autoincrement())
   name                   String    @db.VarChar(50)
@@ -20,7 +26,7 @@ model User {
   password               String    @db.VarChar(100)
   avatar                 String    @default("https://res.cloudinary.com/dtaawt3ej/image/upload/v1747292486/q9lmgugyqgrm7q5voatw.jpg")
   age                    Int?
-  gender                 String?
+  gender                 Gender?
   dob                    DateTime? @db.Date
   address                String?
   role                   UserRole  @default(USER)

@@ -6,6 +6,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserRole } from '@prisma/client';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -126,8 +127,8 @@ export class UserService {
     return await this.findById(req._id);
   }
 
-  async updateProfile(req: { _id: number }, updateUserDto: any, image?: Express.Multer.File) {
-    const user = await this.findById(req._id);
+  async updateProfile(req: { id: number }, updateUserDto: any, image?: Express.Multer.File) {
+    const user = await this.findById(req.id);
     if (!user) throw new BadRequestException('User not found');
 
     const updateData = { ...updateUserDto };
@@ -138,7 +139,7 @@ export class UserService {
     }
 
     await this.prisma.user.update({
-      where: { id: req._id },
+      where: { id: req.id },
       data: updateData,
     });
 
@@ -175,6 +176,22 @@ export class UserService {
 
   async deleteUser(userId: number) {
     await this.prisma.user.delete({ where: { id: userId } });
+    return 'ok';
+  }
+
+  async updateUser(updateUserDto: UpdateUserDto, image?: Express.Multer.File) {
+    const { id, ...updateData } = updateUserDto;
+
+    if (image) {
+      const imageUpload = await this.cloudinaryService.uploadFile(image);
+      updateData.avatar = imageUpload.url;
+    }
+
+    await this.prisma.user.update({
+      where: { id },
+      data: updateData,
+    });
+
     return 'ok';
   }
 }
