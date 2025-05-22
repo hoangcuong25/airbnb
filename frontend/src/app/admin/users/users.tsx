@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { Button } from "@/components/ui/button";
 import ModalUpdateUser from './ModalUpdateUser';
 import { updateUser } from '@/api/user.api';
+import AlertDialogDeleteUser from './AlertDialogDeleteUser';
 
 const UserManagement = () => {
 
@@ -15,12 +16,14 @@ const UserManagement = () => {
 
     const [selectedUser, setSelectedUser] = useState<UserUpdateResponseType | null>(null);
     const [image, setImage] = useState<File | null>(null);
+    const [openUpdate, setOpenUpdate] = useState(false);
 
-    const [open, setOpen] = useState(false);
+    const [userId, setUserId] = useState<string | null>(null);
+    const [openDelete, setOpenDelete] = useState(false);
 
     const handleEditClick = (user: any) => {
         setSelectedUser(user);
-        setOpen(true);
+        setOpenUpdate(true);
     };
 
     const handleSave = async () => {
@@ -47,7 +50,7 @@ const UserManagement = () => {
 
             await updateUser(formData);
             toast.success('Cập nhật người dùng thành công');
-            setOpen(false);
+            setOpenUpdate(false);
             setImage(null);
 
             await fetchAllUsers();
@@ -106,7 +109,14 @@ const UserManagement = () => {
                                                 <Pencil size={14} className="mr-1" />
                                                 Sửa
                                             </Button>
-                                            <Button variant="destructive" size="sm">
+                                            <Button
+                                                variant="destructive"
+                                                size="sm"
+                                                onClick={() => {
+                                                    setUserId(String(user.id));
+                                                    setOpenDelete(true);
+                                                }}
+                                            >
                                                 <Trash2 size={14} className="mr-1" />
                                                 Xóa
                                             </Button>
@@ -121,8 +131,8 @@ const UserManagement = () => {
 
             {/* Modal chỉnh sửa người dùng */}
             <ModalUpdateUser
-                open={open}
-                setOpen={setOpen}
+                open={openUpdate}
+                setOpen={setOpenUpdate}
                 handleSave={handleSave}
                 selectedUser={selectedUser}
                 setSelectedUser={setSelectedUser}
@@ -130,6 +140,14 @@ const UserManagement = () => {
                 setImage={setImage}
                 isLoading={isLoading}
             />
+
+            {/* Modal xác nhận xóa người dùng */}
+            <AlertDialogDeleteUser
+                open={openDelete}
+                setOpen={setOpenDelete}
+                userId={userId}
+            />
+
         </div>
     );
 };
