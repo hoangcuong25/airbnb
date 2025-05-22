@@ -179,11 +179,11 @@ export class UserService {
     return 'ok';
   }
 
-  async updateUser(updateUserDto: UpdateUserDto, image?: Express.Multer.File) {
+  async updateUser(updateUserDto: UpdateUserDto, avatar?: Express.Multer.File) {
     const { id, ...updateData } = updateUserDto;
 
-    if (image) {
-      const imageUpload = await this.cloudinaryService.uploadFile(image);
+    if (avatar) {
+      const imageUpload = await this.cloudinaryService.uploadFile(avatar);
       updateData.avatar = imageUpload.url;
     }
 

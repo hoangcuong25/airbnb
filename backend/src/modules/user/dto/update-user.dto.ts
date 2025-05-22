@@ -1,4 +1,5 @@
-import { IsOptional, IsString, IsInt, IsEnum, IsUrl } from 'class-validator';
+import { IsOptional, IsString, IsInt, IsEnum, IsUrl, IsDate } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export enum Gender {
     MALE = 'MALE',
@@ -7,7 +8,7 @@ export enum Gender {
 }
 
 export class UpdateUserDto {
-
+    @Type(() => Number)
     id: number;
 
     @IsOptional()
@@ -19,6 +20,7 @@ export class UpdateUserDto {
     avatar?: string;
 
     @IsOptional()
+    @Type(() => Number)
     @IsInt()
     age?: number;
 
@@ -27,6 +29,8 @@ export class UpdateUserDto {
     gender?: Gender;
 
     @IsOptional()
+    @Type(() => Date)
+    @IsDate()
     dob?: Date;
 
     @IsOptional()
@@ -34,5 +38,6 @@ export class UpdateUserDto {
     address?: string;
 
     @IsOptional()
+    @IsString()
     phone?: string;
 }

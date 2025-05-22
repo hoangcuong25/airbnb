@@ -18,4 +18,21 @@ declare global {
         createdBy?: string;
         updatedBy?: string;
     }
+
+    type UserUpdateResponseType = {
+        id: string;
+        name: string;
+        avatar: string;
+        age: string;
+        gender: genderEnum;
+        dob: string;
+        address: string;
+        phone: string;
+    }
+
+    enum genderEnum {
+        MALE = 'MALE',
+        FEMALE = 'FEMALE',
+        OTHER = 'OTHER'
+    }
 }

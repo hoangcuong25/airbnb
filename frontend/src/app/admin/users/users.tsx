@@ -6,11 +6,15 @@ import { useContext, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from "@/components/ui/button";
 import ModalUpdateUser from './ModalUpdateUser';
+import { updateUser } from '@/api/user.api';
 
 const UserManagement = () => {
     const { allUsers, formatDateUTC } = useContext(AppContext);
     const [isLoading, setIsLoading] = useState(false);
-    const [selectedUser, setSelectedUser] = useState(null);
+
+    const [selectedUser, setSelectedUser] = useState<UserUpdateResponseType | null>(null);
+    const [image, setImage] = useState<File | null>(null);
+
     const [open, setOpen] = useState(false);
 
     const handleEditClick = (user: any) => {
@@ -18,11 +22,39 @@ const UserManagement = () => {
         setOpen(true);
     };
 
-    const handleSave = () => {
-        // Gọi API cập nhật người dùng ở đây
-        toast.success(`Đã cập nhật tên người dùng: `);
-        setOpen(false);
+    const handleSave = async () => {
+        if (!selectedUser?.id || !selectedUser?.name || !selectedUser?.age || !selectedUser?.dob || !selectedUser?.address || !selectedUser?.phone) {
+            toast.error('Vui lòng điền đầy đủ thông tin người dùng');
+            return;
+        }
+
+        try {
+            setIsLoading(true);
+
+            const formData = new FormData();
+            formData.append('id', selectedUser.id);
+            formData.append('name', selectedUser.name);
+            formData.append('age', selectedUser.age);
+            formData.append('gender', selectedUser.gender);
+            formData.append('dob', selectedUser.dob);
+            formData.append('address', selectedUser.address);
+            formData.append('phone', selectedUser.phone);
+
+            if (image) {
+                formData.append('avatar', image);
+            }
+
+            await updateUser(formData);
+            toast.success('Cập nhật người dùng thành công');
+            setOpen(false);
+            setImage(null);
+        } catch (error) {
+            toast.error('Có lỗi xảy ra khi lưu thông tin người dùng');
+        } finally {
+            setIsLoading(false);
+        }
     };
+
 
     return (
         <div className="p-6">
@@ -90,6 +122,9 @@ const UserManagement = () => {
                 handleSave={handleSave}
                 selectedUser={selectedUser}
                 setSelectedUser={setSelectedUser}
+                image={image}
+                setImage={setImage}
+                isLoading={isLoading}
             />
         </div>
     );

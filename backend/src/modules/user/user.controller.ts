@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Req, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req, UseInterceptors, UploadedFile, ValidationPipe } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -73,11 +73,11 @@ export class UserController {
   @Patch('update-user')
   @ResponseMessage('update user')
   @Roles('ADMIN')
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(FileInterceptor('avatar'))
   updateUser(
-    @Body() updateUserDto: UpdateUserDto,
-    @UploadedFile() image: Express.Multer.File
+    @Body(new ValidationPipe({ transform: true })) updateUserDto: UpdateUserDto,
+    @UploadedFile() avatar: Express.Multer.File
   ) {
-    return this.userService.updateUser(updateUserDto, image)
+    return this.userService.updateUser(updateUserDto, avatar)
   }
 }
