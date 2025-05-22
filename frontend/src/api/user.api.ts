@@ -20,7 +20,7 @@ export const getAllUser = async () => {
     }
 }
 
-export const updateProfile = async (data: FormData) => {
+export const updateUser = async (data: FormData) => {
     try {
         const response = await axiosClient.patch('/api/v1/user/update-user', data, {
             headers: {

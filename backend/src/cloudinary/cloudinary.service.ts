@@ -23,4 +23,20 @@ export class CloudinaryService {
             streamifier.createReadStream(file.buffer).pipe(uploadStream);
         });
     }
+
+    async deleteFile(publicId: string) {
+        return await cloudinary.uploader.destroy(publicId);
+    }
+
+    extractPublicId(url: string): string | null {
+        try {
+            const parts = url.split('/');
+            const filename = parts[parts.length - 1];
+            const publicId = filename.split('.')[0];
+            const folder = parts.slice(-2, -1)[0];
+            return `${folder}/${publicId}`;
+        } catch {
+            return null;
+        }
+    }
 }

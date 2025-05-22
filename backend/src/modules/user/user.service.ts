@@ -179,14 +179,29 @@ export class UserService {
     return 'ok';
   }
 
-  async updateUser(updateUserDto: UpdateUserDto, image?: Express.Multer.File) {
+  async updateUser(updateUserDto: UpdateUserDto, avatar?: Express.Multer.File) {
     const { id, ...updateData } = updateUserDto;
 
-    if (image) {
-      const imageUpload = await this.cloudinaryService.uploadFile(image);
+    if (avatar) {
+      // Lấy thông tin người dùng hiện tại
+      const existingUser = await this.prisma.user.findUnique({
+        where: { id },
+      });
+
+      // Nếu người dùng có avatar cũ thì xóa nó khỏi Cloudinary
+      if (existingUser?.avatar) {
+        const publicId = this.cloudinaryService.extractPublicId(existingUser.avatar);
+        if (publicId) {
+          await this.cloudinaryService.deleteFile(publicId);
+        }
+      }
+
+      // Upload ảnh mới
+      const imageUpload = await this.cloudinaryService.uploadFile(avatar);
       updateData.avatar = imageUpload.url;
     }
 
+    // Cập nhật thông tin người dùng
     await this.prisma.user.update({
       where: { id },
       data: updateData,
