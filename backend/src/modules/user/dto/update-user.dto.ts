@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsInt, IsEnum, IsUrl, IsDate } from 'class-validator';
+import { IsOptional, IsString, IsInt, IsEnum, IsUrl, IsDate, IsNotEmpty } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export enum Gender {
@@ -8,7 +8,9 @@ export enum Gender {
 }
 
 export class UpdateUserDto {
+    @IsNotEmpty()
     @Type(() => Number)
+    @IsInt()
     id: number;
 
     @IsOptional()

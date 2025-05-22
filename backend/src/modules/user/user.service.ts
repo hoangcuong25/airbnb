@@ -183,10 +183,25 @@ export class UserService {
     const { id, ...updateData } = updateUserDto;
 
     if (avatar) {
+      // Lấy thông tin người dùng hiện tại
+      const existingUser = await this.prisma.user.findUnique({
+        where: { id },
+      });
+
+      // Nếu người dùng có avatar cũ thì xóa nó khỏi Cloudinary
+      if (existingUser?.avatar) {
+        const publicId = this.cloudinaryService.extractPublicId(existingUser.avatar);
+        if (publicId) {
+          await this.cloudinaryService.deleteFile(publicId);
+        }
+      }
+
+      // Upload ảnh mới
       const imageUpload = await this.cloudinaryService.uploadFile(avatar);
       updateData.avatar = imageUpload.url;
     }
 
+    // Cập nhật thông tin người dùng
     await this.prisma.user.update({
       where: { id },
       data: updateData,

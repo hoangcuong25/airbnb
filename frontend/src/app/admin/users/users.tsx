@@ -9,7 +9,8 @@ import ModalUpdateUser from './ModalUpdateUser';
 import { updateUser } from '@/api/user.api';
 
 const UserManagement = () => {
-    const { allUsers, formatDateUTC } = useContext(AppContext);
+
+    const { allUsers, formatDateUTC, fetchAllUsers } = useContext(AppContext);
     const [isLoading, setIsLoading] = useState(false);
 
     const [selectedUser, setSelectedUser] = useState<UserUpdateResponseType | null>(null);
@@ -48,6 +49,9 @@ const UserManagement = () => {
             toast.success('Cập nhật người dùng thành công');
             setOpen(false);
             setImage(null);
+
+            await fetchAllUsers();
+
         } catch (error) {
             toast.error('Có lỗi xảy ra khi lưu thông tin người dùng');
         } finally {
