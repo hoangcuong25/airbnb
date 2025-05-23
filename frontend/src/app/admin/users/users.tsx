@@ -1,13 +1,14 @@
 'use client';
 
 import { AppContext } from '@/context/AppContext';
-import { Pencil, Trash2 } from 'lucide-react';
+import { Eye, Pencil, Trash2 } from 'lucide-react';
 import { useContext, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from "@/components/ui/button";
 import ModalUpdateUser from './ModalUpdateUser';
 import { updateUser } from '@/api/user.api';
 import AlertDialogDeleteUser from './AlertDialogDeleteUser';
+import ModalViewDetail from './ModalViewDetail';
 
 const UserManagement = () => {
 
@@ -20,6 +21,9 @@ const UserManagement = () => {
 
     const [userId, setUserId] = useState<string | null>(null);
     const [openDelete, setOpenDelete] = useState(false);
+
+    const [opdenDetail, setOpenDetail] = useState(false);
+    const [userDetail, setUserDetail] = useState<UserType | null>(null);
 
     const handleEditClick = (user: any) => {
         setSelectedUser(user);
@@ -100,26 +104,40 @@ const UserManagement = () => {
                                         <td className="px-6 py-4">Đang hoạt động</td>
                                         <td className="px-6 py-4">{user.createdAt ? formatDateUTC(user.createdAt) : ''}</td>
                                         <td className="px-6 py-4 flex gap-2">
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                className='border-gray-300'
-                                                onClick={() => handleEditClick(user)}
-                                            >
-                                                <Pencil size={14} className="mr-1" />
-                                                Sửa
-                                            </Button>
-                                            <Button
-                                                variant="destructive"
-                                                size="sm"
-                                                onClick={() => {
-                                                    setUserId(String(user.id));
-                                                    setOpenDelete(true);
-                                                }}
-                                            >
-                                                <Trash2 size={14} className="mr-1" />
-                                                Xóa
-                                            </Button>
+                                            <div className="flex items-center gap-2">
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="border-gray-300 text-gray-700"
+                                                    onClick={() => {
+                                                        setUserDetail(user);
+                                                        setOpenDetail(true);
+                                                    }}
+                                                >
+                                                    <Eye size={14} className="mr-1" />
+                                                    Chi tiết
+                                                </Button>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="border-blue-300 text-blue-600 hover:bg-blue-50"
+                                                    onClick={() => handleEditClick(user)}
+                                                >
+                                                    <Pencil size={14} className="mr-1" />
+                                                    Sửa
+                                                </Button>
+                                                <Button
+                                                    variant="destructive"
+                                                    size="sm"
+                                                    onClick={() => {
+                                                        setUserId(String(user.id));
+                                                        setOpenDelete(true);
+                                                    }}
+                                                >
+                                                    <Trash2 size={14} className="mr-1" />
+                                                    Xóa
+                                                </Button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))
@@ -146,6 +164,14 @@ const UserManagement = () => {
                 open={openDelete}
                 setOpen={setOpenDelete}
                 userId={userId}
+            />
+
+            {/* Modal chi tiết người dùng */}
+            <ModalViewDetail
+                open={opdenDetail}
+                setOpen={setOpenDetail}
+                user={userDetail}
+                formatDateUTC={formatDateUTC}
             />
 
         </div>
