@@ -9,6 +9,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { RedisModule, RedisModuleOptions } from '@nestjs-modules/ioredis';
 import { PrismaModule } from './prisma/prisma.module';
+import { ListingModule } from './modules/listing/listing.module';
 
 @Module({
   imports: [
@@ -55,7 +56,8 @@ import { PrismaModule } from './prisma/prisma.module';
     }),
 
     UserModule,
-    AuthModule
+    AuthModule,
+    ListingModule
   ],
   controllers: [AppController],
   providers: [AppService],

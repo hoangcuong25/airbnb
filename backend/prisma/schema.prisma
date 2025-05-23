@@ -38,4 +38,29 @@ model User {
   verificationOtpExpires DateTime?
   createdAt              DateTime  @default(now())
   updatedAt              DateTime  @updatedAt
+  Listing                Listing[]
+}
+
+model Listing {
+  id            Int            @id @default(autoincrement())
+  title         String
+  description   String
+  pricePerNight Int
+  address       String
+  city          String
+  country       String
+  hostId        Int
+  host          User           @relation(fields: [hostId], references: [id])
+  images        ListingImage[] // 1-N relationship with ListingImage
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ListingImage {
+  id        Int    @id @default(autoincrement())
+  listingId Int
+  url       String
+
+  listing Listing @relation(fields: [listingId], references: [id])
 }

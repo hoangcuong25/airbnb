@@ -71,8 +71,10 @@ const ListingManagement = () => {
                     <select className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
                         <option value="">Tất cả đánh giá</option>
                         <option value="5">5 sao</option>
-                        <option value="4">4 sao trở lên</option>
-                        <option value="3">3 sao trở lên</option>
+                        <option value="4">4 sao</option>
+                        <option value="3">3 sao</option>
+                        <option value="3">2 sao</option>
+                        <option value="3">1 sao</option>
                     </select>
                 </div>
             </div>
@@ -122,7 +124,7 @@ const ListingManagement = () => {
                                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{listing.title}</h3>
                                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">{listing.location}</p>
                                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">{listing.description}</p>
-                                
+
                                 {/* Price and Rating */}
                                 <div className="flex justify-between items-center">
                                     <span className="text-lg font-bold text-primary">
