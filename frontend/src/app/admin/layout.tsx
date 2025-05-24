@@ -1,6 +1,7 @@
 'use client';
 
 import SiderAdmin from '@/components/admin/SiderAdmin';
+import AdminContextProvider from '@/context/AdminContext';
 
 export default function AdminLayout({
     children,
@@ -14,7 +15,9 @@ export default function AdminLayout({
 
             {/* Main Content - Dynamic */}
             <div className="flex-1">
-                {children}
+                <AdminContextProvider>
+                    {children}
+                </AdminContextProvider>
             </div>
         </div>
     );

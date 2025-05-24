@@ -1,6 +1,5 @@
 'use client';
 
-import { AppContext } from '@/context/AppContext';
 import { Eye, Pencil, Trash2 } from 'lucide-react';
 import { useContext, useState } from 'react';
 import { toast } from 'sonner';
@@ -9,10 +8,12 @@ import ModalUpdateUser from './ModalUpdateUser';
 import { updateUser } from '@/api/user.api';
 import AlertDialogDeleteUser from './AlertDialogDeleteUser';
 import ModalViewDetail from './ModalViewDetail';
+import { formatDateUTC } from '@/lib/formatDateUTC';
+import { AdminContext } from '@/context/AdminContext';
 
 const UserManagement = () => {
 
-    const { allUsers, formatDateUTC, fetchAllUsers } = useContext(AppContext);
+    const { allUsers, fetchAllUsers } = useContext(AdminContext);
     const [isLoading, setIsLoading] = useState(false);
 
     const [selectedUser, setSelectedUser] = useState<UserUpdateResponseType | null>(null);
