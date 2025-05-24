@@ -36,6 +36,12 @@ declare global {
         OTHER = 'OTHER'
     }
 
+    type ImageListing = {
+        id: number
+        listingId: number
+        url: string
+    }
+
     type ListingType = {
         id: number;
         title: string;
@@ -44,13 +50,12 @@ declare global {
         address: string;
         city: string;
         country: string[];
-
+        host: UserType;
         hostId: number;
-        hostName: string;
-        hostAvatar: string;
-        hostEmail: string;
-        hostPhone: string;
 
-        images: string[];
+        images: ImageListing[];
+
+        createdAt: string;
+        updatedAt: string;
     }
 }

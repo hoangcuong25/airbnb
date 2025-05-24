@@ -50,7 +50,12 @@ export class ListingService {
   }
 
   findAll() {
-    return `This action returns all listing`;
+    return this.prisma.listing.findMany({
+      include: {
+        host: true,
+        images: true,
+      }
+    });
   }
 
   findOne(id: number) {

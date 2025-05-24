@@ -1,9 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { toast } from 'sonner';
 import Image from 'next/image';
 import ModalAddListing from './ModalAddListing';
+import { AppContext } from '@/context/AppContext';
+import { Button } from '@/components/ui/button';
+import { Eye, Pencil, Trash2 } from 'lucide-react';
 
 interface Listing {
     id: string;
@@ -18,7 +21,9 @@ interface Listing {
 }
 
 const ListingManagement = () => {
-    const [listings, setListings] = useState<Listing[]>([]);
+
+    const { listings } = useContext(AppContext)
+
     const [isLoading, setIsLoading] = useState(false);
 
     const [openAdd, setOpenAdd] = useState(false);
@@ -95,68 +100,79 @@ const ListingManagement = () => {
                     </div>
                 ) : (
                     listings.map((listing) => (
-                        <div key={listing.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                        <div
+                            key={listing.id}
+                            className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+                        >
                             {/* Image */}
                             <div className="relative h-48">
-                                {listing.images[0] && (
+                                {listing.images[0]?.url && (
                                     <Image
-                                        src={listing.images[0]}
+                                        src={listing.images[0].url}
                                         alt={listing.title}
                                         fill
                                         className="object-cover"
                                     />
                                 )}
-                                <div className="absolute top-2 right-2">
-                                    <select
-                                        value={listing.status}
-                                        onChange={(e) => handleStatusChange(listing.id, e.target.value as Listing['status'])}
-                                        disabled={isLoading}
-                                        className={`px-2 py-1 text-xs font-semibold rounded-full cursor-pointer ${getStatusColor(listing.status)}`}
-                                    >
-                                        <option value="available">Có sẵn</option>
-                                        <option value="unavailable">Không có sẵn</option>
-                                        <option value="maintenance">Bảo trì</option>
-                                    </select>
-                                </div>
                             </div>
 
                             {/* Content */}
                             <div className="p-4">
-                                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{listing.title}</h3>
-                                <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">{listing.location}</p>
-                                <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">{listing.description}</p>
+                                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                                    {listing.title}
+                                </h3>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                                    {listing.address}, {listing.city}, {listing.country}
+                                </p>
+                                <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">
+                                    {listing.description}
+                                </p>
 
-                                {/* Price and Rating */}
+                                {/* Price */}
                                 <div className="flex justify-between items-center">
                                     <span className="text-lg font-bold text-primary">
-                                        {listing.price.toLocaleString('vi-VN')} VNĐ/đêm
+                                        {listing.pricePerNight.toLocaleString('vi-VN')} VNĐ/đêm
                                     </span>
-                                    <div className="flex items-center">
-                                        <span className="text-yellow-400">★</span>
-                                        <span className="ml-1 text-sm text-gray-600 dark:text-gray-300">{listing.rating}</span>
+                                    <div className="flex items-center gap-2">
+                                        <Image
+                                            src={listing.host.avatar}
+                                            alt={listing.host.name}
+                                            width={24}
+                                            height={24}
+                                            className="rounded-full"
+                                        />
+                                        <span className="text-sm text-gray-700 dark:text-gray-300">{listing.host.name}</span>
                                     </div>
-                                </div>
-
-                                {/* Amenities */}
-                                <div className="mt-4 flex flex-wrap gap-2">
-                                    {listing.amenities.map((amenity, index) => (
-                                        <span
-                                            key={index}
-                                            className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full"
-                                        >
-                                            {amenity}
-                                        </span>
-                                    ))}
                                 </div>
 
                                 {/* Actions */}
                                 <div className="mt-4 flex justify-end gap-2">
-                                    <button className="px-3 py-1 text-sm text-primary hover:text-primary/80 transition-colors duration-200">
-                                        Chỉnh sửa
-                                    </button>
-                                    <button className="px-3 py-1 text-sm text-red-600 hover:text-red-800 transition-colors duration-200">
-                                        Xóa
-                                    </button>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="flex items-center gap-1 border-gray-300 text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                    >
+                                        <Eye size={14} />
+                                        <span>Chi tiết</span>
+                                    </Button>
+
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="border-blue-300 text-blue-600 hover:bg-blue-50"
+                                    >
+                                        <Pencil size={14} className="mr-1" />
+                                        Sửa
+                                    </Button>
+
+                                    <Button
+                                        variant="destructive"
+                                        size="sm"
+                                        className="flex items-center gap-1"
+                                    >
+                                        <Trash2 size={14} />
+                                        <span>Xóa</span>
+                                    </Button>
                                 </div>
                             </div>
                         </div>
@@ -167,10 +183,8 @@ const ListingManagement = () => {
             {/* Pagination */}
 
 
-
-
         </div>
     );
 };
 
-export default ListingManagement; 
+export default ListingManagement;
