@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFiles } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFiles, Req } from '@nestjs/common';
 import { ListingService } from './listing.service';
 import { CreateListingDto } from './dto/create-listing.dto';
 import { UpdateListingDto } from './dto/update-listing.dto';
@@ -15,9 +15,10 @@ export class ListingController {
   @UseInterceptors(FilesInterceptor('images', 10))
   create(
     @UploadedFiles() images: Express.Multer.File[],
-    @Body() createListingDto: CreateListingDto
+    @Body() createListingDto: CreateListingDto,
+    @Req() req,
   ) {
-    return this.listingService.create(createListingDto, images);
+    return this.listingService.create(createListingDto, images, req.user.id);
   }
 
   @Get()

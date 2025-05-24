@@ -12,7 +12,7 @@ export class ListingService {
     private readonly cloudinary: CloudinaryService,
   ) { }
 
-  async create(createListingDto: CreateListingDto, images: Express.Multer.File[]) {
+  async create(createListingDto: CreateListingDto, images: Express.Multer.File[], hostId: number) {
     if (!images || images.length === 0) {
       throw new BadRequestException('No images provided');
     }
@@ -26,7 +26,7 @@ export class ListingService {
         address: createListingDto.address,
         city: createListingDto.city,
         country: createListingDto.country,
-        hostId: createListingDto.hostId,
+        hostId: hostId,
       }
     })
 
@@ -46,13 +46,7 @@ export class ListingService {
       })),
     });
 
-    return {
-      message: 'Listing created successfully',
-      data: {
-        ...listing,
-        images: imageUrls,
-      },
-    };
+    return 'Listing created successfully'
   }
 
   findAll() {

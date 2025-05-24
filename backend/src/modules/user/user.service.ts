@@ -123,8 +123,8 @@ export class UserService {
     return await this.prisma.user.findMany();
   }
 
-  async getProfile(req: { _id: number }) {
-    return await this.findById(req._id);
+  async getProfile(req: { id: number }) {
+    return await this.findById(req.id);
   }
 
   async updateProfile(req: { id: number }, updateUserDto: any, image?: Express.Multer.File) {
@@ -146,18 +146,18 @@ export class UserService {
     return 'ok';
   }
 
-  async updatePhone(req: { _id: number }, phone: string) {
+  async updatePhone(req: { id: number }, phone: string) {
     await this.prisma.user.update({
-      where: { id: req._id },
+      where: { id: req.id },
       data: { phone },
     });
 
     return 'ok';
   }
 
-  async updatePassword(req: { _id: number }, reqBody: any) {
+  async updatePassword(req: { id: number }, reqBody: any) {
     const { newPassword1, newPassword2, oldPassword } = reqBody;
-    const user = await this.findById(req._id);
+    const user = await this.findById(req.id);
     if (!user) throw new BadRequestException('User not found');
 
     const isOldPasswordValid = await comparePasswordHelper(oldPassword, user.password);
@@ -167,7 +167,7 @@ export class UserService {
     const hashedPassword = await hashPasswordHelper(newPassword1);
 
     await this.prisma.user.update({
-      where: { id: req._id },
+      where: { id: req.id },
       data: { password: hashedPassword },
     });
 

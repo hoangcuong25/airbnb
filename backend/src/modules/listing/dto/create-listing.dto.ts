@@ -19,8 +19,4 @@ export class CreateListingDto {
 
     @IsString()
     country: string;
-
-    @IsInt()
-    @Type(() => Number)
-    hostId: number;
 }
