@@ -4,9 +4,9 @@ import { useContext, useState } from 'react';
 import { toast } from 'sonner';
 import Image from 'next/image';
 import ModalAddListing from './ModalAddListing';
-import { AppContext } from '@/context/AppContext';
 import { Button } from '@/components/ui/button';
 import { Eye, Pencil, Trash2 } from 'lucide-react';
+import { AdminContext } from '@/context/AdminContext';
 
 interface Listing {
     id: string;
@@ -22,7 +22,7 @@ interface Listing {
 
 const ListingManagement = () => {
 
-    const { listings } = useContext(AppContext)
+    const { listings } = useContext(AdminContext)
 
     const [isLoading, setIsLoading] = useState(false);
 
