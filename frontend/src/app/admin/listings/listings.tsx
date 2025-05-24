@@ -8,16 +8,16 @@ import { Button } from '@/components/ui/button';
 import { Eye, Pencil, Trash2 } from 'lucide-react';
 import { AppContext } from '@/context/AppContext';
 import AlertDialogDeleteListing from './AlertDialogDeleteListing';
+import ModalUpdateListing from './ModalUpdateListing';
 
 const ListingManagement = () => {
 
     const { listings } = useContext(AppContext)
 
-    const [isLoading, setIsLoading] = useState(false);
-
     const [openAdd, setOpenAdd] = useState(false);
 
     const [openEdit, setOpenEdit] = useState(false);
+    const [selectedListing, setSelectedListing] = useState<ListingType | null>(null);
 
     const [openDelete, setOpenDelete] = useState(false);
     const [selectedListingId, setSelectedListingId] = useState<string | null>(null);
@@ -127,6 +127,10 @@ const ListingManagement = () => {
                                         variant="outline"
                                         size="sm"
                                         className="border-blue-300 text-blue-600 hover:bg-blue-50"
+                                        onClick={() => {
+                                            setSelectedListing(listing);
+                                            setOpenEdit(true);
+                                        }}
                                     >
                                         <Pencil size={14} className="mr-1" />
                                         Sửa
@@ -160,6 +164,15 @@ const ListingManagement = () => {
                 setOpen={setOpenDelete}
                 listingId={selectedListingId}
             />
+
+            {/* modal update */}
+            {selectedListing && (
+                <ModalUpdateListing
+                    open={openEdit}
+                    setOpen={setOpenEdit}
+                    listing={selectedListing}
+                />
+            )}
 
         </div>
     );

@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useContext } from "react"
 import {
     Dialog,
     DialogTrigger,
@@ -19,6 +19,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { ListingSchema } from "@/hook/zod-schema/ListingSchema"
 import { createListingApi } from "@/api/listing.api"
 import { toast } from "sonner"
+import { AppContext } from "@/context/AppContext"
 
 type Props = {
     open: boolean
@@ -28,13 +29,16 @@ type Props = {
 type ListingFormData = z.infer<typeof ListingSchema>
 
 const ModalAddListing = ({ open, setOpen }: Props) => {
+
+    const { fetchAllListings } = useContext(AppContext)
+
     const [images, setImages] = React.useState<File[]>([])
 
     const {
         register,
         handleSubmit,
-        formState: { errors, isSubmitting },
         reset,
+        formState: { errors, isSubmitting },
     } = useForm<ListingFormData>({
         resolver: zodResolver(ListingSchema),
     })
@@ -59,15 +63,17 @@ const ModalAddListing = ({ open, setOpen }: Props) => {
         try {
             const response = await createListingApi(formData)
 
+            await fetchAllListings() // Cập nhật danh sách sau khi thêm mới
+
             toast.success("Thêm phòng thành công")
         } catch (error) {
             toast.error("Thêm phòng thất bại")
         }
 
-        // Reset
-        // setOpen(false)
-        // setImages([])
-        // reset()
+
+        setOpen(false)
+        setImages([])
+        reset()
     }
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {

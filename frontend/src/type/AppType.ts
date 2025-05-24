@@ -49,7 +49,7 @@ declare global {
         pricePerNight: number;
         address: string;
         city: string;
-        country: string[];
+        country: string;
         host: UserType;
         hostId: number;
 
