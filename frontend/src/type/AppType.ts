@@ -35,4 +35,22 @@ declare global {
         FEMALE = 'FEMALE',
         OTHER = 'OTHER'
     }
+
+    type ListingType = {
+        id: number;
+        title: string;
+        description: string;
+        pricePerNight: number;
+        address: string;
+        city: string;
+        country: string[];
+
+        hostId: number;
+        hostName: string;
+        hostAvatar: string;
+        hostEmail: string;
+        hostPhone: string;
+
+        images: string[];
+    }
 }

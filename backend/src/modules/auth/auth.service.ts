@@ -49,7 +49,7 @@ export class AuthService {
     const payload = {
       sub: userLogin.email,
       iss: 'from server',
-      _id: userLogin.id,
+      id: userLogin.id,
       role: userLogin.role,
     };
 
@@ -101,7 +101,7 @@ export class AuthService {
         const decoded = this.jwtService.verify(access_token, {
           secret: this.configService.get<string>('JWT_ACCESS_TOKEN_SECRET'),
         });
-        await this.redis.del(`refresh_token:${decoded._id}`);
+        await this.redis.del(`refresh_token:${decoded.id}`);
       }
       return 'ok';
     } catch {
@@ -117,16 +117,16 @@ export class AuthService {
     const decoded = this.jwtService.verify(refreshToken, {
       secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
     });
-    const storedToken = await this.redis.get(`refresh_token:${decoded._id}`);
+    const storedToken = await this.redis.get(`refresh_token:${decoded.id}`);
 
     if (storedToken !== refreshToken) throw new UnauthorizedException('Invalid refresh token');
 
-    const user = await this.prisma.user.findUnique({ where: { id: decoded._id } });
+    const user = await this.prisma.user.findUnique({ where: { id: decoded.id } });
 
     const payload = {
       sub: user.email,
       iss: 'from server',
-      _id: user.id,
+      id: user.id,
       role: user.role,
     };
 
@@ -135,7 +135,7 @@ export class AuthService {
 
   async sendEmailActive(req) {
     const codeId = Math.random().toString(36).substring(2, 8);
-    const user = await this.prisma.user.findUnique({ where: { id: req._id } });
+    const user = await this.prisma.user.findUnique({ where: { id: req.id } });
 
     await this.mailerService.sendMail({
       to: user.email,
@@ -149,7 +149,7 @@ export class AuthService {
     });
 
     await this.prisma.user.update({
-      where: { id: req._id },
+      where: { id: req.id },
       data: {
         verificationOtp: codeId,
         verificationOtpExpires: new Date(Date.now() + 5 * 60 * 1000),
@@ -160,7 +160,7 @@ export class AuthService {
   }
 
   async confirmActive(req, codeId: string) {
-    const user = await this.prisma.user.findUnique({ where: { id: req._id } });
+    const user = await this.prisma.user.findUnique({ where: { id: req.id } });
 
     if (user.verificationOtp !== codeId) {
       throw new BadRequestException('Invalid activation code');
@@ -171,7 +171,7 @@ export class AuthService {
     }
 
     await this.prisma.user.update({
-      where: { id: req._id },
+      where: { id: req.id },
       data: {
         isVerified: true,
         verificationOtp: null,
@@ -253,7 +253,7 @@ export class AuthService {
       const payload = {
         sub: user.email,
         iss: 'from server',
-        _id: user.id,
+        id: user.id,
         role: user.role,
       };
 
@@ -285,7 +285,7 @@ export class AuthService {
       const payload = {
         sub: user.email,
         iss: 'from server',
-        _id: user.id,
+        id: user.id,
         role: user.role,
       };
 
