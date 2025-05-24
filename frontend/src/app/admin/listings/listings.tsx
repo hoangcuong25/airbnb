@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
 import Image from 'next/image';
+import ModalAddListing from './ModalAddListing';
 
 interface Listing {
     id: string;
@@ -19,6 +20,10 @@ interface Listing {
 const ListingManagement = () => {
     const [listings, setListings] = useState<Listing[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+
+    const [openAdd, setOpenAdd] = useState(false);
+
+    const [openEdit, setOpenEdit] = useState(false);
 
     const handleStatusChange = async (listingId: string, newStatus: Listing['status']) => {
         try {
@@ -80,11 +85,7 @@ const ListingManagement = () => {
             </div>
 
             {/* Add New Listing Button */}
-            <div className="mb-6">
-                <button className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors duration-200">
-                    Thêm phòng mới
-                </button>
-            </div>
+            <ModalAddListing open={openAdd} setOpen={setOpenAdd} />
 
             {/* Listings Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -162,6 +163,12 @@ const ListingManagement = () => {
                     ))
                 )}
             </div>
+
+            {/* Pagination */}
+
+
+
+
         </div>
     );
 };
