@@ -21,7 +21,9 @@ export class ListingController {
     return this.listingService.create(createListingDto, images, req.user.id);
   }
 
-  @Get()
+  @Get("get-all-listing")
+  @ResponseMessage("Listing retrieved successfully")
+  @Roles("ADMIN")
   findAll() {
     return this.listingService.findAll();
   }

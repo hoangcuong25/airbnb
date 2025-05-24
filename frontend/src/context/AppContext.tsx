@@ -3,6 +3,7 @@
 
 'use client'
 
+import { getAllListingApi } from "@/api/listing.api";
 import { getAllUser, getUser } from "@/api/user.api";
 import React, { createContext, ReactNode, useEffect, useState } from "react";
 
@@ -14,6 +15,9 @@ interface AppContextType {
     setAllUsers: React.Dispatch<React.SetStateAction<UserType[]>>;
     fetchAllUsers: () => Promise<void>;
     formatDateUTC: (date: string | Date) => string;
+    listings: ListingType[];
+    setListings: React.Dispatch<React.SetStateAction<ListingType[]>>;
+    fetchAllListings: () => Promise<void>;
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -24,6 +28,9 @@ export const AppContext = createContext<AppContextType>({
     setAllUsers: () => { },
     fetchAllUsers: async () => { },
     formatDateUTC: (date: string | Date) => '',
+    listings: [],
+    setListings: () => { },
+    fetchAllListings: async () => { },
 });
 
 interface AppContextProviderProps {
@@ -33,6 +40,8 @@ interface AppContextProviderProps {
 const AppContextProvider: React.FC<AppContextProviderProps> = ({ children }) => {
     const [user, setUser] = useState<UserType | null>(null);
     const [allUsers, setAllUsers] = useState<UserType[]>([]);
+
+    const [listings, setListings] = useState<ListingType[]>([]);
 
     const fetchUser = async () => {
         try {
@@ -52,6 +61,17 @@ const AppContextProvider: React.FC<AppContextProviderProps> = ({ children }) => 
             setAllUsers(response);
         } catch (error) {
             console.error("Error fetching all users data:", error);
+        }
+    }
+
+    const fetchAllListings = async () => {
+        try {
+            const response = await getAllListingApi();
+
+            setListings(response);
+        }
+        catch (error) {
+            console.error("Error fetching all listings data:", error);
         }
     }
 
@@ -81,7 +101,9 @@ const AppContextProvider: React.FC<AppContextProviderProps> = ({ children }) => 
         fetchUser,
         allUsers, setAllUsers,
         fetchAllUsers,
-        formatDateUTC
+        formatDateUTC,
+        listings, setListings,
+        fetchAllListings
     };
 
     useEffect(() => {
@@ -91,6 +113,7 @@ const AppContextProvider: React.FC<AppContextProviderProps> = ({ children }) => 
             fetchUser()
         }
 
+        fetchAllListings()
         fetchAllUsers()
     }, []);
 
