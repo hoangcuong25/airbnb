@@ -1,5 +1,4 @@
-'use client'
-
+import React, { Dispatch, SetStateAction, useContext } from 'react'
 import {
     AlertDialog,
     AlertDialogAction,
@@ -10,37 +9,40 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Dispatch, SetStateAction } from "react";
-import { toast } from "sonner";
-import { deleteUser } from "@/api/user.api"; // API xoá người dùng
-import { useContext } from "react";
-import { AdminContext } from "@/context/AdminContext";
+import { AppContext } from '@/context/AppContext';
+import { deleteListingApi } from '@/api/listing.api';
+import { toast } from 'sonner';
+
 
 interface Props {
     open: boolean;
     setOpen: Dispatch<SetStateAction<boolean>>;
-    userId: string | null;
+    listingId: string | null;
 }
 
-const AlertDialogDeleteUser = ({ open, setOpen, userId }: Props) => {
-    const { fetchAllUsers } = useContext(AdminContext);
+const AlertDialogDeleteListing = ({ open, setOpen, listingId }: Props) => {
+
+    const { fetchAllListings } = useContext(AppContext);
 
     const handleDelete = async () => {
-        if (!userId) {
-            toast.error("Không tìm thấy người dùng để xoá.");
+        if (!listingId) {
+            console.error("Không tìm thấy phòng để xoá.");
             return;
         }
 
         try {
-            await deleteUser(userId);
-            toast.success("Xoá người dùng thành công.");
-            await fetchAllUsers();
+            await deleteListingApi(listingId);
+
+            toast.success("Xoá phòng thành công.");
+
+            fetchAllListings();
+
         } catch (error) {
-            toast.error("Đã xảy ra lỗi khi xoá người dùng.");
+            toast.error("Đã xảy ra lỗi khi xoá phòng.");
         } finally {
             setOpen(false);
         }
-    };
+    }
 
     return (
         <AlertDialog open={open} onOpenChange={setOpen}>
@@ -48,7 +50,7 @@ const AlertDialogDeleteUser = ({ open, setOpen, userId }: Props) => {
                 <AlertDialogHeader>
                     <AlertDialogTitle>Bạn có chắc chắn muốn xoá?</AlertDialogTitle>
                     <AlertDialogDescription>
-                        Hành động này không thể hoàn tác. Dữ liệu người dùng sẽ bị xoá khỏi hệ thống.
+                        Hành động này không thể hoàn tác. Dữ liệu phòng sẽ bị xoá khỏi hệ thống.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -57,7 +59,7 @@ const AlertDialogDeleteUser = ({ open, setOpen, userId }: Props) => {
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>
-    );
-};
+    )
+}
 
-export default AlertDialogDeleteUser;
+export default AlertDialogDeleteListing

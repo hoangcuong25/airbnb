@@ -38,7 +38,9 @@ export class ListingController {
     return this.listingService.update(+id, updateListingDto);
   }
 
-  @Delete(':id')
+  @Delete('delete/:id')
+  @ResponseMessage("Listing deleted successfully")
+  @Roles("ADMIN")
   remove(@Param('id') id: string) {
     return this.listingService.remove(+id);
   }

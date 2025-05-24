@@ -66,7 +66,33 @@ export class ListingService {
     return `This action updates a #${id} listing`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} listing`;
+  async remove(id: number) {
+    // 1. Kiểm tra xem listing tồn tại không
+    const listing = await this.prisma.listing.findUnique({
+      where: { id },
+      include: { images: true },
+    });
+
+    if (!listing) {
+      throw new BadRequestException('Listing not found');
+    }
+
+    // 2.  Xoá ảnh khỏi Cloudinary
+    for (const image of listing.images) {
+      const publicId = this.cloudinary.extractPublicId(image.url);
+      await this.cloudinary.deleteFile(publicId);
+    }
+
+    // 3. Xoá ảnh trong bảng listingImage
+    await this.prisma.listingImage.deleteMany({
+      where: { listingId: id },
+    });
+
+    // 4. Xoá listing
+    await this.prisma.listing.delete({
+      where: { id },
+    });
+
+    return 'Listing deleted successfully';
   }
 }

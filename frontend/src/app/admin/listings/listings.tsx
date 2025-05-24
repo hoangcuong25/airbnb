@@ -6,23 +6,12 @@ import Image from 'next/image';
 import ModalAddListing from './ModalAddListing';
 import { Button } from '@/components/ui/button';
 import { Eye, Pencil, Trash2 } from 'lucide-react';
-import { AdminContext } from '@/context/AdminContext';
-
-interface Listing {
-    id: string;
-    title: string;
-    description: string;
-    price: number;
-    location: string;
-    status: 'available' | 'unavailable' | 'maintenance';
-    images: string[];
-    amenities: string[];
-    rating: number;
-}
+import { AppContext } from '@/context/AppContext';
+import AlertDialogDeleteListing from './AlertDialogDeleteListing';
 
 const ListingManagement = () => {
 
-    const { listings } = useContext(AdminContext)
+    const { listings } = useContext(AppContext)
 
     const [isLoading, setIsLoading] = useState(false);
 
@@ -30,30 +19,8 @@ const ListingManagement = () => {
 
     const [openEdit, setOpenEdit] = useState(false);
 
-    const handleStatusChange = async (listingId: string, newStatus: Listing['status']) => {
-        try {
-            setIsLoading(true);
-            // Add your API call here to update listing status
-            toast.success('Cập nhật trạng thái thành công');
-        } catch (error) {
-            toast.error('Có lỗi xảy ra khi cập nhật trạng thái');
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const getStatusColor = (status: Listing['status']) => {
-        switch (status) {
-            case 'available':
-                return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-            case 'unavailable':
-                return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
-            case 'maintenance':
-                return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
-            default:
-                return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
-        }
-    };
+    const [openDelete, setOpenDelete] = useState(false);
+    const [selectedListingId, setSelectedListingId] = useState<string | null>(null);
 
     return (
         <div className="p-6">
@@ -169,6 +136,10 @@ const ListingManagement = () => {
                                         variant="destructive"
                                         size="sm"
                                         className="flex items-center gap-1"
+                                        onClick={() => {
+                                            setSelectedListingId(String(listing.id));
+                                            setOpenDelete(true);
+                                        }}
                                     >
                                         <Trash2 size={14} />
                                         <span>Xóa</span>
@@ -182,6 +153,13 @@ const ListingManagement = () => {
 
             {/* Pagination */}
 
+
+            {/* alert delete */}
+            <AlertDialogDeleteListing
+                open={openDelete}
+                setOpen={setOpenDelete}
+                listingId={selectedListingId}
+            />
 
         </div>
     );
