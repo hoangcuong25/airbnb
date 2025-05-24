@@ -11,12 +11,18 @@ interface AppContextType {
     user: UserType | null;
     setUser: React.Dispatch<React.SetStateAction<UserType | null>>;
     fetchUser: () => Promise<void>;
+    listings: ListingType[];
+    setListings: React.Dispatch<React.SetStateAction<ListingType[]>>;
+    fetchAllListings: () => Promise<void>;
 }
 
 export const AppContext = createContext<AppContextType>({
     user: null,
     setUser: () => { },
     fetchUser: async () => { },
+    listings: [],
+    setListings: () => { },
+    fetchAllListings: async () => { },
 });
 
 interface AppContextProviderProps {
@@ -24,7 +30,9 @@ interface AppContextProviderProps {
 }
 
 const AppContextProvider: React.FC<AppContextProviderProps> = ({ children }) => {
-    const [user, setUser] = useState<UserType | null>(null);;
+    const [user, setUser] = useState<UserType | null>(null);
+
+    const [listings, setListings] = useState<ListingType[]>([]);
 
     const fetchUser = async () => {
         try {
@@ -37,9 +45,22 @@ const AppContextProvider: React.FC<AppContextProviderProps> = ({ children }) => 
         }
     }
 
+    const fetchAllListings = async () => {
+        try {
+            const response = await getAllListingApi();
+
+            setListings(response);
+        }
+        catch (error) {
+            console.error("Error fetching all listings data:", error);
+        }
+    }
+
     const value = {
         user, setUser,
         fetchUser,
+        listings, setListings,
+        fetchAllListings
     };
 
     useEffect(() => {
@@ -48,6 +69,8 @@ const AppContextProvider: React.FC<AppContextProviderProps> = ({ children }) => 
         if (isToken) {
             fetchUser()
         }
+
+        fetchAllListings()
     }, []);
 
     return (

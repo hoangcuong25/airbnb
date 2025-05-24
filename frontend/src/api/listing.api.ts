@@ -23,3 +23,13 @@ export const getAllListingApi = async () => {
         throw error
     }
 }
+
+export const deleteListingApi = async (id: string) => {
+    try {
+        const response = await axiosClient.delete(`/api/v1/listing/delete/${id}`)
+        return response.data
+    }
+    catch (error) {
+        throw error
+    }
+}
