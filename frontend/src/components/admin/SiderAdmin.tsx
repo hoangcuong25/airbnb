@@ -25,17 +25,17 @@ const SiderAdmin = () => {
         {
             title: 'Quản lý người dùng',
             icon: <FaUsers className="w-6 h-6" />,
-            path: '/admin/users'
+            path: '/admin/user'
         },
         {
             title: 'Quản lý đặt phòng',
             icon: <FaCalendarCheck className="w-6 h-6" />,
-            path: '/admin/bookings'
+            path: '/admin/booking'
         },
         {
             title: 'Quản lý danh sách',
             icon: <FaList className="w-6 h-6" />,
-            path: '/admin/listings'
+            path: '/admin/listing'
         }
     ];
 
