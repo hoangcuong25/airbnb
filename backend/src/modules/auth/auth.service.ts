@@ -94,15 +94,25 @@ export class AuthService {
     return { id: newUser.id };
   }
 
-  async logout(req) {
+  async logout(req, res) {
     try {
       const access_token = req.headers.authorization?.split(' ')[1];
       if (access_token) {
         const decoded = this.jwtService.verify(access_token, {
           secret: this.configService.get<string>('JWT_ACCESS_TOKEN_SECRET'),
         });
+
         await this.redis.del(`refresh_token:${decoded.id}`);
       }
+
+      // Xoá refresh_token trong cookie
+      res.clearCookie('refresh_token', {
+        httpOnly: true,
+        secure: true, // dùng nếu bạn chạy trên HTTPS
+        sameSite: 'strict',
+        path: '/', // hoặc path cụ thể nếu bạn set nó khác
+      });
+
       return 'ok';
     } catch {
       throw new UnauthorizedException();

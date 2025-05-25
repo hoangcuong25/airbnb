@@ -3,8 +3,10 @@
 
 'use client'
 
+import { LogoutApi } from "@/api/auth.api";
 import { getAllListingApi } from "@/api/listing.api";
-import { getAllUser, getUser } from "@/api/user.api";
+import { getUser } from "@/api/user.api";
+import { useRouter } from "next/navigation";
 import React, { createContext, ReactNode, useEffect, useState } from "react";
 
 interface AppContextType {
@@ -14,6 +16,7 @@ interface AppContextType {
     listings: ListingType[];
     setListings: React.Dispatch<React.SetStateAction<ListingType[]>>;
     fetchAllListings: () => Promise<void>;
+    logout: () => Promise<void>;
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -23,6 +26,7 @@ export const AppContext = createContext<AppContextType>({
     listings: [],
     setListings: () => { },
     fetchAllListings: async () => { },
+    logout: async () => { }
 });
 
 interface AppContextProviderProps {
@@ -30,6 +34,9 @@ interface AppContextProviderProps {
 }
 
 const AppContextProvider: React.FC<AppContextProviderProps> = ({ children }) => {
+
+    const route = useRouter();
+
     const [user, setUser] = useState<UserType | null>(null);
 
     const [listings, setListings] = useState<ListingType[]>([]);
@@ -56,11 +63,25 @@ const AppContextProvider: React.FC<AppContextProviderProps> = ({ children }) => 
         }
     }
 
+    const logout = async () => {
+        try {
+            localStorage.removeItem('access_token');
+            setUser(null);
+            route.push('/login');
+
+            await LogoutApi();
+
+        } catch (error) {
+            console.error("Error during logout:", error);
+        }
+    }
+
     const value = {
         user, setUser,
         fetchUser,
         listings, setListings,
-        fetchAllListings
+        fetchAllListings,
+        logout
     };
 
     useEffect(() => {

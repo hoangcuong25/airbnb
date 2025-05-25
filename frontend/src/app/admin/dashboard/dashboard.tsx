@@ -1,20 +1,4 @@
-'use client';
-
-import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
-import { useState } from 'react';
-
 const Dashboard = () => {
-    const router = useRouter();
-    const [isLoading, setIsLoading] = useState(false);
-
-    const handleLogout = () => {
-        setIsLoading(true);
-        // Add your logout logic here
-        toast.success('Đăng xuất thành công');
-        router.push('/login');
-    };
-
     return (
         <>
             {/* Top Navigation */}
@@ -23,15 +7,6 @@ const Dashboard = () => {
                     <div className="flex justify-between h-16">
                         <div className="flex items-center">
                             <h1 className="text-xl font-bold text-gray-900 dark:text-white transition-colors duration-200">Dashboard</h1>
-                        </div>
-                        <div className="flex items-center">
-                            <button
-                                onClick={handleLogout}
-                                disabled={isLoading}
-                                className="ml-4 px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary/90 focus:outline-none disabled:opacity-50 transition-all duration-300 transform hover:scale-105 hover:shadow-md active:scale-95"
-                            >
-                                {isLoading ? 'Đang xử lý...' : 'Đăng xuất'}
-                            </button>
                         </div>
                     </div>
                 </div>

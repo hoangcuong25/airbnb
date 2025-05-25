@@ -29,7 +29,7 @@ import { AppContext } from '@/context/AppContext';
 
 const NavbarGuest = () => {
 
-    const { user } = useContext(AppContext)
+    const { user, logout } = useContext(AppContext)
 
     const pathname = usePathname()
 
@@ -168,7 +168,12 @@ const NavbarGuest = () => {
                                     <p className='text-base hover:bg-gray-100 cursor-pointer px-2 py-1 rounded w-full'>Tìm host hỗ trợ</p>
                                 </div>
 
-                                <p className='text-base mt-5 hover:bg-gray-100 cursor-pointer px-2 py-1 rounded w-full'>Đăng xuất</p>
+                                <p
+                                    className='text-base mt-5 hover:bg-gray-100 cursor-pointer px-2 py-1 rounded w-full'
+                                    onClick={logout}
+                                >
+                                    Đăng xuất
+                                </p>
                             </div>
                             : <div className='flex flex-col items-start justify-start text-sm'>
                                 <div className='flex items-center justify-start gap-2 border-b border-gray-300 pb-5 w-full'>
