@@ -1,7 +1,6 @@
 import React, { useContext, useEffect } from "react"
 import {
     Dialog,
-    DialogTrigger,
     DialogContent,
     DialogHeader,
     DialogTitle,
@@ -28,9 +27,22 @@ type Props = {
 
 type ListingFormData = z.infer<typeof ListingSchema>
 
+type ExistingImage = {
+    id: number
+    url: string
+    isNew: false
+}
+
+type NewImage = {
+    file: File
+    isNew: true
+}
+
+type ImageState = ExistingImage | NewImage
+
 const ModalUpdateListing = ({ open, setOpen, listing }: Props) => {
     const { fetchAllListings } = useContext(AppContext)
-    const [images, setImages] = React.useState<File[]>([])
+    const [images, setImages] = React.useState<ImageState[]>([])
 
     const {
         register,
@@ -50,6 +62,13 @@ const ModalUpdateListing = ({ open, setOpen, listing }: Props) => {
     })
 
     useEffect(() => {
+        const initialImages: ExistingImage[] = listing.images.map((img) => ({
+            id: img.id,
+            url: img.url,
+            isNew: false,
+        }))
+        setImages(initialImages)
+
         reset({
             title: listing.title,
             description: listing.description,
@@ -60,8 +79,23 @@ const ModalUpdateListing = ({ open, setOpen, listing }: Props) => {
         })
     }, [listing, reset])
 
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            const files = Array.from(e.target.files).map((file) => ({
+                file,
+                isNew: true as const,
+            }))
+            setImages((prev) => [...prev, ...files])
+        }
+    }
+
+    const handleRemoveImage = (index: number) => {
+        setImages((prev) => prev.filter((_, i) => i !== index))
+    }
+
     const onSubmit = async (data: ListingFormData) => {
         const formData = new FormData()
+
         formData.append("title", data.title)
         formData.append("description", data.description)
         formData.append("pricePerNight", data.pricePerNight.toString())
@@ -69,12 +103,31 @@ const ModalUpdateListing = ({ open, setOpen, listing }: Props) => {
         formData.append("city", data.city)
         formData.append("country", data.country)
 
-        images.forEach((file) => {
-            formData.append("images", file)
+        // Append ảnh mới
+        images.forEach((img) => {
+            if (img.isNew) {
+                formData.append("images", img.file)
+            }
         })
+
+        // Tìm các ảnh cũ đã bị xóa
+        const originalIds = listing.images.map((img) => img.id)
+
+        const currentOldImageIds = images
+            .filter((img) => !img.isNew)
+            .map((img) => (img as ExistingImage).id)
+
+        const removedImageIds = originalIds.filter(
+            (id) => !currentOldImageIds.includes(id)
+        )
+
+        removedImageIds.forEach((id) =>
+            formData.append("removedImageIds", id.toString())
+        )
 
         try {
             // await updateListingApi(listing.id, formData)
+
             await fetchAllListings()
             toast.success("Cập nhật thành công")
         } catch {
@@ -83,17 +136,6 @@ const ModalUpdateListing = ({ open, setOpen, listing }: Props) => {
 
         setOpen(false)
         setImages([])
-    }
-
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files) {
-            const files = Array.from(e.target.files)
-            setImages((prev) => [...prev, ...files])
-        }
-    }
-
-    const handleRemoveImage = (index: number) => {
-        setImages((prev) => prev.filter((_, i) => i !== index))
     }
 
     return (
@@ -147,8 +189,8 @@ const ModalUpdateListing = ({ open, setOpen, listing }: Props) => {
                             id="images"
                             type="file"
                             accept="image/*"
-                            disabled={isSubmitting}
                             multiple
+                            disabled={isSubmitting}
                             onChange={handleImageChange}
                         />
                         {images.length > 0 && (
@@ -156,7 +198,7 @@ const ModalUpdateListing = ({ open, setOpen, listing }: Props) => {
                                 {images.map((img, idx) => (
                                     <div key={idx} className="relative group border rounded-md overflow-hidden">
                                         <img
-                                            src={URL.createObjectURL(img)}
+                                            src={img.isNew ? URL.createObjectURL(img.file) : img.url}
                                             alt={`preview-${idx}`}
                                             className="w-full h-24 object-cover"
                                         />
