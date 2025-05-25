@@ -33,9 +33,15 @@ export class ListingController {
     return this.listingService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateListingDto: UpdateListingDto) {
-    return this.listingService.update(+id, updateListingDto);
+  @Patch('update')
+  @ResponseMessage("Listing updated successfully")
+  @Roles("ADMIN")
+  @UseInterceptors(FilesInterceptor('images', 10))
+  update(
+    @Body() updateListingDto: UpdateListingDto,
+    @UploadedFiles() images: Express.Multer.File[],
+  ) {
+    return this.listingService.update(updateListingDto, images);
   }
 
   @Delete('delete/:id')

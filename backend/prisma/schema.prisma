@@ -61,6 +61,7 @@ model ListingImage {
   id        Int    @id @default(autoincrement())
   listingId Int
   url       String
+  name      String
 
   listing Listing @relation(fields: [listingId], references: [id])
 }

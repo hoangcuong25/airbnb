@@ -1,4 +1,32 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateListingDto } from './create-listing.dto';
+import { Type } from 'class-transformer';
+import { IsArray, IsInt, IsNumber, IsOptional, IsString } from 'class-validator';
 
-export class UpdateListingDto extends PartialType(CreateListingDto) {}
+export class UpdateListingDto {
+
+    @IsNumber()
+    @Type(() => Number)
+    id: number;
+
+    @IsString()
+    title: string;
+
+    @IsString()
+    description: string;
+
+    @IsInt()
+    @Type(() => Number)
+    pricePerNight: number;
+
+    @IsString()
+    address: string;
+
+    @IsString()
+    city: string;
+
+    @IsString()
+    country: string;
+
+    @IsOptional()
+    @Type(() => Number)
+    removedImageIds?: number[];
+}

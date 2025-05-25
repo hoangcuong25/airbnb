@@ -1,8 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateListingDto } from './dto/create-listing.dto';
 import { UpdateListingDto } from './dto/update-listing.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { UploadApiResponse } from 'cloudinary';
 
 @Injectable()
 export class ListingService {
@@ -28,25 +29,33 @@ export class ListingService {
         country: createListingDto.country,
         hostId: hostId,
       }
-    })
-
-    // Bước 2: Upload ảnh lên Cloudinary
-    const imageUploadResults = await Promise.all(
-      images.map((file) => {
-        return this.cloudinary.uploadFile(file);
-      })
-    )
-    const imageUrls = imageUploadResults.map((result) => result.url);
-
-    // Bước 3: Lưu URL ảnh vào bảng listingImage
-    await this.prisma.listingImage.createMany({
-      data: imageUrls.map((url) => ({
-        listingId: listing.id,
-        url,
-      })),
     });
 
-    return 'Listing created successfully'
+    // Bước 2: Upload ảnh lên Cloudinary và lưu thông tin chi tiết
+    const newImageRecords = [];
+
+    for (const file of images) {
+      try {
+        const uploadResult = await this.cloudinary.uploadFile(file);
+        newImageRecords.push({
+          listingId: listing.id,
+          url: uploadResult.secure_url,
+          name: uploadResult.original_filename,
+        });
+      } catch (err) {
+        console.error("Image upload failed:", file.originalname, err);
+        // Bạn có thể throw lỗi ở đây hoặc tiếp tục bỏ qua ảnh lỗi tùy use-case
+      }
+    }
+
+    // Bước 3: Lưu ảnh mới vào bảng
+    if (newImageRecords.length > 0) {
+      await this.prisma.listingImage.createMany({
+        data: newImageRecords,
+      });
+    }
+
+    return { message: "Listing created successfully" };
   }
 
   findAll() {
@@ -62,8 +71,68 @@ export class ListingService {
     return `This action returns a #${id} listing`;
   }
 
-  update(id: number, updateListingDto: UpdateListingDto) {
-    return `This action updates a #${id} listing`;
+  async update(updateListingDto: UpdateListingDto, images: Express.Multer.File[]) {
+    const { id, removedImageIds, ...updateData } = updateListingDto;
+
+    const listing = await this.prisma.listing.findUnique({
+      where: { id },
+      include: { images: true },
+    });
+
+    if (!listing) throw new NotFoundException("Listing not found");
+
+    // 1. Xóa ảnh cũ
+    if (removedImageIds) {
+      const ids = Array.isArray(removedImageIds)
+        ? removedImageIds
+        : [removedImageIds];
+
+      const imagesToRemove = listing.images.filter((img) =>
+        ids.includes(img.id),
+      );
+
+      // xóa trên Cloudinary
+      for (const img of imagesToRemove) {
+        const publicId = this.cloudinary.extractPublicId(img.url);
+        if (publicId) {
+          await this.cloudinary.deleteFile(publicId);
+        }
+      }
+
+      await this.prisma.listingImage.deleteMany({
+        where: {
+          id: { in: ids },
+          listingId: id,
+        },
+      });
+    }
+
+    // 2. Upload ảnh mới lên Cloudinary
+    const newImageRecords = [];
+
+    for (const file of images) {
+      const uploadResult = await this.cloudinary.uploadFile(file);
+
+      newImageRecords.push({
+        listingId: id,
+        url: uploadResult.secure_url,
+        name: uploadResult.original_filename,
+      });
+    }
+
+    if (newImageRecords.length > 0) {
+      await this.prisma.listingImage.createMany({
+        data: newImageRecords,
+      });
+    }
+
+    // 3. Cập nhật các trường khác
+    await this.prisma.listing.update({
+      where: { id },
+      data: updateData,
+    });
+
+    return { message: "Listing updated successfully" };
   }
 
   async remove(id: number) {

@@ -11,6 +11,7 @@ export class CreateListingDto {
     @IsInt()
     @Type(() => Number)
     pricePerNight: number;
+
     @IsString()
     address: string;
 

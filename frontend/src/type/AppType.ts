@@ -40,6 +40,7 @@ declare global {
         id: number
         listingId: number
         url: string
+        name: string
     }
 
     type ListingType = {
@@ -49,7 +50,7 @@ declare global {
         pricePerNight: number;
         address: string;
         city: string;
-        country: string[];
+        country: string;
         host: UserType;
         hostId: number;
 
