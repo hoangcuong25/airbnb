@@ -1,7 +1,10 @@
-import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsArray, IsInt, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class UpdateListingDto {
+
     @IsNumber()
+    @Type(() => Number)
     id: number;
 
     @IsString()
@@ -10,7 +13,8 @@ export class UpdateListingDto {
     @IsString()
     description: string;
 
-    @IsNumber()
+    @IsInt()
+    @Type(() => Number)
     pricePerNight: number;
 
     @IsString()
@@ -23,6 +27,6 @@ export class UpdateListingDto {
     country: string;
 
     @IsOptional()
-    @IsArray()
+    @Type(() => Number)
     removedImageIds?: number[];
 }

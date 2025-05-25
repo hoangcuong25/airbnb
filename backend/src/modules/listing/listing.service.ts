@@ -82,9 +82,13 @@ export class ListingService {
     if (!listing) throw new NotFoundException("Listing not found");
 
     // 1. Xóa ảnh cũ
-    if (removedImageIds && removedImageIds.length > 0) {
+    if (removedImageIds) {
+      const ids = Array.isArray(removedImageIds)
+        ? removedImageIds
+        : [removedImageIds];
+
       const imagesToRemove = listing.images.filter((img) =>
-        removedImageIds.includes(img.id),
+        ids.includes(img.id),
       );
 
       // xóa trên Cloudinary
@@ -97,7 +101,7 @@ export class ListingService {
 
       await this.prisma.listingImage.deleteMany({
         where: {
-          id: { in: removedImageIds },
+          id: { in: ids },
           listingId: id,
         },
       });

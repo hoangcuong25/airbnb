@@ -18,6 +18,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { ListingSchema } from "@/hook/zod-schema/ListingSchema"
 import { toast } from "sonner"
 import { AppContext } from "@/context/AppContext"
+import { updateListingApi } from "@/api/listing.api"
 
 type Props = {
     open: boolean
@@ -96,6 +97,7 @@ const ModalUpdateListing = ({ open, setOpen, listing }: Props) => {
     const onSubmit = async (data: ListingFormData) => {
         const formData = new FormData()
 
+        formData.append("id", listing.id.toString())
         formData.append("title", data.title)
         formData.append("description", data.description)
         formData.append("pricePerNight", data.pricePerNight.toString())
@@ -126,7 +128,7 @@ const ModalUpdateListing = ({ open, setOpen, listing }: Props) => {
         )
 
         try {
-            // await updateListingApi(listing.id, formData)
+            await updateListingApi(formData)
 
             await fetchAllListings()
             toast.success("Cập nhật thành công")
