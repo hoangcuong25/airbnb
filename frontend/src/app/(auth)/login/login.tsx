@@ -36,7 +36,10 @@ const Login = () => {
             if (response.data.user.role == 'ADMIN') {
                 router.push('/admin/dashboard');
             }
-            else {
+            else if (response.data.user.role == 'HOST') {
+                router.push('/host/dashboard');
+            }
+            else if (response.data.user.role == 'USER') {
                 router.push('/');
             }
 

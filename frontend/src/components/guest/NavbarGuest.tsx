@@ -8,24 +8,12 @@ import {
     FerrisWheel,
     ConciergeBell,
     Globe,
-    Menu,
-    CircleHelp,
     Search,
-    Heart,
-    CarTaxiFront,
-    MessageCircle,
-    CircleUser,
-    Bell,
-    Settings
 } from 'lucide-react';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { AppContext } from '@/context/AppContext';
+import DropdownMenuNavbar from './DropdownMenuNavbar';
 
 const NavbarGuest = () => {
 
@@ -104,103 +92,8 @@ const NavbarGuest = () => {
                 )}
 
                 {/* Menu dropdown */}
-                <DropdownMenu>
-                    <DropdownMenuTrigger>
-                        <div className='size-9 flex items-center justify-center rounded-full bg-gray-200 shadow-md'>
-                            <Menu className='text-6xl' />
-                        </div>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className='w-56 p-5'>
-                        {user ?
-                            <div className='flex flex-col items-start justify-start text-sm'>
-                                <div className='flex items-center justify-start gap-2 pb-5 w-full hover:bg-gray-100 cursor-pointer px-2 py-1 rounded'>
-                                    <Heart className='w-5 h-5' />
-                                    <p>Danh sách yêu thích</p>
-                                </div>
+                <DropdownMenuNavbar user={user} logout={logout}/>
 
-                                <div className='flex items-center justify-start gap-2 pb-5 w-full hover:bg-gray-100 cursor-pointer px-2 py-1 rounded'>
-                                    <CarTaxiFront className='w-5 h-5' />
-                                    <p>Chuyến đi</p>
-                                </div>
-
-                                <div className='flex items-center justify-start gap-2 pb-5 w-full hover:bg-gray-100 cursor-pointer px-2 py-1 rounded'>
-                                    <MessageCircle className='w-5 h-5' />
-                                    <p>Tin nhắn</p>
-                                </div>
-
-                                <div className='flex items-center justify-start gap-2 pb-5 w-full border-b border-gray-300 hover:bg-gray-100 cursor-pointer px-2 py-1 rounded'>
-                                    <CircleUser className='w-5 h-5' />
-                                    <p>Hồ sơ</p>
-                                </div>
-
-                                <div className='flex items-center justify-start gap-2 py-5 w-full hover:bg-gray-100 cursor-pointer px-2 rounded'>
-                                    <Bell className='w-5 h-5' />
-                                    <p>Thông báo</p>
-                                </div>
-
-                                <div className='flex items-center justify-start gap-2 pb-5 w-full hover:bg-gray-100 cursor-pointer px-2 py-1 rounded'>
-                                    <Settings className='w-5 h-5' />
-                                    <p>Cài đặt tài khoản</p>
-                                </div>
-
-                                <div className='flex items-center justify-start gap-2 pb-5 w-full hover:bg-gray-100 cursor-pointer px-2 py-1 rounded'>
-                                    <Globe className='w-5 h-5' />
-                                    <p>Ngôn ngữ</p>
-                                </div>
-
-                                <div className='flex items-center justify-start gap-2 pb-5 border-b border-gray-300 w-full hover:bg-gray-100 cursor-pointer px-2 py-1 rounded'>
-                                    <CircleHelp className='w-5 h-5' />
-                                    <p>Trung tâm trợ giúp</p>
-                                </div>
-
-                                <div className='flex items-start justify-start gap-2 border-b border-gray-300 py-5 w-full hover:bg-gray-100 cursor-pointer px-2  rounded'>
-                                    <div className='flex flex-col items-start justify-start'>
-                                        <p className='font-semibold'>Trở thành host</p>
-                                        <p className='text-xs'>
-                                            Bắt đầu tiếp đón khách và <br />
-                                            kiếm thêm thu nhập thật dễ dàng
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className='flex flex-col items-start justify-start gap-2 border-b border-gray-300 py-5 w-full'>
-                                    <p className='text-base hover:bg-gray-100 cursor-pointer px-2 py-1 rounded w-full'>Giới thiệu chủ nhà</p>
-                                    <p className='text-base hover:bg-gray-100 cursor-pointer px-2 py-1 rounded w-full'>Tìm host hỗ trợ</p>
-                                </div>
-
-                                <p
-                                    className='text-base mt-5 hover:bg-gray-100 cursor-pointer px-2 py-1 rounded w-full'
-                                    onClick={logout}
-                                >
-                                    Đăng xuất
-                                </p>
-                            </div>
-                            : <div className='flex flex-col items-start justify-start text-sm'>
-                                <div className='flex items-center justify-start gap-2 border-b border-gray-300 pb-5 w-full'>
-                                    <CircleHelp className='text-xl' />
-                                    <p className=''>Trung tâm trợ giúp</p>
-                                </div>
-
-                                <div className='flex items-start justify-start gap-2 border-b border-gray-300 py-5 w-full'>
-                                    <div className='flex flex-col items-start justify-start'>
-                                        <p className='font-semibold'>Trở thành host</p>
-                                        <p className='text-xs'>
-                                            Bắt đầu tiếp đón khách và <br />
-                                            kiếm thêm thu nhập thật dễ dàng
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className='pt-5 cursor-pointer'>
-                                    <Link href='/login' >
-                                        <p className='font-semibold'>Đăng nhập</p>
-                                        <p className='text-xs'>Để xem thông tin tài khoản của bạn</p>
-                                    </Link>
-                                </div>
-                            </div>
-                        }
-                    </DropdownMenuContent>
-                </DropdownMenu>
             </div>
         </div >
     );
