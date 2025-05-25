@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateListingDto } from './dto/create-listing.dto';
 import { UpdateListingDto } from './dto/update-listing.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -62,9 +62,49 @@ export class ListingService {
     return `This action returns a #${id} listing`;
   }
 
-  update(id: number, updateListingDto: UpdateListingDto) {
-    return `This action updates a #${id} listing`;
+  async update(updateListingDto: UpdateListingDto, images: Express.Multer.File[]) {
+    const { id, removedImageIds, ...updateData } = updateListingDto;
+
+    // 1. Lấy bài đăng cũ
+    const listing = await this.prisma.listing.findUnique({
+      where: { id },
+      include: { images: true },
+    });
+
+    if (!listing) throw new NotFoundException("Listing not found");
+
+    // 2. Xoá ảnh cũ nếu có
+    if (removedImageIds && removedImageIds.length > 0) {
+      await this.prisma.listingImage.deleteMany({
+        where: {
+          id: { in: removedImageIds },
+          listingId: id,
+        },
+      });
+    }
+
+    // 3. Lưu ảnh mới (nếu có)
+    const newImagesData = images.map((file) => ({
+      listingId: id,
+      url: `/uploads/${file.filename}`, // tuỳ thuộc vào nơi lưu trữ
+      name: file.originalname,
+    }));
+
+    if (newImagesData.length > 0) {
+      await this.prisma.listingImage.createMany({
+        data: newImagesData,
+      });
+    }
+
+    // 4. Cập nhật dữ liệu bài đăng
+    await this.prisma.listing.update({
+      where: { id },
+      data: updateData,
+    });
+
+    return { message: "Listing updated successfully" };
   }
+
 
   async remove(id: number) {
     // 1. Kiểm tra xem listing tồn tại không
