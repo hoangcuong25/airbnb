@@ -9,6 +9,7 @@ import { Eye, Pencil, Trash2 } from 'lucide-react';
 import { AppContext } from '@/context/AppContext';
 import AlertDialogDeleteListing from './AlertDialogDeleteListing';
 import ModalUpdateListing from './ModalUpdateListing';
+import ModalViewListing from './ModalViewListing';
 
 const ListingManagement = () => {
 
@@ -17,10 +18,12 @@ const ListingManagement = () => {
     const [openAdd, setOpenAdd] = useState(false);
 
     const [openEdit, setOpenEdit] = useState(false);
-    const [selectedListing, setSelectedListing] = useState<ListingType | null>(null);
+    const [openView, setOpenView] = useState(false);
 
     const [openDelete, setOpenDelete] = useState(false);
     const [selectedListingId, setSelectedListingId] = useState<string | null>(null);
+
+    const [selectedListing, setSelectedListing] = useState<ListingType | null>(null);
 
     return (
         <div className="p-6">
@@ -118,6 +121,10 @@ const ListingManagement = () => {
                                         variant="outline"
                                         size="sm"
                                         className="flex items-center gap-1 border-gray-300 text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                        onClick={() => {
+                                            setSelectedListing(listing)
+                                            setOpenView(true)
+                                        }}
                                     >
                                         <Eye size={14} />
                                         <span>Chi tiết</span>
@@ -170,6 +177,15 @@ const ListingManagement = () => {
                 <ModalUpdateListing
                     open={openEdit}
                     setOpen={setOpenEdit}
+                    listing={selectedListing}
+                />
+            )}
+
+            {/* modal view */}
+            {selectedListing && (
+                <ModalViewListing
+                    open={openView}
+                    setOpen={setOpenView}
                     listing={selectedListing}
                 />
             )}
