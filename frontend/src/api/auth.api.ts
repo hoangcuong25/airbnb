@@ -35,7 +35,7 @@ export const LoginApi = async (payload: LoginPayload) => {
     }
 }
 
-export const Logout = async () => {
+export const LogoutApi = async () => {
     try {
         await axiosClient.post('/api/v1/auth/logout')
 

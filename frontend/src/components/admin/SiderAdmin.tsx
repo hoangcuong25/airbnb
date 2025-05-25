@@ -1,18 +1,27 @@
 'use client';
 
+import { AppContext } from '@/context/AppContext';
+import { LayoutDashboard, LogOut } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
-import { 
-    FaUsers, 
-    FaCalendarCheck, 
-    FaList, 
-    FaCog 
+import { useContext } from 'react';
+import {
+    FaUsers,
+    FaCalendarCheck,
+    FaList,
 } from 'react-icons/fa';
 
 const SiderAdmin = () => {
     const router = useRouter();
     const pathname = usePathname();
 
+    const { logout } = useContext(AppContext)
+
     const menuItems = [
+        {
+            title: 'Dashboard',
+            icon: <LayoutDashboard className="w-6 h-6" />,
+            path: '/admin/dashboard'
+        },
         {
             title: 'Quản lý người dùng',
             icon: <FaUsers className="w-6 h-6" />,
@@ -27,11 +36,6 @@ const SiderAdmin = () => {
             title: 'Quản lý danh sách',
             icon: <FaList className="w-6 h-6" />,
             path: '/admin/listings'
-        },
-        {
-            title: 'Cấu hình',
-            icon: <FaCog className="w-6 h-6" />,
-            path: '/admin/config'
         }
     ];
 
@@ -45,11 +49,10 @@ const SiderAdmin = () => {
                             <li key={item.path}>
                                 <button
                                     onClick={() => router.push(item.path)}
-                                    className={`w-full flex items-center px-6 py-4 text-gray-700 dark:text-gray-200 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-md ${
-                                        pathname === item.path
-                                            ? 'bg-primary text-white shadow-lg scale-105'
-                                            : 'hover:bg-gray-100 dark:hover:bg-gray-700'
-                                    }`}
+                                    className={`w-full flex items-center px-6 py-4 text-gray-700 dark:text-gray-200 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-md ${pathname === item.path
+                                        ? 'bg-primary text-white shadow-lg scale-105'
+                                        : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                                        }`}
                                 >
                                     <span className={`mr-4 transition-transform duration-300 ${pathname === item.path ? 'rotate-12' : 'group-hover:rotate-12'}`}>
                                         {item.icon}
@@ -58,6 +61,17 @@ const SiderAdmin = () => {
                                 </button>
                             </li>
                         ))}
+
+                        <div>
+                            <button
+                                onClick={logout}
+                                className="w-full flex items-center px-6 py-4 text-red-600 dark:text-red-400 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-md hover:bg-red-200 dark:hover:bg-red-800"
+                            >
+                                <LogOut className="w-6 h-6 mr-4" />
+                                <span className="text-lg font-medium">Đăng xuất</span>
+                            </button>
+
+                        </div>
                     </ul>
                 </nav>
             </div>
