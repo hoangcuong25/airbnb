@@ -3,6 +3,7 @@ import { CreateListingDto } from './dto/create-listing.dto';
 import { UpdateListingDto } from './dto/update-listing.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { UploadApiResponse } from 'cloudinary';
 
 @Injectable()
 export class ListingService {
@@ -28,25 +29,33 @@ export class ListingService {
         country: createListingDto.country,
         hostId: hostId,
       }
-    })
-
-    // Bước 2: Upload ảnh lên Cloudinary
-    const imageUploadResults = await Promise.all(
-      images.map((file) => {
-        return this.cloudinary.uploadFile(file);
-      })
-    )
-    const imageUrls = imageUploadResults.map((result) => result.url);
-
-    // Bước 3: Lưu URL ảnh vào bảng listingImage
-    await this.prisma.listingImage.createMany({
-      data: imageUrls.map((url) => ({
-        listingId: listing.id,
-        url,
-      })),
     });
 
-    return 'Listing created successfully'
+    // Bước 2: Upload ảnh lên Cloudinary và lưu thông tin chi tiết
+    const newImageRecords = [];
+
+    for (const file of images) {
+      try {
+        const uploadResult = await this.cloudinary.uploadFile(file);
+        newImageRecords.push({
+          listingId: listing.id,
+          url: uploadResult.secure_url,
+          name: uploadResult.original_filename,
+        });
+      } catch (err) {
+        console.error("Image upload failed:", file.originalname, err);
+        // Bạn có thể throw lỗi ở đây hoặc tiếp tục bỏ qua ảnh lỗi tùy use-case
+      }
+    }
+
+    // Bước 3: Lưu ảnh mới vào bảng
+    if (newImageRecords.length > 0) {
+      await this.prisma.listingImage.createMany({
+        data: newImageRecords,
+      });
+    }
+
+    return { message: "Listing created successfully" };
   }
 
   findAll() {
@@ -65,7 +74,6 @@ export class ListingService {
   async update(updateListingDto: UpdateListingDto, images: Express.Multer.File[]) {
     const { id, removedImageIds, ...updateData } = updateListingDto;
 
-    // 1. Lấy bài đăng cũ
     const listing = await this.prisma.listing.findUnique({
       where: { id },
       include: { images: true },
@@ -73,8 +81,20 @@ export class ListingService {
 
     if (!listing) throw new NotFoundException("Listing not found");
 
-    // 2. Xoá ảnh cũ nếu có
+    // 1. Xóa ảnh cũ
     if (removedImageIds && removedImageIds.length > 0) {
+      const imagesToRemove = listing.images.filter((img) =>
+        removedImageIds.includes(img.id),
+      );
+
+      // xóa trên Cloudinary
+      for (const img of imagesToRemove) {
+        const publicId = this.cloudinary.extractPublicId(img.url);
+        if (publicId) {
+          await this.cloudinary.deleteFile(publicId);
+        }
+      }
+
       await this.prisma.listingImage.deleteMany({
         where: {
           id: { in: removedImageIds },
@@ -83,20 +103,26 @@ export class ListingService {
       });
     }
 
-    // 3. Lưu ảnh mới (nếu có)
-    const newImagesData = images.map((file) => ({
-      listingId: id,
-      url: `/uploads/${file.filename}`, // tuỳ thuộc vào nơi lưu trữ
-      name: file.originalname,
-    }));
+    // 2. Upload ảnh mới lên Cloudinary
+    const newImageRecords = [];
 
-    if (newImagesData.length > 0) {
-      await this.prisma.listingImage.createMany({
-        data: newImagesData,
+    for (const file of images) {
+      const uploadResult = await this.cloudinary.uploadFile(file);
+
+      newImageRecords.push({
+        listingId: id,
+        url: uploadResult.secure_url,
+        name: uploadResult.original_filename,
       });
     }
 
-    // 4. Cập nhật dữ liệu bài đăng
+    if (newImageRecords.length > 0) {
+      await this.prisma.listingImage.createMany({
+        data: newImageRecords,
+      });
+    }
+
+    // 3. Cập nhật các trường khác
     await this.prisma.listing.update({
       where: { id },
       data: updateData,
@@ -104,7 +130,6 @@ export class ListingService {
 
     return { message: "Listing updated successfully" };
   }
-
 
   async remove(id: number) {
     // 1. Kiểm tra xem listing tồn tại không

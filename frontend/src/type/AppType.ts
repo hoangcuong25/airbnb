@@ -40,6 +40,7 @@ declare global {
         id: number
         listingId: number
         url: string
+        name: string
     }
 
     type ListingType = {
