@@ -67,10 +67,6 @@ export class ListingService {
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} listing`;
-  }
-
   async update(updateListingDto: UpdateListingDto, images: Express.Multer.File[]) {
     const { id, removedImageIds, ...updateData } = updateListingDto;
 
@@ -163,5 +159,20 @@ export class ListingService {
     });
 
     return 'Listing deleted successfully';
+  }
+
+  async findMyListing(hostId: number) {
+    const listings = await this.prisma.listing.findMany({
+      where: { hostId },
+      include: {
+        images: true,
+      },
+    });
+
+    if (!listings || listings.length === 0) {
+      throw new NotFoundException("No listings found for this host");
+    }
+
+    return listings;
   }
 }

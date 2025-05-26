@@ -2,14 +2,14 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, Upl
 import { ListingService } from './listing.service';
 import { CreateListingDto } from './dto/create-listing.dto';
 import { UpdateListingDto } from './dto/update-listing.dto';
-import { ResponseMessage, Roles } from 'src/decorator/customize';
+import { Public, ResponseMessage, Roles } from 'src/decorator/customize';
 import { FilesInterceptor } from '@nestjs/platform-express';
 
 @Controller('listing')
 export class ListingController {
   constructor(private readonly listingService: ListingService) { }
 
-  @Roles("ADMIN")
+  @Roles("HOST")
   @ResponseMessage("Listing created successfully")
   @Post('create')
   @UseInterceptors(FilesInterceptor('images', 10))
@@ -21,16 +21,18 @@ export class ListingController {
     return this.listingService.create(createListingDto, images, req.user.id);
   }
 
-  @Get("get-all-listing")
-  @ResponseMessage("Listing retrieved successfully")
-  @Roles("ADMIN")
-  findAll() {
-    return this.listingService.findAll();
+  @Roles("HOST")
+  @Get('get-my-listing')
+  @ResponseMessage("My listings retrieved successfully")
+  findMyListing(@Req() req) {
+    return this.listingService.findMyListing(req.user.id);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.listingService.findOne(+id);
+  @Get("get-all-listing")
+  @ResponseMessage("Listing retrieved successfully")
+  @Public()
+  findAll() {
+    return this.listingService.findAll();
   }
 
   @Patch('update')
