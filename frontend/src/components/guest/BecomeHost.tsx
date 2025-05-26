@@ -1,3 +1,5 @@
+"use client"
+
 import { useState } from "react";
 import {
     Dialog,
@@ -7,8 +9,12 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 const BecomeHost = () => {
+
+    const router = useRouter();
+
     const [selected, setSelected] = useState<string | null>(null);
 
     const options = [
@@ -61,6 +67,7 @@ const BecomeHost = () => {
                             ? "bg-black "
                             : "bg-gray-300 border border-black text-black cursor-not-allowed"
                             }`}
+                        onClick={() => router.push(`/become-a-host`)}
                     >
                         Tiếp theo
                     </Button>
