@@ -71,4 +71,11 @@ export class ListingController {
   hostRemove(@Param('id') id: string, @Req() req) {
     return this.listingService.hostRemove(+id, req.user.id);
   }
+
+  @Get('get-listing/:id')
+  @ResponseMessage("Listing retrieved successfully")
+  @Public()
+  findOne(@Param('id') id: string) {
+    return this.listingService.findOne(+id);
+  }
 }

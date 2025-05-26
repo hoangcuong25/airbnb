@@ -29,7 +29,7 @@ const Home = () => {
                                     alt={listing.title}
                                     fill
                                     className="object-cover rounded-lg"
-                                    onClick={() => router.push(`/room/${listing.id}`)}
+                                    onClick={() => router.push(`/listing/${listing.id}`)}
                                 />
                                 <button className="absolute top-2 right-2 bg-white rounded-full p-1">
                                     <Heart
