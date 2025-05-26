@@ -71,3 +71,13 @@ export const hostUpdateListingApi = async (formData: any) => {
         throw error
     }
 }
+
+export const hostDeleteListingApi = async (id: string) => {
+    try {
+        const response = await axiosClient.delete(`/api/v1/listing/host-delete/${id}`)
+        return response.data
+    }
+    catch (error) {
+        throw error
+    }
+}

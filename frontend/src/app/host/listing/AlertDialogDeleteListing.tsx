@@ -10,8 +10,9 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { AppContext } from '@/context/AppContext';
-import { deleteListingApi } from '@/api/listing.api';
+import { hostDeleteListingApi } from '@/api/listing.api';
 import { toast } from 'sonner';
+import { HostContext } from '@/context/HostContext';
 
 
 interface Props {
@@ -23,6 +24,7 @@ interface Props {
 const AlertDialogDeleteListing = ({ open, setOpen, listingId }: Props) => {
 
     const { fetchAllListings } = useContext(AppContext);
+    const { findMyListing } = useContext(HostContext);
 
     const handleDelete = async () => {
         if (!listingId) {
@@ -31,11 +33,12 @@ const AlertDialogDeleteListing = ({ open, setOpen, listingId }: Props) => {
         }
 
         try {
-            await deleteListingApi(listingId);
+            await hostDeleteListingApi(listingId);
 
             toast.success("Xoá phòng thành công.");
 
             fetchAllListings();
+            findMyListing()
 
         } catch (error) {
             toast.error("Đã xảy ra lỗi khi xoá phòng.");
