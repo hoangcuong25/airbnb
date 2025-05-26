@@ -15,9 +15,28 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import Link from 'next/link';
+import { becomeHost } from '@/api/user.api';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 const BecomeAHost = () => {
+
+    const router = useRouter()
+
+    const handleBecomeHost = async () => {
+        try {
+            await becomeHost();
+            router.push('/host/dashboard');
+            toast.success("Bạn đã trở thành chủ nhà thành công!");
+        } catch (error: any) {
+            const errorMessage =
+                error?.response?.data?.message ||
+                error?.message ||
+                "Đã xảy ra lỗi khi trở thành chủ nhà. Vui lòng thử lại sau.";
+            toast.error(errorMessage);
+        }
+    };
+
     return (
         <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
             <div className="max-w-4xl w-full bg-white shadow-xl rounded-2xl p-10 flex flex-col md:flex-row gap-10">
@@ -36,7 +55,7 @@ const BecomeAHost = () => {
 
                     <AlertDialog>
                         <AlertDialogTrigger asChild>
-                            <Button className="w-full h-16 text-lg font-semibold bg-black text-white hover:bg-gray-800">
+                            <Button className="w-full h-16 text-lg font-semibold bg-black text-white ">
                                 Bắt đầu ngay
                             </Button>
                         </AlertDialogTrigger>
@@ -50,11 +69,7 @@ const BecomeAHost = () => {
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                                 <AlertDialogCancel>Hủy</AlertDialogCancel>
-                                <AlertDialogAction asChild>
-                                    <Link href="/host/dashboard">
-                                        Tiếp tục
-                                    </Link>
-                                </AlertDialogAction>
+                                <AlertDialogAction onClick={handleBecomeHost}>Chấp thuận</AlertDialogAction>
                             </AlertDialogFooter>
                         </AlertDialogContent>
                     </AlertDialog>

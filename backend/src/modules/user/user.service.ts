@@ -209,4 +209,20 @@ export class UserService {
 
     return 'ok';
   }
+
+  async becomeHost(userId: number) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new BadRequestException('User not found');
+
+    if (user.role === UserRole.HOST) {
+      throw new BadRequestException('You are already a host');
+    }
+
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { role: UserRole.HOST },
+    });
+
+    return 'You are now a host';
+  }
 }
