@@ -4,8 +4,9 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { Bell, CarTaxiFront, CircleHelp, CircleUser, Globe, Heart, Link, Menu, MessageCircle, Settings } from "lucide-react";
+import { Bell, CarTaxiFront, CircleHelp, CircleUser, Globe, Heart, Menu, MessageCircle, Settings } from "lucide-react";
 import BecomeHost from "./BecomeHost";
+import Link from "next/link";
 
 const MenuItem = ({ icon: Icon, label }: { icon: any, label: string }) => (
     <div className='flex items-center justify-start gap-2 pb-5 w-full hover:bg-gray-100 cursor-pointer px-2 py-1 rounded'>

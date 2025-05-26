@@ -22,6 +22,11 @@ export async function middleware(request: NextRequest) {
             return NextResponse.redirect(new URL('/', request.url))
         }
 
+        // Kiểm tra role nếu truy cập /host
+        if (request.nextUrl.pathname.startsWith('/host') && role !== 'HOST') {
+            return NextResponse.redirect(new URL('/', request.url))
+        }
+
         return NextResponse.next()
     } catch (err) {
         return NextResponse.redirect(new URL('/login', request.url))
@@ -29,5 +34,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-    matcher: ['/admin/:path*'],
+    matcher: ['/admin/:path*', '/host/:path*'],
 }

@@ -80,4 +80,12 @@ export class UserController {
   ) {
     return this.userService.updateUser(updateUserDto, avatar)
   }
+
+  @Post('become-host')
+  @ResponseMessage('become host')
+  becomeHost(
+    @Req() req,
+  ) {
+    return this.userService.becomeHost(req.user.id);
+  }
 }

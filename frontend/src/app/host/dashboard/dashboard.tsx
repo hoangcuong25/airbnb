@@ -1,12 +1,31 @@
+'use client';
+
+import { AppContext } from "@/context/AppContext";
+import Image from "next/image";
+import { useContext } from "react";
+
 const Dashboard = () => {
+
+    const { user } = useContext(AppContext)
+
     return (
         <>
             {/* Top Navigation */}
             <nav className="bg-white dark:bg-gray-800 shadow-lg transition-shadow duration-300 hover:shadow-xl">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
-                        <div className="flex items-center">
+                        <div className="flex items-center justify-between w-full">
                             <h1 className="text-xl font-bold text-gray-900 dark:text-white transition-colors duration-200">Dashboard</h1>
+                            <div className='flex items-center gap-4'>
+                                <Image
+                                    src={user?.avatar || "/"}
+                                    width={40}
+                                    height={40}
+                                    alt="Avatar"
+                                    className="rounded-full object-cover border-2 border-gray-300 dark:border-gray-600"
+                                />
+                                <p>{user?.name}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
