@@ -64,4 +64,11 @@ export class ListingController {
   ) {
     return this.listingService.hostUpdate(updateListingDto, images, req.user.id);
   }
+
+  @Delete('host-delete/:id')
+  @ResponseMessage("Listing deleted successfully")
+  @Roles("HOST")
+  hostRemove(@Param('id') id: string, @Req() req) {
+    return this.listingService.hostRemove(+id, req.user.id);
+  }
 }
