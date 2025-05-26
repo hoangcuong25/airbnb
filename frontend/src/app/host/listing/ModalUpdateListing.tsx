@@ -18,7 +18,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { ListingSchema } from "@/hook/zod-schema/ListingSchema"
 import { toast } from "sonner"
 import { AppContext } from "@/context/AppContext"
-import { updateListingApi } from "@/api/listing.api"
+import { hostUpdateListingApi } from "@/api/listing.api"
 
 type Props = {
     open: boolean
@@ -128,7 +128,7 @@ const ModalUpdateListing = ({ open, setOpen, listing }: Props) => {
         )
 
         try {
-            await updateListingApi(formData)
+            await hostUpdateListingApi(formData)
 
             await fetchAllListings()
             toast.success("Cập nhật thành công")

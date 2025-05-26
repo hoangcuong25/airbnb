@@ -52,4 +52,16 @@ export class ListingController {
   remove(@Param('id') id: string) {
     return this.listingService.remove(+id);
   }
+
+  @Patch('host-update')
+  @ResponseMessage("Listing updated successfully")
+  @Roles("HOST")
+  @UseInterceptors(FilesInterceptor('images', 10))
+  hostUpdate(
+    @Body() updateListingDto: UpdateListingDto,
+    @UploadedFiles() images: Express.Multer.File[],
+    @Req() req,
+  ) {
+    return this.listingService.hostUpdate(updateListingDto, images, req.user.id);
+  }
 }

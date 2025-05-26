@@ -175,4 +175,77 @@ export class ListingService {
 
     return listings;
   }
+
+  async hostUpdate(updateListingDto: UpdateListingDto, images: Express.Multer.File[], hostId: number) {
+    const { id, removedImageIds, ...updateData } = updateListingDto;
+
+    // 1. Kiểm tra xem listing có tồn tại không
+    const listing = await this.prisma.listing.findUnique({
+      where: { id },
+      include: { images: true },
+    });
+
+    if (!listing) {
+      throw new NotFoundException("Listing not found");
+    }
+
+    // 2. Kiểm tra xem hostId có khớp với host của listing không
+    if (listing.hostId !== hostId) {
+      throw new BadRequestException("You are not authorized to update this listing");
+    }
+
+    // 3. Xử lý xóa ảnh cũ
+    if (removedImageIds) {
+      const ids = Array.isArray(removedImageIds)
+        ? removedImageIds
+        : [removedImageIds];
+
+      const imagesToRemove = listing.images.filter((img) =>
+        ids.includes(img.id),
+      );
+
+      // Xóa ảnh trên Cloudinary
+      for (const img of imagesToRemove) {
+        const publicId = this.cloudinary.extractPublicId(img.url);
+        if (publicId) {
+          await this.cloudinary.deleteFile(publicId);
+        }
+      }
+
+      // Xóa ảnh trong bảng listingImage
+      await this.prisma.listingImage.deleteMany({
+        where: {
+          id: { in: ids },
+          listingId: id,
+        },
+      });
+    }
+
+    // 4. Upload ảnh mới lên Cloudinary
+    const newImageRecords = [];
+
+    for (const file of images) {
+      const uploadResult = await this.cloudinary.uploadFile(file);
+
+      newImageRecords.push({
+        listingId: id,
+        url: uploadResult.secure_url,
+        name: uploadResult.original_filename,
+      });
+    }
+
+    if (newImageRecords.length > 0) {
+      await this.prisma.listingImage.createMany({
+        data: newImageRecords,
+      });
+    }
+
+    // 5. Cập nhật các trường khác của listing
+    await this.prisma.listing.update({
+      where: { id },
+      data: updateData,
+    });
+
+    return { message: "Listing updated successfully" };
+  }
 }

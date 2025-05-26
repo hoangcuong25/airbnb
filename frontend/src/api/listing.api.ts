@@ -57,3 +57,17 @@ export const getMyListingApi = async () => {
         throw error
     }
 }
+
+export const hostUpdateListingApi = async (formData: any) => {
+    try {
+        const response = await axiosClient.patch(`/api/v1/listing/host-update`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        })
+        return response.data
+    }
+    catch (error) {
+        throw error
+    }
+}
