@@ -70,7 +70,6 @@ const ModalAddListing = ({ open, setOpen }: Props) => {
             toast.error("Thêm phòng thất bại")
         }
 
-
         setOpen(false)
         setImages([])
         reset()

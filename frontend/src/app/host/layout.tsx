@@ -1,6 +1,7 @@
-'use client';
+'use client'
 
 import SiderHost from "@/components/host/SiderHost";
+import HostContextProvider from "@/context/HostContext";
 
 export default function AdminLayout({
     children,
@@ -14,7 +15,9 @@ export default function AdminLayout({
 
             {/* Main Content - Dynamic */}
             <div className="flex-1">
-                {children}
+                <HostContextProvider>
+                    {children}
+                </HostContextProvider>
             </div>
         </div>
     );

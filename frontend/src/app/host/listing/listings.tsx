@@ -10,10 +10,11 @@ import { AppContext } from '@/context/AppContext';
 import AlertDialogDeleteListing from './AlertDialogDeleteListing';
 import ModalUpdateListing from './ModalUpdateListing';
 import ModalViewListing from './ModalViewListing';
+import { HostContext } from '@/context/HostContext';
 
 const ListingManagement = () => {
 
-    const { listings } = useContext(AppContext)
+    const { hostListings } = useContext(HostContext);
 
     const [openAdd, setOpenAdd] = useState(false);
 
@@ -64,12 +65,12 @@ const ListingManagement = () => {
 
             {/* Listings Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {listings.length === 0 ? (
+                {hostListings.length === 0 ? (
                     <div className="col-span-full text-center text-gray-500 dark:text-gray-400 py-8">
                         Không có dữ liệu
                     </div>
                 ) : (
-                    listings.map((listing) => (
+                    hostListings.map((listing) => (
                         <div
                             key={listing.id}
                             className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
@@ -104,14 +105,14 @@ const ListingManagement = () => {
                                         {listing.pricePerNight.toLocaleString('vi-VN')} VNĐ/đêm
                                     </span>
                                     <div className="flex items-center gap-2">
-                                        <Image
+                                        {/* <Image
                                             src={listing.host.avatar}
                                             alt={listing.host.name}
                                             width={24}
                                             height={24}
                                             className="rounded-full"
-                                        />
-                                        <span className="text-sm text-gray-700 dark:text-gray-300">{listing.host.name}</span>
+                                        /> */}
+                                        {/* <span className="text-sm text-gray-700 dark:text-gray-300">{listing.host.name}</span> */}
                                     </div>
                                 </div>
 

@@ -3,7 +3,6 @@
 import { useContext, useState } from 'react';
 import { toast } from 'sonner';
 import Image from 'next/image';
-import ModalAddListing from './ModalAddListing';
 import { Button } from '@/components/ui/button';
 import { Eye, Pencil, Trash2 } from 'lucide-react';
 import { AppContext } from '@/context/AppContext';
@@ -14,8 +13,6 @@ import ModalViewListing from './ModalViewListing';
 const ListingManagement = () => {
 
     const { listings } = useContext(AppContext)
-
-    const [openAdd, setOpenAdd] = useState(false);
 
     const [openEdit, setOpenEdit] = useState(false);
     const [openView, setOpenView] = useState(false);
@@ -58,9 +55,6 @@ const ListingManagement = () => {
                     </select>
                 </div>
             </div>
-
-            {/* Add New Listing Button */}
-            <ModalAddListing open={openAdd} setOpen={setOpenAdd} />
 
             {/* Listings Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
