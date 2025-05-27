@@ -3,6 +3,7 @@
 import { CalendarCheck2, KeyRound, MapPin } from 'lucide-react'
 import Image from 'next/image'
 import { useState } from 'react'
+import DatePicker from './DatePicker'
 
 export default function ListingDetail({ listing }: { listing: ListingType }) {
     const [guests, setGuests] = useState(1)
@@ -97,29 +98,23 @@ export default function ListingDetail({ listing }: { listing: ListingType }) {
                     ₫{listing.pricePerNight.toLocaleString('vi-VN')} <span className="text-gray-500 text-sm">/ đêm</span>
                 </p>
 
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div>
-                        <label className="block font-medium">Nhận phòng</label>
-                        <input type="date" className="w-full border rounded px-2 py-1" defaultValue="2025-07-18" />
-                    </div>
-                    <div>
-                        <label className="block font-medium">Trả phòng</label>
-                        <input type="date" className="w-full border rounded px-2 py-1" defaultValue="2025-07-20" />
-                    </div>
-                </div>
+                <DatePicker />
 
                 <div>
-                    <label className="block font-medium text-sm">Khách</label>
+                    <label className="block font-medium text-sm">Số khách</label>
                     <select
                         className="w-full border rounded px-2 py-1"
                         value={guests}
                         onChange={(e) => setGuests(Number(e.target.value))}
                     >
-                        {[1, 2, 3, 4].map(n => (
-                            <option key={n} value={n}>{n} khách</option>
+                        {Array.from({ length: listing.maxGuests }, (_, i) => i + 1).map(n => (
+                            <option key={n} value={n}>
+                                {n} khách
+                            </option>
                         ))}
                     </select>
                 </div>
+
 
                 <button className="w-full bg-pink-800 hover:bg-pink-900 text-white rounded-lg py-3 font-semibold">
                     Đặt phòng

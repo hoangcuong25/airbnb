@@ -53,6 +53,7 @@ declare global {
         country: string;
         host: UserType;
         hostId: number;
+        maxGuests  : number;
 
         images: ImageListing[];
 

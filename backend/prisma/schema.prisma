@@ -46,6 +46,7 @@ model Listing {
   title         String
   description   String         @db.Text
   pricePerNight Int
+  maxGuests     Int            @default(1)
   address       String
   city          String
   country       String
