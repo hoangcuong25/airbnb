@@ -39,6 +39,7 @@ model User {
   createdAt              DateTime  @default(now())
   updatedAt              DateTime  @updatedAt
   Listing                Listing[]
+  Booking                Booking[]
 }
 
 model Listing {
@@ -54,8 +55,9 @@ model Listing {
   host          User           @relation(fields: [hostId], references: [id])
   images        ListingImage[] // 1-N relationship with ListingImage
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Booking   Booking[]
 }
 
 model ListingImage {
@@ -65,4 +67,27 @@ model ListingImage {
   name      String
 
   listing Listing @relation(fields: [listingId], references: [id])
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+model Booking {
+  id           Int           @id @default(autoincrement())
+  guestId      Int
+  listingId    Int
+  checkInDate  DateTime
+  checkOutDate DateTime
+  totalPrice   Float
+  status       BookingStatus @default(PENDING)
+
+  guest   User    @relation(fields: [guestId], references: [id])
+  listing Listing @relation(fields: [listingId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
