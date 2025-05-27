@@ -20,6 +20,7 @@ import { ListingSchema } from "@/hook/zod-schema/ListingSchema"
 import { createListingApi } from "@/api/listing.api"
 import { toast } from "sonner"
 import { AppContext } from "@/context/AppContext"
+import { HostContext } from "@/context/HostContext"
 
 type Props = {
     open: boolean
@@ -31,6 +32,7 @@ type ListingFormData = z.infer<typeof ListingSchema>
 const ModalAddListing = ({ open, setOpen }: Props) => {
 
     const { fetchAllListings } = useContext(AppContext)
+    const {findMyListing} = useContext(HostContext)
 
     const [images, setImages] = React.useState<File[]>([])
 
@@ -64,9 +66,11 @@ const ModalAddListing = ({ open, setOpen }: Props) => {
             const response = await createListingApi(formData)
 
             await fetchAllListings() // Cập nhật danh sách sau khi thêm mới
+            await findMyListing() // Cập nhật danh sách phòng của host
 
             toast.success("Thêm phòng thành công")
         } catch (error) {
+            console.error("Error creating listing:", error)
             toast.error("Thêm phòng thất bại")
         }
 

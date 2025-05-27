@@ -283,4 +283,20 @@ export class ListingService {
 
     return 'Listing deleted successfully';
   }
+
+  async findOne(id: number) {
+    const listing = await this.prisma.listing.findUnique({
+      where: { id },
+      include: {
+        host: true,
+        images: true,
+      },
+    });
+
+    if (!listing) {
+      throw new NotFoundException("Listing not found");
+    }
+
+    return listing;
+  }
 }

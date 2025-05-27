@@ -6,6 +6,7 @@ export const createListingApi = async (data: any) => {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
+            timeout: 10 * 60 * 1000 // 10 minutes timeout
         })
         return response.data
     }
@@ -81,3 +82,19 @@ export const hostDeleteListingApi = async (id: string) => {
         throw error
     }
 }
+
+export const getListingByIdApi = async (id: string) => {
+    try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/listing/get-listing/${id}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        const data = await res.json();
+        return data.data;
+    } catch (error) {
+        throw error;
+    }
+};
