@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `listing` ADD COLUMN `Guest` INTEGER NOT NULL DEFAULT 1;
