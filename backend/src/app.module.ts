@@ -10,6 +10,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 import { RedisModule, RedisModuleOptions } from '@nestjs-modules/ioredis';
 import { PrismaModule } from './prisma/prisma.module';
 import { ListingModule } from './modules/listing/listing.module';
+import { BookingModule } from './modules/booking/booking.module';
 
 @Module({
   imports: [
@@ -57,7 +58,8 @@ import { ListingModule } from './modules/listing/listing.module';
 
     UserModule,
     AuthModule,
-    ListingModule
+    ListingModule,
+    BookingModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -53,9 +53,32 @@ declare global {
         country: string;
         host: UserType;
         hostId: number;
-        maxGuests  : number;
+        maxGuests: number;
 
         images: ImageListing[];
+
+        createdAt: string;
+        updatedAt: string;
+    }
+
+    type statusEnum = {
+        PENDING: 'PENDING';
+        CONFIRMED: 'CONFIRMED';
+        CANCELLED: 'CANCELLED';
+        COMPLETED: 'COMPLETED';
+    }
+
+    type BookingType = {
+        id: number;
+        listing: ListingType;
+        listingId: number;
+        user: UserType;
+        userId: number;
+        checkInDate: string;
+        checkOutDate: string;
+        totalPrice: number;
+        status: statusEnum;
+        guestNumber: number;
 
         createdAt: string;
         updatedAt: string;
