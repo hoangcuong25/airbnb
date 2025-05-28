@@ -59,6 +59,8 @@ declare global {
 
         createdAt: string;
         updatedAt: string;
+
+        blockedDates: string[];
     }
 
     type statusEnum = {

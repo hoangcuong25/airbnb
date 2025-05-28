@@ -297,6 +297,36 @@ export class ListingService {
       throw new NotFoundException("Listing not found");
     }
 
-    return listing;
+    // Lấy booking trùng với listingId
+    const bookings = await this.prisma.booking.findMany({
+      where: {
+        listingId: id,
+        status: {
+          in: ['PENDING', 'CONFIRMED'],
+        },
+      },
+      select: {
+        checkInDate: true,
+        checkOutDate: true,
+      },
+    });
+
+    // Generate danh sách ngày bị khóa
+    const blockedDates = bookings.flatMap((booking) => {
+      const dates = [];
+      const current = new Date(booking.checkInDate);
+      const end = new Date(booking.checkOutDate);
+      while (current < end) {
+        dates.push(new Date(current));
+        current.setDate(current.getDate() + 1);
+      }
+      return dates;
+    });
+
+    return {
+      ...listing,
+      blockedDates,
+    };
   }
+
 }

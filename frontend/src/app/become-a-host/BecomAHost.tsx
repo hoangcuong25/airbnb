@@ -55,7 +55,7 @@ const BecomeAHost = () => {
 
                     <AlertDialog>
                         <AlertDialogTrigger asChild>
-                            <Button className="w-full h-16 text-lg font-semibold bg-black text-white ">
+                            <Button className="w-full h-16 text-lg font-semibold bg-black text-white cursor-pointer transition-colors duration-200">
                                 Bắt đầu ngay
                             </Button>
                         </AlertDialogTrigger>
