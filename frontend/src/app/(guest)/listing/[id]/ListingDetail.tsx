@@ -37,7 +37,7 @@ export default function ListingDetail({ listing }: { listing: ListingType }) {
     const handleBooking = async () => {
         try {
             await createBookingApi(data)
-
+            toast.success('Đặt phòng thành công!')
         }
         catch (error) {
             toast.error('Đặt phòng thất bại, vui lòng thử lại sau.')
