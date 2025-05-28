@@ -6,7 +6,6 @@ import { useContext, useEffect, useState } from 'react'
 import DatePicker from './DatePicker'
 import { toast } from 'sonner'
 import { createBookingApi } from '@/api/booking.api'
-import { AppContext } from '@/context/AppContext'
 
 export default function ListingDetail({ listing }: { listing: ListingType }) {
 
@@ -132,7 +131,7 @@ export default function ListingDetail({ listing }: { listing: ListingType }) {
                     ₫{listing.pricePerNight.toLocaleString('vi-VN')} <span className="text-gray-500 text-sm">/ đêm</span>
                 </p>
 
-                <DatePicker data={data} setData={setData} />
+                <DatePicker data={data} setData={setData} blockedDates={listing.blockedDates}/>
 
                 <div>
                     <label className="block font-medium text-sm">Số khách</label>
@@ -149,7 +148,6 @@ export default function ListingDetail({ listing }: { listing: ListingType }) {
                     </select>
                 </div>
 
-
                 <button
                     onClick={handleBooking}
                     className="w-full bg-pink-800 hover:bg-pink-900 text-white rounded-lg py-3 font-semibold"
@@ -159,8 +157,6 @@ export default function ListingDetail({ listing }: { listing: ListingType }) {
 
                 <p className="text-xs text-center text-gray-500">Bạn vẫn chưa bị trừ tiền</p>
             </div>
-
-
         </div>
     )
 }

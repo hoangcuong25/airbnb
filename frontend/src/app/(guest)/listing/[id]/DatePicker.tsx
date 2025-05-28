@@ -4,18 +4,30 @@ import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Button } from "@/components/ui/button"
 import { format } from "date-fns"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { vi } from "date-fns/locale"
 
 type DatePickerProps = {
     data: any;
     setData: any;
+    blockedDates: string[];
 };
 
-export default function DatePicker({ data, setData }: DatePickerProps) {
-    const [checkIn, setCheckIn] = useState<Date | undefined>(new Date())
+export default function DatePicker({ data, setData, blockedDates }: DatePickerProps) {
+    const [checkIn, setCheckIn] = useState<Date | undefined>(undefined)
     const [checkOut, setCheckOut] = useState<Date | undefined>(undefined)
 
+    // Tạo set để check nhanh ngày bị khóa (chuyển string thành toDateString)
+    const blockedDatesSet = useMemo(() => {
+        return new Set(blockedDates.map(d => new Date(d).toDateString()))
+    }, [blockedDates])
+
+    // Hàm check ngày có bị khóa không
+    const isDateBlocked = (date: Date) => {
+        return blockedDatesSet.has(date.toDateString())
+    }
+
+    // Cập nhật data khi checkIn hoặc checkOut thay đổi
     useEffect(() => {
         if (checkIn && checkOut) {
             setData((prev: any) => ({
@@ -43,14 +55,19 @@ export default function DatePicker({ data, setData }: DatePickerProps) {
                             selected={checkIn}
                             onSelect={(date) => {
                                 setCheckIn(date)
-                                // Nếu check-out đang trước check-in, cập nhật luôn
+                                // Nếu check-out đang trước check-in, cập nhật thành ngày kế tiếp check-in
                                 if (checkOut && date && checkOut <= date) {
                                     const tomorrow = new Date(date)
                                     tomorrow.setDate(tomorrow.getDate() + 1)
                                     setCheckOut(tomorrow)
                                 }
                             }}
-                            disabled={(date) => date < new Date()}
+                            disabled={(date) => {
+                                // Disable ngày trong quá khứ và ngày bị khóa
+                                const today = new Date()
+                                today.setHours(0, 0, 0, 0)
+                                return date < today || isDateBlocked(date)
+                            }}
                         />
                     </PopoverContent>
                 </Popover>
@@ -70,9 +87,10 @@ export default function DatePicker({ data, setData }: DatePickerProps) {
                             mode="single"
                             selected={checkOut}
                             onSelect={setCheckOut}
-                            disabled={(date) =>
-                                !checkIn || (date <= checkIn)
-                            }
+                            disabled={(date) => {
+                                // Disable ngày trước hoặc bằng check-in hoặc ngày bị khóa
+                                return !checkIn || date <= checkIn || isDateBlocked(date)
+                            }}
                         />
                     </PopoverContent>
                 </Popover>
