@@ -11,12 +11,14 @@ import { RedisModule, RedisModuleOptions } from '@nestjs-modules/ioredis';
 import { PrismaModule } from './prisma/prisma.module';
 import { ListingModule } from './modules/listing/listing.module';
 import { BookingModule } from './modules/booking/booking.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
 
     PrismaModule,
+    ScheduleModule.forRoot(),
 
     MailerModule.forRootAsync({
       imports: [ConfigModule],
