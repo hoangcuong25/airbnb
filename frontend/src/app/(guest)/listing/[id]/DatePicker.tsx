@@ -1,6 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-export default function DatePicker() {
+type DatePickerProps = {
+    data: any;
+    setData: any;
+};
+
+export default function DatePicker({ data, setData }: DatePickerProps) {
     const today = new Date().toISOString().split("T")[0]; // yyyy-mm-dd
 
     const [checkIn, setCheckIn] = useState(today);
@@ -21,6 +26,15 @@ export default function DatePicker() {
             setCheckOut(getTomorrow(newCheckIn));
         }
     };
+
+    useEffect(() => {
+        // Cập nhật data khi checkIn hoặc checkOut thay đổi
+        setData((prevData: any) => ({
+            ...prevData,
+            checkInDate: checkIn,
+            checkOutDate: checkOut,
+        }));
+    }, [checkIn, checkOut, setData]);
 
     return (
         <div className="grid grid-cols-2 gap-2 text-sm">

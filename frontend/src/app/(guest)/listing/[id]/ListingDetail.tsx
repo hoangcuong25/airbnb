@@ -2,13 +2,47 @@
 
 import { CalendarCheck2, KeyRound, MapPin } from 'lucide-react'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import DatePicker from './DatePicker'
+import { toast } from 'sonner'
+import { createBookingApi } from '@/api/booking.api'
+import { AppContext } from '@/context/AppContext'
 
 export default function ListingDetail({ listing }: { listing: ListingType }) {
+
     const [guests, setGuests] = useState(1)
     const [showAllImages, setShowAllImages] = useState(false)
     const displayImages = showAllImages ? listing.images : listing.images.slice(0, 5)
+
+    const [data, setData] = useState({
+        listingId: 0,
+        checkInDate: '',
+        checkOutDate: '',
+        totalPrice: 0,
+        status: 'PENDING',
+        guestNumber: guests,
+    })
+
+    useEffect(() => {
+        if (listing) {
+            setData(prev => ({
+                ...prev,
+                guestNumber: guests,
+                listingId: listing.id,
+                totalPrice: listing.pricePerNight,
+            }))
+        }
+    }, [listing, guests])
+
+    const handleBooking = async () => {
+        try {
+            await createBookingApi(data)
+
+        }
+        catch (error) {
+            toast.error('Đặt phòng thất bại, vui lòng thử lại sau.')
+        }
+    }
 
     return (
         <div className="max-w-6xl mx-auto p-4 grid grid-cols-1 lg:grid-cols-3 gap-6 border-t border-gray-300 mt-4 w-full">
@@ -98,7 +132,7 @@ export default function ListingDetail({ listing }: { listing: ListingType }) {
                     ₫{listing.pricePerNight.toLocaleString('vi-VN')} <span className="text-gray-500 text-sm">/ đêm</span>
                 </p>
 
-                <DatePicker />
+                <DatePicker data={data} setData={setData} />
 
                 <div>
                     <label className="block font-medium text-sm">Số khách</label>
@@ -116,7 +150,10 @@ export default function ListingDetail({ listing }: { listing: ListingType }) {
                 </div>
 
 
-                <button className="w-full bg-pink-800 hover:bg-pink-900 text-white rounded-lg py-3 font-semibold">
+                <button
+                    onClick={handleBooking}
+                    className="w-full bg-pink-800 hover:bg-pink-900 text-white rounded-lg py-3 font-semibold"
+                >
                     Đặt phòng
                 </button>
 
