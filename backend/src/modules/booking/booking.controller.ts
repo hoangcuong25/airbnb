@@ -34,4 +34,10 @@ export class BookingController {
     return this.bookingService.hostBooking(req.user.id);
   }
 
+  @Get('all-booking')
+  @Roles("ADMIN")
+  @ResponseMessage("get all booking for admin")
+  allBooking(@Req() req) {
+    return this.bookingService.allBooking(req.user.id)
+  }
 }

@@ -30,3 +30,13 @@ export const updateStatusApi = async (bookingId: number, newStatus: 'CONFIRMED' 
         throw error;
     }
 };
+
+export const getAllBookingApi = async () => {
+    try {
+        const response = await axiosClient.get(`/api/v1/booking/all-booking`)
+        return response.data.data
+    }
+    catch (error) {
+        throw error;
+    }
+}
