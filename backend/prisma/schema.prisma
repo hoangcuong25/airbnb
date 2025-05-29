@@ -20,26 +20,40 @@ enum Gender {
 }
 
 model User {
-  id                     Int       @id @default(autoincrement())
-  name                   String    @db.VarChar(50)
-  email                  String    @unique
-  password               String    @db.VarChar(100)
-  avatar                 String    @default("https://res.cloudinary.com/dtaawt3ej/image/upload/v1747292486/q9lmgugyqgrm7q5voatw.jpg")
+  id                     Int        @id @default(autoincrement())
+  name                   String     @db.VarChar(50)
+  email                  String     @unique
+  password               String     @db.VarChar(100)
+  avatar                 String     @default("https://res.cloudinary.com/dtaawt3ej/image/upload/v1747292486/q9lmgugyqgrm7q5voatw.jpg")
   age                    Int?
   gender                 Gender?
-  dob                    DateTime? @db.Date
+  dob                    DateTime?  @db.Date
   address                String?
-  role                   UserRole  @default(USER)
+  role                   UserRole   @default(USER)
   phone                  String?
-  isVerified             Boolean   @default(false)
+  isVerified             Boolean    @default(false)
   resetOtp               String?
   resetOtpExpires        DateTime?
   verificationOtp        String?
   verificationOtpExpires DateTime?
-  createdAt              DateTime  @default(now())
-  updatedAt              DateTime  @updatedAt
+  createdAt              DateTime   @default(now())
+  updatedAt              DateTime   @updatedAt
   Listing                Listing[]
   Booking                Booking[]
+  Wishlist               Wishlist[]
+}
+
+model Wishlist {
+  id        Int @id @default(autoincrement())
+  userId    Int
+  listingId Int
+
+  user    User    @relation(fields: [userId], references: [id])
+  listing Listing @relation(fields: [listingId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, listingId])
 }
 
 model Listing {
@@ -55,9 +69,10 @@ model Listing {
   host          User           @relation(fields: [hostId], references: [id])
   images        ListingImage[] // 1-N relationship with ListingImage
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
   Booking   Booking[]
+  Wishlist  Wishlist[]
 }
 
 model ListingImage {
