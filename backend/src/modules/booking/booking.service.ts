@@ -47,7 +47,7 @@ export class BookingService {
 
   async updateStatus(update, hostId) {
     const booking = await this.prisma.booking.findUnique({
-      where: { id: update.id },
+      where: { id: update.bookingId },
       include: {
         listing: true
       }
@@ -62,7 +62,7 @@ export class BookingService {
     }
 
     await this.prisma.booking.update({
-      where: { id: update.id },
+      where: { id: update.bookingId },
       data: { status: update.status }
     });
 

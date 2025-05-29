@@ -18,3 +18,15 @@ export const getHostBookingApi = async () => {
         throw error;
     }
 }
+
+export const updateStatusApi = async (bookingId: number, newStatus: 'CONFIRMED' | 'CANCELLED') => {
+    try {
+        const response = await axiosClient.patch(`/api/v1/booking/update-status`, {
+            bookingId,
+            status: newStatus
+        });
+        return response.data.data;
+    } catch (error) {
+        throw error;
+    }
+};
