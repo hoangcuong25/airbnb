@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -86,6 +86,37 @@ export class BookingService {
       },
       orderBy: {
         createdAt: 'desc',
+      },
+    });
+  }
+
+  async allBooking(userId: number) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user || user.role !== 'ADMIN') {
+      throw new UnauthorizedException('Bạn không có quyền xem tất cả đặt phòng.');
+    }
+    return await this.prisma.booking.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+      include: {
+        guest: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        listing: {
+          select: {
+            id: true,
+            title: true,
+            city: true
+          },
+        },
       },
     });
   }
