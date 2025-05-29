@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Req } from '@nestjs/
 import { BookingService } from './booking.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
-import { Public, ResponseMessage } from 'src/decorator/customize';
+import { Public, ResponseMessage, Roles } from 'src/decorator/customize';
 
 @Controller('booking')
 export class BookingController {
@@ -17,23 +17,21 @@ export class BookingController {
     return this.bookingService.create(createBookingDto, req.user.id);
   }
 
-  @Get()
-  findAll() {
-    return this.bookingService.findAll();
+  @Patch('update-status')
+  @Roles("HOST")
+  @ResponseMessage('update status')
+  updateStatus(
+    @Body() update,
+    @Req() req
+  ) {
+    return this.bookingService.updateStatus(update, req.user.id)
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.bookingService.findOne(+id);
+  @Get('host-booking')
+  @Roles("HOST")
+  @ResponseMessage("Get all bookings of the host")
+  hostBooking(@Req() req) {
+    return this.bookingService.hostBooking(req.user.id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateBookingDto: UpdateBookingDto) {
-    return this.bookingService.update(+id, updateBookingDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.bookingService.remove(+id);
-  }
 }

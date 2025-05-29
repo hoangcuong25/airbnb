@@ -45,19 +45,48 @@ export class BookingService {
     }
   }
 
-  findAll() {
-    return `This action returns all booking`;
+  async updateStatus(update, hostId) {
+    const booking = await this.prisma.booking.findUnique({
+      where: { id: update.id },
+      include: {
+        listing: true
+      }
+    });
+
+    if (!booking) {
+      throw new Error('Booking not found');
+    }
+
+    if (booking.listing.hostId !== hostId) {
+      throw new Error('Unauthorized: You are not the host of this booking');
+    }
+
+    await this.prisma.booking.update({
+      where: { id: update.id },
+      data: { status: update.status }
+    });
+
+    return 'ok';
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} booking`;
-  }
-
-  update(id: number, updateBookingDto: UpdateBookingDto) {
-    return `This action updates a #${id} booking`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} booking`;
+  async hostBooking(hostId: number) {
+    return this.prisma.booking.findMany({
+      where: {
+        listing: {
+          hostId: hostId,
+        },
+      },
+      include: {
+        listing: {
+          include: {
+            images: true,
+          },
+        },
+        guest: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
   }
 }
