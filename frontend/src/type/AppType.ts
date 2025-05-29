@@ -63,23 +63,23 @@ declare global {
         blockedDates: string[];
     }
 
-    type statusEnum = {
-        PENDING: 'PENDING';
-        CONFIRMED: 'CONFIRMED';
-        CANCELLED: 'CANCELLED';
-        COMPLETED: 'COMPLETED';
+    export enum StatusEnum {
+        PENDING = 'PENDING',
+        CONFIRMED = 'CONFIRMED',
+        CANCELLED = 'CANCELLED',
+        COMPLETED = 'COMPLETED'
     }
 
     type BookingType = {
         id: number;
         listing: ListingType;
         listingId: number;
-        user: UserType;
-        userId: number;
+        guest: UserType;
+        guestId: number;
         checkInDate: string;
         checkOutDate: string;
         totalPrice: number;
-        status: statusEnum;
+        status: StatusEnum;
         guestNumber: number;
 
         createdAt: string;

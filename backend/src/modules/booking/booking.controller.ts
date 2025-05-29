@@ -26,4 +26,12 @@ export class BookingController {
   ) {
     return this.bookingService.updateStatus(update, req.user.id)
   }
+
+  @Get('host-booking')
+  @Roles("HOST")
+  @ResponseMessage("Get all bookings of the host")
+  hostBooking(@Req() req) {
+    return this.bookingService.hostBooking(req.user.id);
+  }
+
 }

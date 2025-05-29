@@ -69,4 +69,24 @@ export class BookingService {
     return 'ok';
   }
 
+  async hostBooking(hostId: number) {
+    return this.prisma.booking.findMany({
+      where: {
+        listing: {
+          hostId: hostId,
+        },
+      },
+      include: {
+        listing: {
+          include: {
+            images: true,
+          },
+        },
+        guest: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
 }
