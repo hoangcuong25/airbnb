@@ -1,28 +1,41 @@
 'use client';
 
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import { toast } from 'sonner';
-import axios from 'axios';
 import { HostContext } from '@/context/HostContext';
+import { updateStatusApi } from '@/api/booking.api';
 
 const BookingManagement = () => {
-
-    const { hostBookings } = useContext(HostContext)
+    const { hostBookings, getHostBookings } = useContext(HostContext);
 
     const [isLoading, setIsLoading] = useState(false);
 
-    const getStatusColor = (status: BookingType['status']) => {
+    const getStatusBadge = (status: string) => {
+        const base = "px-2 py-1 text-xs font-semibold rounded-full";
         switch (status) {
             case 'PENDING':
-                return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
+                return <span className={`${base} bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200`}>Chờ xác nhận</span>;
             case 'CONFIRMED':
-                return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+                return <span className={`${base} bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200`}>Đã xác nhận</span>;
             case 'CANCELLED':
-                return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+                return <span className={`${base} bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200`}>Đã hủy</span>;
             case 'COMPLETED':
-                return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
+                return <span className={`${base} bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200`}>Hoàn thành</span>;
             default:
-                return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+                return <span className={`${base} bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200`}>Không xác định</span>;
+        }
+    };
+
+    const handleUpdateStatus = async (bookingId: number, status: 'CONFIRMED' | 'CANCELLED') => {
+        try {
+            setIsLoading(true);
+            await updateStatusApi(bookingId, status);
+            toast.success("Cập nhật trạng thái thành công");
+            await getHostBookings(); // cập nhật lại danh sách
+        } catch (error) {
+            toast.error("Cập nhật thất bại");
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -57,23 +70,29 @@ const BookingManagement = () => {
                                     <td className="px-6 py-4">{booking.listing.title}</td>
                                     <td className="px-6 py-4">{booking.checkInDate}</td>
                                     <td className="px-6 py-4">{booking.checkOutDate}</td>
-                                    <td className="px-6 py-4">
-                                        <select
-                                            value={booking.status}
-                                            // onChange={(e) => handleStatusChange(booking.id, e.target.value as BookingType['status'])}
-                                            disabled={isLoading}
-                                            className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(booking.status)}`}
-                                        >
-                                            <option value="PENDING">Chờ xác nhận</option>
-                                            <option value="CONFIRMED">Đã xác nhận</option>
-                                            <option value="CANCELLED">Đã hủy</option>
-                                            <option value="COMPLETED">Hoàn thành</option>
-                                        </select>
-                                    </td>
+                                    <td className="px-6 py-4">{getStatusBadge(booking.status)}</td>
                                     <td className="px-6 py-4">{booking.totalPrice.toLocaleString('vi-VN')} VNĐ</td>
-                                    <td className="px-6 py-4">
-                                        <button className="text-primary hover:underline mr-2">Chi tiết</button>
-                                        <button className="text-red-500 hover:underline">Hủy</button>
+                                    <td className="px-6 py-4 space-x-2">
+                                        {booking.status === 'PENDING' ? (
+                                            <>
+                                                <button
+                                                    disabled={isLoading}
+                                                    onClick={() => handleUpdateStatus(booking.id, 'CONFIRMED')}
+                                                    className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm"
+                                                >
+                                                    Đồng ý
+                                                </button>
+                                                <button
+                                                    disabled={isLoading}
+                                                    onClick={() => handleUpdateStatus(booking.id, 'CANCELLED')}
+                                                    className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm"
+                                                >
+                                                    Hủy
+                                                </button>
+                                            </>
+                                        ) : (
+                                            <span className="text-gray-400 text-sm">Không khả dụng</span>
+                                        )}
                                     </td>
                                 </tr>
                             ))
