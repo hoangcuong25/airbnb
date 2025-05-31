@@ -19,4 +19,13 @@ export class WishlistController {
   getUserWishlist(@Req() req) {
     return this.wishlistService.fetchUserWishlist(req.user.id);
   }
+
+  @Patch('remove-from-wishlist')
+  removeFromWishlist(
+    @Body() body,
+    @Req() req
+  ) {
+    console.log(body)
+    return this.wishlistService.removeFromWishlist(body.listingId, req.user.id)
+  }
 }

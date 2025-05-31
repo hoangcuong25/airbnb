@@ -17,3 +17,13 @@ export const fetchUserWishlistApi = async () => {
         throw error;
     }
 }
+
+export const removeFromWishlistApi = async (listingId: number) => {
+    try {
+        await axiosClient.patch("/api/v1/wishlist/remove-from-wishlist", { listingId })
+
+    }
+    catch (error) {
+        throw error;
+    }
+}
