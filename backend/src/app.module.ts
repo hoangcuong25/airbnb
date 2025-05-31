@@ -12,6 +12,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { ListingModule } from './modules/listing/listing.module';
 import { BookingModule } from './modules/booking/booking.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { WishlistModule } from './modules/wishlist/wishlist.module';
 
 @Module({
   imports: [
@@ -61,7 +62,8 @@ import { ScheduleModule } from '@nestjs/schedule';
     UserModule,
     AuthModule,
     ListingModule,
-    BookingModule
+    BookingModule,
+    WishlistModule,
   ],
   controllers: [AppController],
   providers: [AppService],
