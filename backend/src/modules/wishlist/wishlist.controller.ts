@@ -9,10 +9,10 @@ export class WishlistController {
 
   @Post('add-to-wishlist')
   addToWishlist(
-    @Body() listingId: string,
+    @Body() body,
     @Req() req
   ) {
-    return this.wishlistService.addToWishlist(+listingId, req.user.id);
+    return this.wishlistService.addToWishlist(body.listingId, req.user.id);
   }
 
   @Get()
