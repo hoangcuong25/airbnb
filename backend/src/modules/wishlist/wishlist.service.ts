@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateWishlistDto } from './dto/create-wishlist.dto';
-import { UpdateWishlistDto } from './dto/update-wishlist.dto';
+
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -27,4 +26,16 @@ export class WishlistService {
       },
     });
   }
+
+  async removeFromWishlist(listingId: number, userId: number) {
+    return await this.prisma.wishlist.delete({
+      where: {
+        userId_listingId: {
+          userId,
+          listingId,
+        },
+      },
+    })
+  }
+
 }

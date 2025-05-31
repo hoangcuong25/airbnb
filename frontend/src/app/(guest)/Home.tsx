@@ -1,6 +1,6 @@
 'use client'
 
-import { addToWishlistApi } from '@/api/wishlist.api'
+import { addToWishlistApi, removeFromWishlistApi } from '@/api/wishlist.api'
 import { AppContext } from '@/context/AppContext'
 import { Heart } from 'lucide-react'
 import Image from 'next/image'
@@ -23,6 +23,17 @@ const Home = () => {
         }
         catch (error: any) {
             toast.error('Thêm vào wishlist thất bại');
+        }
+    }
+
+    const handleRemoveFromWishlist = async (listingId: number) => {
+        try {
+            await removeFromWishlistApi(listingId)
+
+            toast.success('Đã bỏ khỏi danh sách yêu thích!');
+            fetchUserWishlist()
+        } catch (error: any) {
+            toast.error('Bỏ wishlist thất bại');
         }
     }
 
@@ -50,11 +61,17 @@ const Home = () => {
                                     onClick={() => router.push(`/listing/${listing.id}`)}
                                 />
                                 <button className="absolute top-2 right-2 bg-white rounded-full p-1">
-                                    <Heart
-                                        onClick={() => handleAddToWishlist(listing.id)}
-                                        className={`w-5 h-5 cursor-pointer ${isInWishlist(listing.id) ? "fill-red-500 text-red-500" : "text-gray-500"
-                                            }`}
-                                    />
+                                    {
+                                        isInWishlist(listing.id) ?
+                                            <Heart
+                                                onClick={() => handleRemoveFromWishlist(listing.id)}
+                                                className={`w-5 h-5 cursor-pointer  fill-red-500 text-red-500`}
+                                            />
+                                            : <Heart
+                                                onClick={() => handleAddToWishlist(listing.id)}
+                                                className={`w-5 h-5 cursor-pointer text-gray-500`}
+                                            />
+                                    }
                                 </button>
                                 {true && (
                                     <span className="absolute top-2 left-2 bg-white text-xs px-2 py-1 rounded">
