@@ -1,14 +1,27 @@
 'use client'
 
+import { addToWishlistApi } from '@/api/wishlist.api'
 import { AppContext } from '@/context/AppContext'
 import { Heart } from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import React, { useContext } from 'react'
+import { toast } from 'sonner'
 
 const Home = () => {
 
     const { listings } = useContext(AppContext)
+
+    const handleAddToWishlist = async (listingId: number) => {
+        try {
+            const response = await addToWishlistApi(listingId)
+
+            toast.success('Đã thêm vào danh sách yêu thích!');
+        }
+        catch (error: any) {
+            toast.error('Thêm vào wishlist thất bại');
+        }
+    }
 
     const router = useRouter()
 
@@ -33,7 +46,8 @@ const Home = () => {
                                 />
                                 <button className="absolute top-2 right-2 bg-white rounded-full p-1">
                                     <Heart
-                                        className={`w-5 h-5 ${true ? "fill-red-500 text-red-500" : "text-gray-500"
+                                        onClick={() => handleAddToWishlist(listing.id)}
+                                        className={`w-5 h-5 ${false ? "fill-red-500 text-red-500" : "text-gray-500"
                                             }`}
                                     />
                                 </button>
