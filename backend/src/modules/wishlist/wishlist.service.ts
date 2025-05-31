@@ -17,19 +17,14 @@ export class WishlistService {
     });
   }
 
-  findAll() {
-    return `This action returns all wishlist`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} wishlist`;
-  }
-
-  update(id: number, updateWishlistDto: UpdateWishlistDto) {
-    return `This action updates a #${id} wishlist`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} wishlist`;
+  async fetchUserWishlist(userId: number) {
+    return this.prisma.wishlist.findMany({
+      where: {
+        userId,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
   }
 }

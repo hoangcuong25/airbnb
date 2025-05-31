@@ -15,23 +15,8 @@ export class WishlistController {
     return this.wishlistService.addToWishlist(body.listingId, req.user.id);
   }
 
-  @Get()
-  findAll() {
-    return this.wishlistService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.wishlistService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateWishlistDto: UpdateWishlistDto) {
-    return this.wishlistService.update(+id, updateWishlistDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.wishlistService.remove(+id);
+  @Get('my-wishlist')
+  getUserWishlist(@Req() req) {
+    return this.wishlistService.fetchUserWishlist(req.user.id);
   }
 }

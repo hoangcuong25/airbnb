@@ -10,20 +10,25 @@ import { toast } from 'sonner'
 
 const Home = () => {
 
-    const { listings } = useContext(AppContext)
+    const { listings, userWishlist, fetchUserWishlist } = useContext(AppContext)
+
+    const router = useRouter()
 
     const handleAddToWishlist = async (listingId: number) => {
         try {
             const response = await addToWishlistApi(listingId)
 
             toast.success('Đã thêm vào danh sách yêu thích!');
+            fetchUserWishlist()
         }
         catch (error: any) {
             toast.error('Thêm vào wishlist thất bại');
         }
     }
 
-    const router = useRouter()
+    const isInWishlist = (listingId: number) => {
+        return userWishlist.some((item: any) => item.listingId === listingId);
+    };
 
     return (
         <div className="p-4">
@@ -47,7 +52,7 @@ const Home = () => {
                                 <button className="absolute top-2 right-2 bg-white rounded-full p-1">
                                     <Heart
                                         onClick={() => handleAddToWishlist(listing.id)}
-                                        className={`w-5 h-5 ${false ? "fill-red-500 text-red-500" : "text-gray-500"
+                                        className={`w-5 h-5 cursor-pointer ${isInWishlist(listing.id) ? "fill-red-500 text-red-500" : "text-gray-500"
                                             }`}
                                     />
                                 </button>

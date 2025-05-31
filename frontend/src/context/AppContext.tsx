@@ -6,6 +6,7 @@
 import { LogoutApi } from "@/api/auth.api";
 import { getAllListingApi } from "@/api/listing.api";
 import { getUser } from "@/api/user.api";
+import { fetchUserWishlistApi } from "@/api/wishlist.api";
 import { useRouter } from "next/navigation";
 import React, { createContext, ReactNode, useEffect, useState } from "react";
 
@@ -17,6 +18,9 @@ interface AppContextType {
     setListings: React.Dispatch<React.SetStateAction<ListingType[]>>;
     fetchAllListings: () => Promise<void>;
     logout: () => Promise<void>;
+    userWishlist: any
+    setUserWishlist: React.Dispatch<React.SetStateAction<any>>;
+    fetchUserWishlist: () => Promise<void>
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -26,7 +30,10 @@ export const AppContext = createContext<AppContextType>({
     listings: [],
     setListings: () => { },
     fetchAllListings: async () => { },
-    logout: async () => { }
+    logout: async () => { },
+    userWishlist: null,
+    setUserWishlist: () => { },
+    fetchUserWishlist: async () => { }
 });
 
 interface AppContextProviderProps {
@@ -38,8 +45,8 @@ const AppContextProvider: React.FC<AppContextProviderProps> = ({ children }) => 
     const route = useRouter();
 
     const [user, setUser] = useState<UserType | null>(null);
-
     const [listings, setListings] = useState<ListingType[]>([]);
+    const [userWishlist, setUserWishlist] = useState()
 
     const fetchUser = async () => {
         try {
@@ -76,12 +83,25 @@ const AppContextProvider: React.FC<AppContextProviderProps> = ({ children }) => 
         }
     }
 
+    const fetchUserWishlist = async () => {
+        try {
+            const response = await fetchUserWishlistApi()
+
+            setUserWishlist(response)
+        }
+        catch (error) {
+            console.error("Error:", error);
+        }
+    }
+
     const value = {
         user, setUser,
         fetchUser,
         listings, setListings,
         fetchAllListings,
-        logout
+        logout,
+        userWishlist, setUserWishlist,
+        fetchUserWishlist
     };
 
     useEffect(() => {
@@ -89,6 +109,7 @@ const AppContextProvider: React.FC<AppContextProviderProps> = ({ children }) => 
 
         if (isToken) {
             fetchUser()
+            fetchUserWishlist()
         }
 
         fetchAllListings()
