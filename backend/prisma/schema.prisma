@@ -42,6 +42,7 @@ model User {
   Booking                Booking[]
   Wishlist               Wishlist[]
   Review                 Review[]
+  Report                 Report[]
 }
 
 model Wishlist {
@@ -75,6 +76,7 @@ model Listing {
   Booking   Booking[]
   Wishlist  Wishlist[]
   Review    Review[]
+  Report    Report[]
 }
 
 model ListingImage {
@@ -124,4 +126,24 @@ model Review {
   updatedAt DateTime @updatedAt
 
   @@unique([guestId, listingId])
+}
+
+enum ReportStatus {
+  PENDING
+  REVIEWED
+  REJECTED
+}
+
+model Report {
+  id         Int          @id @default(autoincrement())
+  reporterId Int
+  listingId  Int
+  reason     String
+  status     ReportStatus @default(PENDING)
+
+  reporter User    @relation(fields: [reporterId], references: [id])
+  listing  Listing @relation(fields: [listingId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

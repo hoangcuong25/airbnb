@@ -14,6 +14,7 @@ import { BookingModule } from './modules/booking/booking.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { WishlistModule } from './modules/wishlist/wishlist.module';
 import { ReviewModule } from './modules/review/review.module';
+import { ReportModule } from './modules/report/report.module';
 
 @Module({
   imports: [
@@ -66,6 +67,7 @@ import { ReviewModule } from './modules/review/review.module';
     BookingModule,
     WishlistModule,
     ReviewModule,
+    ReportModule,
   ],
   controllers: [AppController],
   providers: [AppService],
