@@ -32,7 +32,7 @@ type ListingFormData = z.infer<typeof ListingSchema>
 const ModalAddListing = ({ open, setOpen }: Props) => {
 
     const { fetchAllListings } = useContext(AppContext)
-    const {findMyListing} = useContext(HostContext)
+    const { findMyListing } = useContext(HostContext)
 
     const [images, setImages] = React.useState<File[]>([])
 
@@ -56,6 +56,7 @@ const ModalAddListing = ({ open, setOpen }: Props) => {
         formData.append("address", data.address)
         formData.append("city", data.city)
         formData.append("country", data.country)
+        formData.append("maxGuests", data.maxGuests.toString())
 
         // Thêm ảnh (images[] là File[])
         images.forEach((file) => {
@@ -124,6 +125,12 @@ const ModalAddListing = ({ open, setOpen }: Props) => {
                         <Label htmlFor="pricePerNight">Price Per Night</Label>
                         <Input disabled={isSubmitting} type="number" id="pricePerNight" {...register("pricePerNight")} />
                         {errors.pricePerNight && <p className="text-red-500 text-sm">{errors.pricePerNight.message}</p>}
+                    </div>
+
+                    <div>
+                        <Label htmlFor="maxGuests">Max Guests</Label>
+                        <Input disabled={isSubmitting} type="number" id="maxGuests" {...register("maxGuests")} />
+                        {errors.maxGuests && <p className="text-red-500 text-sm">{errors.maxGuests.message}</p>}
                     </div>
 
                     <div>

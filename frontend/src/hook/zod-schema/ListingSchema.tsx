@@ -7,4 +7,5 @@ export const ListingSchema = z.object({
     address: z.string().min(1, "Address is required"),
     city: z.string().min(1, "City is required"),
     country: z.string().min(1, "Country is required"),
+    maxGuests: z.coerce.number().min(1, "maxGuests must be at least 1"),
 })

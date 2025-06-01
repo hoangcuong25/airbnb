@@ -43,6 +43,11 @@ const ModalViewListing = ({ open, setOpen, listing }: Props) => {
                     </div>
 
                     <div>
+                        <Label>Số khách tối đa</Label>
+                        <p className="text-gray-700 dark:text-gray-300">{listing.maxGuests} khách</p>
+                    </div>
+
+                    <div>
                         <Label>Địa chỉ</Label>
                         <p className="text-gray-700 dark:text-gray-300">{listing.address}</p>
                     </div>

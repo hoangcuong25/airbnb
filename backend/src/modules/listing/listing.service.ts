@@ -26,6 +26,7 @@ export class ListingService {
         pricePerNight: createListingDto.pricePerNight,
         address: createListingDto.address,
         city: createListingDto.city,
+        maxGuests: Number(createListingDto.maxGuests),
         country: createListingDto.country,
         hostId: hostId,
       }

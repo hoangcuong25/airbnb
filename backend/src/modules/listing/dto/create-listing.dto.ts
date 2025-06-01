@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsString, IsInt } from 'class-validator';
+import { IsString, IsInt, Min } from 'class-validator';
 
 export class CreateListingDto {
     @IsString()
@@ -20,4 +20,8 @@ export class CreateListingDto {
 
     @IsString()
     country: string;
+
+    @IsInt()
+    @Type(() => Number)
+    maxGuests: number;
 }
