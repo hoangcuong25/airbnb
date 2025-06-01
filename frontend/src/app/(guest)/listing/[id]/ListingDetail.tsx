@@ -7,6 +7,7 @@ import DatePicker from './DatePicker'
 import { toast } from 'sonner'
 import { createBookingApi } from '@/api/booking.api'
 import ModalReview from './ModalReview'
+import ModalReport from './ModalReport'
 
 export default function ListingDetail({ listing }: { listing: ListingType }) {
 
@@ -179,8 +180,8 @@ export default function ListingDetail({ listing }: { listing: ListingType }) {
                 >
                     Đặt phòng
                 </button>
-
                 <p className="text-xs text-center text-gray-500">Bạn vẫn chưa bị trừ tiền</p>
+                <ModalReport listingId={listing.id} />
             </div>
         </div>
     )
