@@ -98,3 +98,14 @@ export const getListingByIdApi = async (id: string) => {
         throw error;
     }
 };
+
+export const searchListingApi = async (keyword: string) => {
+    try {
+        const response = await axiosClient.get('/api/v1/listing/search', {
+            params: { keyword },
+        });
+        return response.data.data;
+    } catch (error) {
+        throw error;
+    }
+};

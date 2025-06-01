@@ -78,4 +78,13 @@ export class ListingController {
   findOne(@Param('id') id: string) {
     return this.listingService.findOne(+id);
   }
+
+  @Get('search')
+  @Public()
+  @ResponseMessage("Listing search completed successfully")
+  search(@Req() req) {
+    const keyword = req.query.keyword || '';
+    return this.listingService.search(keyword);
+  }
+
 }
