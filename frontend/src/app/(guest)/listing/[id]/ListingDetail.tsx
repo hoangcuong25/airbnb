@@ -6,6 +6,7 @@ import { useContext, useEffect, useState } from 'react'
 import DatePicker from './DatePicker'
 import { toast } from 'sonner'
 import { createBookingApi } from '@/api/booking.api'
+import ModalReview from './ModalReview'
 
 export default function ListingDetail({ listing }: { listing: ListingType }) {
 
@@ -42,6 +43,8 @@ export default function ListingDetail({ listing }: { listing: ListingType }) {
             toast.error('Đặt phòng thất bại, vui lòng thử lại sau.')
         }
     }
+
+    console.log(listing)
 
     return (
         <div className="max-w-6xl mx-auto p-4 grid grid-cols-1 lg:grid-cols-3 gap-6 border-t border-gray-300 mt-4 w-full">
@@ -122,6 +125,28 @@ export default function ListingDetail({ listing }: { listing: ListingType }) {
                         <h3 className="text-xl font-semibold mb-2">Mô tả</h3>
                         <p className="leading-relaxed whitespace-pre-line">{listing.description}</p>
                     </div>
+
+                    {/* Modal review */}
+                    <ModalReview listingId={listing.id} />
+
+                    <p className="font-semibold mb-2">Đánh giá:</p>
+                    {
+                        listing?.Review && listing.Review.length > 0 ? (
+                            <div className="space-y-4">
+                                {listing.Review.map((review: any) => (
+                                    <div key={review.id} className="border rounded p-3">
+                                        <div className="flex items-center justify-between mb-1">
+                                            <span className="font-medium">⭐ {review.rating}/5</span>
+                                            <span className="text-xs text-gray-500">{new Date(review.createdAt).toLocaleDateString('vi-VN')}</span>
+                                        </div>
+                                        <p className="text-sm text-gray-700 whitespace-pre-line">{review.comment}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="text-sm text-gray-500">Chưa có đánh giá nào.</p>
+                        )
+                    }
                 </div>
             </div>
 
@@ -131,7 +156,7 @@ export default function ListingDetail({ listing }: { listing: ListingType }) {
                     ₫{listing.pricePerNight.toLocaleString('vi-VN')} <span className="text-gray-500 text-sm">/ đêm</span>
                 </p>
 
-                <DatePicker data={data} setData={setData} blockedDates={listing.blockedDates}/>
+                <DatePicker data={data} setData={setData} blockedDates={listing.blockedDates} />
 
                 <div>
                     <label className="block font-medium text-sm">Số khách</label>

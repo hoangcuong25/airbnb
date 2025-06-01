@@ -291,6 +291,11 @@ export class ListingService {
       include: {
         host: true,
         images: true,
+        Review: {
+          orderBy: {
+            createdAt: 'desc',
+          },
+        },
       },
     });
 
@@ -298,7 +303,6 @@ export class ListingService {
       throw new NotFoundException("Listing not found");
     }
 
-    // Lấy booking trùng với listingId
     const bookings = await this.prisma.booking.findMany({
       where: {
         listingId: id,
@@ -312,7 +316,6 @@ export class ListingService {
       },
     });
 
-    // Generate danh sách ngày bị khóa
     const blockedDates = bookings.flatMap((booking) => {
       const dates = [];
       const current = new Date(booking.checkInDate);
