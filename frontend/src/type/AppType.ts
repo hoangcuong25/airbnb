@@ -86,4 +86,12 @@ declare global {
         createdAt: string;
         updatedAt: string;
     }
+
+    type ReportType = {
+        id: string;
+        listingId: number;
+        reason: string;
+        status: string;
+        createdAt: string;
+    }
 }
