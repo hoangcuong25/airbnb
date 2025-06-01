@@ -30,14 +30,14 @@ const HostLinks = () => (
 
 const AuthenticatedMenu = ({ logout }: { logout: () => void }) => (
     <div className='flex flex-col items-start justify-start text-sm'>
-        <MenuItem icon={Heart} label='Danh sách yêu thích' href="whishlist" />
-        <MenuItem icon={CarTaxiFront} label='Chuyến đi' href="whishlist" />
-        <MenuItem icon={MessageCircle} label='Tin nhắn' href="whishlist" />
-        <MenuItem icon={CircleUser} label='Hồ sơ' href="whishlist" />
-        <MenuItem icon={Bell} label='Thông báo' href="whishlist" />
-        <MenuItem icon={Settings} label='Cài đặt tài khoản' href="whishlist" />
-        <MenuItem icon={Globe} label='Ngôn ngữ' href="whishlist" />
-        <MenuItem icon={CircleHelp} label='Trung tâm trợ giúp' href="whishlist" />
+        <MenuItem icon={Heart} label='Danh sách yêu thích' href="wishlist" />
+        <MenuItem icon={CarTaxiFront} label='Chuyến đi' href="profile/about" />
+        <MenuItem icon={MessageCircle} label='Tin nhắn' href="profile" />
+        <MenuItem icon={CircleUser} label='Hồ sơ' href="profile/about" />
+        <MenuItem icon={Bell} label='Thông báo' href="profile/about" />
+        <MenuItem icon={Settings} label='Cài đặt tài khoản' href="profile/about" />
+        <MenuItem icon={Globe} label='Ngôn ngữ' href="profile/about" />
+        <MenuItem icon={CircleHelp} label='Trung tâm trợ giúp' href="profile/about" />
         <BecomeHost />
         <HostLinks />
         <p

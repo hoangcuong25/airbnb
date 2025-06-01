@@ -10,7 +10,7 @@ import { toast } from 'sonner'
 
 const Home = () => {
 
-    const { listings, userWishlist, fetchUserWishlist } = useContext(AppContext)
+    const { listings, userWishlist, fetchUserWishlist, user } = useContext(AppContext)
 
     const router = useRouter()
 
@@ -62,7 +62,7 @@ const Home = () => {
                                 />
                                 <button className="absolute top-2 right-2 bg-white rounded-full p-1">
                                     {
-                                        isInWishlist(listing.id) ?
+                                        user && isInWishlist(listing.id) ?
                                             <Heart
                                                 onClick={() => handleRemoveFromWishlist(listing.id)}
                                                 className={`w-5 h-5 cursor-pointer  fill-red-500 text-red-500`}
