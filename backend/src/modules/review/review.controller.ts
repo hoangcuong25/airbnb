@@ -8,7 +8,7 @@ import { ResponseMessage } from 'src/decorator/customize';
 export class ReviewController {
   constructor(private readonly reviewService: ReviewService) { }
 
-  @Post()
+  @Post('user-review')
   @ResponseMessage("review a listing")
   create(
     @Body() createReviewDto: CreateReviewDto,

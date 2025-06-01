@@ -61,6 +61,7 @@ declare global {
         updatedAt: string;
 
         blockedDates: string[];
+        Review: string[]
     }
 
     export enum StatusEnum {

@@ -42,7 +42,12 @@ export class ReviewService {
 
     // Tạo review
     return this.prisma.review.create({
-      data: dto,
+      data: {
+        rating: dto.rating,
+        comment: dto.comment,
+        guestId: guestId,
+        listingId:  dto.listingId,
+      },
     });
   }
 
