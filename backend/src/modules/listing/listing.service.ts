@@ -333,4 +333,27 @@ export class ListingService {
     };
   }
 
+  async search(keyword: string) {
+    return await this.prisma.listing.findMany({
+      where: {
+        OR: [
+          { title: { contains: keyword, } },
+          { description: { contains: keyword, } },
+          { city: { contains: keyword, } },
+          { address: { contains: keyword, } },
+          { country: { contains: keyword, } },
+        ],
+      },
+      include: {
+        host: true,
+        images: true,
+        Review: {
+          orderBy: {
+            createdAt: 'desc',
+          },
+        },
+      },
+    });
+  }
+
 }

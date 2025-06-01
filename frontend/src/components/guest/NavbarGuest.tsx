@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import air_bnb_logo from '@public/Airbnb_Logo.svg'
 import {
     House,
@@ -10,7 +10,7 @@ import {
     Globe,
     Search,
 } from 'lucide-react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { AppContext } from '@/context/AppContext';
 import DropdownMenuNavbar from './DropdownMenuNavbar';
@@ -19,7 +19,9 @@ const NavbarGuest = () => {
 
     const { user, logout } = useContext(AppContext)
 
+    const [location, setLocation] = useState('');
     const pathname = usePathname()
+    const router = useRouter();
 
     return (
         <div className='flex items-start justify-between'>
@@ -48,8 +50,12 @@ const NavbarGuest = () => {
                 <div className='flex items-center justify-center mt-5 text-sm '>
                     <div className='border border-gray-300 rounded-full px-5 py-2 flex items-center justify-between'>
                         <div className='border-r border-gray-300 pr-5'>
-                            <p>Địa điểm</p>
-                            <p className='font-light'>Tìm kiếm theo địa điểm</p>
+                            <input
+                                value={location}
+                                onChange={(e) => setLocation(e.target.value)}
+                                placeholder='Tìm kiếm theo địa điểm'
+                                className='bg-transparent outline-none text-sm font-light w-32'
+                            />
                         </div>
                         <div className='border-r border-gray-300 px-5'>
                             <p>Nhận Phòng</p>
@@ -63,9 +69,19 @@ const NavbarGuest = () => {
                             <p>Khách</p>
                             <p className='font-light'>Thêm khách</p>
                         </div>
-                        <div className='flex items-center justify-center bg-red-500 rounded-full p-2'>
+                        <button
+                            onClick={async () => {
+                                if (!location.trim()) return;
+                                try {
+                                    router.push(`/search?keyword=${encodeURIComponent(location.trim())}`);
+                                } catch (err) {
+                                    console.error('Search error:', err);
+                                }
+                            }}
+                            className='flex items-center justify-center bg-red-500 rounded-full p-2'
+                        >
                             <Search className='text-white' />
-                        </div>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -92,7 +108,7 @@ const NavbarGuest = () => {
                 )}
 
                 {/* Menu dropdown */}
-                <DropdownMenuNavbar user={user} logout={logout}/>
+                <DropdownMenuNavbar user={user} logout={logout} />
 
             </div>
         </div >
