@@ -4,11 +4,7 @@ import Image from 'next/image'
 import React, { useContext } from 'react'
 import air_bnb_logo from '@public/Airbnb_Logo.svg'
 import {
-    House,
-    FerrisWheel,
-    ConciergeBell,
     Globe,
-    Search,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { AppContext } from '@/context/AppContext';
