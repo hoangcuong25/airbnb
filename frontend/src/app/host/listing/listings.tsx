@@ -95,6 +95,9 @@ const ListingManagement = () => {
                                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
                                     {listing.address}, {listing.city}, {listing.country}
                                 </p>
+                                <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">
+                                    Sức chứa tối đa: <strong>{listing.maxGuests}</strong> khách
+                                </p>
                                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">
                                     {listing.description}
                                 </p>
@@ -104,16 +107,6 @@ const ListingManagement = () => {
                                     <span className="text-lg font-bold text-primary">
                                         {listing.pricePerNight.toLocaleString('vi-VN')} VNĐ/đêm
                                     </span>
-                                    <div className="flex items-center gap-2">
-                                        {/* <Image
-                                            src={listing.host.avatar}
-                                            alt={listing.host.name}
-                                            width={24}
-                                            height={24}
-                                            className="rounded-full"
-                                        /> */}
-                                        {/* <span className="text-sm text-gray-700 dark:text-gray-300">{listing.host.name}</span> */}
-                                    </div>
                                 </div>
 
                                 {/* Actions */}

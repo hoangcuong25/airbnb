@@ -59,6 +59,7 @@ const ModalUpdateListing = ({ open, setOpen, listing }: Props) => {
             address: listing.address,
             city: listing.city,
             country: listing.country,
+            maxGuests: listing.maxGuests,
         },
     })
 
@@ -77,6 +78,7 @@ const ModalUpdateListing = ({ open, setOpen, listing }: Props) => {
             address: listing.address,
             city: listing.city,
             country: listing.country,
+            maxGuests: listing.maxGuests,
         })
     }, [listing, reset])
 
@@ -104,6 +106,7 @@ const ModalUpdateListing = ({ open, setOpen, listing }: Props) => {
         formData.append("address", data.address)
         formData.append("city", data.city)
         formData.append("country", data.country)
+        formData.append("maxGuests", data.maxGuests.toString())
 
         // Append ảnh mới
         images.forEach((img) => {
@@ -164,6 +167,19 @@ const ModalUpdateListing = ({ open, setOpen, listing }: Props) => {
                         <Label htmlFor="pricePerNight">Price Per Night</Label>
                         <Input type="number" id="pricePerNight" {...register("pricePerNight")} disabled={isSubmitting} />
                         {errors.pricePerNight && <p className="text-red-500 text-sm">{errors.pricePerNight.message}</p>}
+                    </div>
+
+                    <div>
+                        <Label htmlFor="maxGuests">Số khách tối đa</Label>
+                        <Input
+                            type="number"
+                            id="maxGuests"
+                            {...register("maxGuests")}
+                            disabled={isSubmitting}
+                        />
+                        {errors.maxGuests && (
+                            <p className="text-red-500 text-sm">{errors.maxGuests.message}</p>
+                        )}
                     </div>
 
                     <div>
