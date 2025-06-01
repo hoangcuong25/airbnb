@@ -1,7 +1,7 @@
 'use client';
 
 import { AppContext } from '@/context/AppContext';
-import { LayoutDashboard, LogOut } from 'lucide-react';
+import { LayoutDashboard, LogOut, MessageSquareWarning } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useContext } from 'react';
 import {
@@ -36,6 +36,11 @@ const SiderAdmin = () => {
             title: 'Quản lý danh sách',
             icon: <FaList className="w-6 h-6" />,
             path: '/admin/listing'
+        },
+        {
+            title: 'Báo cáo',
+            icon: <MessageSquareWarning className="w-6 h-6" />,
+            path: '/admin/report'
         }
     ];
 

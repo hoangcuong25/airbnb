@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Req } from '@nestjs/
 import { ReportService } from './report.service';
 import { CreateReportDto } from './dto/create-report.dto';
 import { UpdateReportDto } from './dto/update-report.dto';
-import { ResponseMessage } from 'src/decorator/customize';
+import { ResponseMessage, Roles } from 'src/decorator/customize';
 
 @Controller('report')
 export class ReportController {
@@ -16,6 +16,7 @@ export class ReportController {
   }
 
   @Get()
+  @Roles('ADMIN')
   @ResponseMessage('find all')
   findAll() {
     return this.reportService.findAll()
