@@ -41,6 +41,7 @@ model User {
   Listing                Listing[]
   Booking                Booking[]
   Wishlist               Wishlist[]
+  Review                 Review[]
 }
 
 model Wishlist {
@@ -73,6 +74,7 @@ model Listing {
   updatedAt DateTime   @updatedAt
   Booking   Booking[]
   Wishlist  Wishlist[]
+  Review    Review[]
 }
 
 model ListingImage {
@@ -106,4 +108,20 @@ model Booking {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Review {
+  id        Int    @id @default(autoincrement())
+  rating    Int
+  comment   String @db.Text
+  guestId   Int
+  listingId Int
+
+  guest   User    @relation(fields: [guestId], references: [id])
+  listing Listing @relation(fields: [listingId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([guestId, listingId])
 }
