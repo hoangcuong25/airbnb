@@ -93,5 +93,7 @@ declare global {
         reason: string;
         status: string;
         createdAt: string;
+        reporter: UserType;
+        listing: ListingType
     }
 }

@@ -19,6 +19,7 @@ interface AdminContextType {
     setAllBooking: React.Dispatch<React.SetStateAction<BookingType[]>>;
 
     reports: ReportType[];  // thêm reports vào context
+    setReports: React.Dispatch<React.SetStateAction<ReportType[]>>;
     fetchReport: () => Promise<void>;  // expose hàm fetch report
 }
 
@@ -31,6 +32,7 @@ export const AdminContext = createContext<AdminContextType>({
     setAllBooking: () => { },
 
     reports: [],
+    setReports: () => {},
     fetchReport: async () => { },
 });
 
@@ -77,7 +79,7 @@ const AdminContextProvider: React.FC<AdminContextProviderProps> = ({ children })
         fetchAllBooking,
         allBooking, setAllBooking,
 
-        reports,
+        reports, setReports,
         fetchReport,
     };
 
