@@ -11,3 +11,9 @@ export const fetchReports = async () => {
     const response = await axiosClient.get('/api/v1/report')
     return response.data.data
 }
+
+// Delete report by ID
+export const deleteReport = async (id: number) => {
+    const response = await axiosClient.delete(`/api/v1/report/${id}`)
+    return response.data
+}

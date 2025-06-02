@@ -1,14 +1,12 @@
 'use client';
 
 import { useContext } from 'react';
-import { Button } from '@/components/ui/button';
-import { Eye, Trash2 } from 'lucide-react';
 import { AdminContext } from '@/context/AdminContext';
+import ReportDetailModal from './ReportDetailModal';
+import DeleteReportDialog from './DeleteReportDialog';
 
 const ReportManagement = () => {
-    const { reports } = useContext(AdminContext);
-
-    console.log(reports)
+    const { reports, setReports } = useContext(AdminContext);
 
     if (!Array.isArray(reports)) return <div>Loading or invalid data</div>;
 
@@ -30,41 +28,42 @@ const ReportManagement = () => {
                             key={report.id}
                             className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
                         >
-                            <div className="p-4">
-                                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                                    Báo cáo #{report.id} - {report.status}
+                            <div className="p-4 space-y-3">
+                                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                                    Báo cáo #{report.id} - <span className="uppercase">{report.status}</span>
                                 </h3>
-                                <p className="text-sm text-gray-500 dark:text-gray-400 mb-2 line-clamp-3">
-                                    {report.reason}
-                                </p>
 
-                                <div className="flex justify-between items-center mb-4">
-                                    <span className="text-sm text-gray-600 dark:text-gray-300">
-                                        Listing ID: {report.listingId}
-                                    </span>
-                                    <span className="text-sm text-gray-600 dark:text-gray-300">
-                                        Ngày tạo: {new Date(report.createdAt).toLocaleDateString()}
-                                    </span>
+                                <div className="text-sm text-gray-600 dark:text-gray-300">
+                                    <strong>Lý do:</strong>
+                                    <p className="line-clamp-2">{report.reason}</p>
                                 </div>
 
-                                <div className="flex justify-end gap-2">
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="flex items-center gap-1 border-gray-300 text-gray-700 cursor-default"
-                                    >
-                                        <Eye size={14} />
-                                        <span>Chi tiết</span>
-                                    </Button>
+                                <div className="text-sm text-gray-600 dark:text-gray-300">
+                                    <strong>Ngày tạo:</strong> {new Date(report.createdAt).toLocaleString()}
+                                </div>
 
-                                    <Button
-                                        variant="destructive"
-                                        size="sm"
-                                        className="flex items-center gap-1 cursor-default"
-                                    >
-                                        <Trash2 size={14} />
-                                        <span>Xóa</span>
-                                    </Button>
+                                {/* Reporter info */}
+                                <div className="border-t pt-3 text-sm text-gray-600 dark:text-gray-300">
+                                    <strong>Người báo cáo:</strong> {report.reporter?.name} <br />
+                                    <strong>Email:</strong> {report.reporter?.email}
+                                </div>
+
+                                {/* Listing info */}
+                                <div className="border-t pt-3 text-sm text-gray-600 dark:text-gray-300">
+                                    <strong>Phòng bị báo cáo:</strong> {report.listing?.title} <br />
+                                    <strong>Địa chỉ:</strong> {report.listing?.address}, {report.listing?.country} <br />
+                                    <strong>Giá/đêm:</strong> {report.listing?.pricePerNight?.toLocaleString()} VND <br />
+                                    <strong>Số khách tối đa:</strong> {report.listing?.maxGuests}
+                                </div>
+
+                                <div className="flex justify-end gap-2 pt-3">
+                                    <ReportDetailModal report={report} />
+
+                                    <DeleteReportDialog
+                                        reportId={Number(report.id)}
+                                        reports={reports}
+                                        setReports={setReports}
+                                    />
                                 </div>
                             </div>
                         </div>
