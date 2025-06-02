@@ -8,7 +8,7 @@ export class ReviewService {
   constructor(private prisma: PrismaService) { }
 
   async create(dto: CreateReviewDto, guestId) {
-    // Check nếu đã review rồi
+    // Kiểm tra xem đã đánh giá chưa
     const existing = await this.prisma.review.findUnique({
       where: {
         guestId_listingId: {
@@ -19,34 +19,34 @@ export class ReviewService {
     });
 
     if (existing) {
-      throw new BadRequestException('You have already reviewed this listing.');
+      throw new BadRequestException('Bạn đã đánh giá chỗ nghỉ này rồi.');
     }
 
-    // Check nếu đã từng đặt phòng và booking đã hoàn thành hoặc xác nhận
+    // Kiểm tra nếu đã từng đặt phòng và đã hoàn tất
     const booking = await this.prisma.booking.findFirst({
       where: {
         guestId: guestId,
         listingId: dto.listingId,
         status: {
-          in: ['COMPLETED'], //  chỉ cho phép nếu đã thuê phòng
+          in: ['COMPLETED'], // chỉ cho phép nếu đã ở xong
         },
         checkOutDate: {
-          lte: new Date(), //  checkOut đã qua (người dùng đã ở xong)
+          lte: new Date(), // thời gian trả phòng đã qua
         },
       },
     });
 
     if (!booking) {
-      throw new BadRequestException('You can only review a listing after staying there.');
+      throw new BadRequestException('Bạn chỉ có thể đánh giá sau khi đã ở tại chỗ nghỉ này.');
     }
 
-    // Tạo review
+    // Tạo đánh giá
     return this.prisma.review.create({
       data: {
         rating: dto.rating,
         comment: dto.comment,
         guestId: guestId,
-        listingId:  dto.listingId,
+        listingId: dto.listingId,
       },
     });
   }
@@ -72,7 +72,7 @@ export class ReviewService {
 
   async update(id: number, dto: UpdateReviewDto) {
     const review = await this.prisma.review.findUnique({ where: { id } });
-    if (!review) throw new NotFoundException('Review not found');
+    if (!review) throw new NotFoundException('Không tìm thấy đánh giá.');
 
     return this.prisma.review.update({
       where: { id },
@@ -82,7 +82,7 @@ export class ReviewService {
 
   async remove(id: number) {
     const review = await this.prisma.review.findUnique({ where: { id } });
-    if (!review) throw new NotFoundException('Review not found');
+    if (!review) throw new NotFoundException('Không tìm thấy đánh giá.');
 
     return this.prisma.review.delete({ where: { id } });
   }

@@ -47,8 +47,16 @@ const Login = () => {
             fetchUser()
 
             toast.success('Đăng nhập thành công');
-        } catch (error) {
-            toast.error('Đăng nhập thất bại');
+        } catch (error: any) {
+            // Lấy thông báo lỗi từ backend (thường nằm ở error.response.data.message)
+            const errorMessage =
+                error?.response?.data?.message ||
+                error?.message ||
+                'Đăng nhập thất bại';
+
+            toast.error(errorMessage);
+        } finally {
+            fetchUser();
         }
     };
 

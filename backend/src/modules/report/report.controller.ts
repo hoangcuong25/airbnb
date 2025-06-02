@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req, ParseIntPipe } from '@nestjs/common';
 import { ReportService } from './report.service';
 import { CreateReportDto } from './dto/create-report.dto';
 import { UpdateReportDto } from './dto/update-report.dto';
@@ -20,5 +20,12 @@ export class ReportController {
   @ResponseMessage('find all')
   findAll() {
     return this.reportService.findAll()
+  }
+
+  @Delete(':id')
+  @Roles('ADMIN')
+  @ResponseMessage('delete report')
+  delete(@Param('id', ParseIntPipe) id: number) {
+    return this.reportService.delete(id);
   }
 }

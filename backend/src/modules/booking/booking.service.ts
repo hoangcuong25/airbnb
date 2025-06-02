@@ -1,4 +1,4 @@
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -6,10 +6,9 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class BookingService {
+  private readonly logger = new Logger(BookingService.name);
 
-  private readonly logger = new Logger(BookingService.name)
-
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async create(createBookingDto: CreateBookingDto, guestId: number) {
     return this.prisma.booking.create({
@@ -41,7 +40,7 @@ export class BookingService {
     });
 
     if (result.count > 0) {
-      this.logger.log(`Đã huỷ ${result.count} booking quá hạn.`);
+      this.logger.log(`Đã huỷ ${result.count} đơn đặt phòng quá hạn.`);
     }
   }
 
@@ -49,24 +48,24 @@ export class BookingService {
     const booking = await this.prisma.booking.findUnique({
       where: { id: update.bookingId },
       include: {
-        listing: true
-      }
+        listing: true,
+      },
     });
 
     if (!booking) {
-      throw new Error('Booking not found');
+      throw new NotFoundException('Không tìm thấy đơn đặt phòng');
     }
 
     if (booking.listing.hostId !== hostId) {
-      throw new Error('Unauthorized: You are not the host of this booking');
+      throw new ForbiddenException('Bạn không phải là chủ nhà của đơn đặt phòng này');
     }
 
     await this.prisma.booking.update({
       where: { id: update.bookingId },
-      data: { status: update.status }
+      data: { status: update.status },
     });
 
-    return 'ok';
+    return 'Cập nhật trạng thái thành công';
   }
 
   async hostBooking(hostId: number) {
@@ -96,8 +95,9 @@ export class BookingService {
     });
 
     if (!user || user.role !== 'ADMIN') {
-      throw new UnauthorizedException('Bạn không có quyền xem tất cả đặt phòng.');
+      throw new UnauthorizedException('Bạn không có quyền truy cập danh sách đặt phòng.');
     }
+
     return await this.prisma.booking.findMany({
       orderBy: {
         createdAt: 'desc',
@@ -114,7 +114,7 @@ export class BookingService {
           select: {
             id: true,
             title: true,
-            city: true
+            city: true,
           },
         },
       },
