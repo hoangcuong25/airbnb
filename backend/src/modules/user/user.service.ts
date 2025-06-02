@@ -70,8 +70,8 @@ export class UserService {
     try {
       const { name, email, password1, password2 } = createUserDto;
 
-      if (await this.isEmailExist(email)) throw new BadRequestException('Email already exists');
-      if (password1 !== password2) throw new BadRequestException('Password not match');
+      if (await this.isEmailExist(email)) throw new BadRequestException('Email đã được sử dụng.');
+      if (password1 !== password2) throw new BadRequestException('Mật khẩu không khớp.');
 
       const hashPassword = await hashPasswordHelper(password1);
 
@@ -87,7 +87,7 @@ export class UserService {
       return { id: user.id };
     } catch (error) {
       console.log(error);
-      throw new BadRequestException('Internal server error');
+      throw new BadRequestException('Lỗi máy chủ nội bộ.');
     }
   }
 
@@ -102,8 +102,8 @@ export class UserService {
   async handleRegister(registerDto: CreateAuthDto) {
     const { name, email, password1, password2 } = registerDto;
 
-    if (await this.isEmailExist(email)) throw new BadRequestException('Email already exists!');
-    if (password1 !== password2) throw new BadRequestException('Password not match');
+    if (await this.isEmailExist(email)) throw new BadRequestException('Email đã được sử dụng!');
+    if (password1 !== password2) throw new BadRequestException('Mật khẩu không khớp.');
 
     const hashPassword = await hashPasswordHelper(password1);
 
@@ -129,7 +129,7 @@ export class UserService {
 
   async updateProfile(req: { id: number }, updateUserDto: any, image?: Express.Multer.File) {
     const user = await this.findById(req.id);
-    if (!user) throw new BadRequestException('User not found');
+    if (!user) throw new BadRequestException('Không tìm thấy người dùng.');
 
     const updateData = { ...updateUserDto };
 
@@ -143,7 +143,7 @@ export class UserService {
       data: updateData,
     });
 
-    return 'ok';
+    return 'Cập nhật thành công.';
   }
 
   async updatePhone(req: { id: number }, phone: string) {
@@ -152,17 +152,17 @@ export class UserService {
       data: { phone },
     });
 
-    return 'ok';
+    return 'Cập nhật thành công.';
   }
 
   async updatePassword(req: { id: number }, reqBody: any) {
     const { newPassword1, newPassword2, oldPassword } = reqBody;
     const user = await this.findById(req.id);
-    if (!user) throw new BadRequestException('User not found');
+    if (!user) throw new BadRequestException('Không tìm thấy người dùng.');
 
     const isOldPasswordValid = await comparePasswordHelper(oldPassword, user.password);
-    if (!isOldPasswordValid) throw new BadRequestException('Incorrect old password');
-    if (newPassword1 !== newPassword2) throw new BadRequestException('New passwords do not match');
+    if (!isOldPasswordValid) throw new BadRequestException('Mật khẩu cũ không đúng.');
+    if (newPassword1 !== newPassword2) throw new BadRequestException('Mật khẩu mới không khớp.');
 
     const hashedPassword = await hashPasswordHelper(newPassword1);
 
@@ -171,24 +171,22 @@ export class UserService {
       data: { password: hashedPassword },
     });
 
-    return 'ok';
+    return 'Đổi mật khẩu thành công.';
   }
 
   async deleteUser(userId: number) {
     await this.prisma.user.delete({ where: { id: userId } });
-    return 'ok';
+    return 'Xóa người dùng thành công.';
   }
 
   async updateUser(updateUserDto: UpdateUserDto, avatar?: Express.Multer.File) {
     const { id, ...updateData } = updateUserDto;
 
     if (avatar) {
-      // Lấy thông tin người dùng hiện tại
       const existingUser = await this.prisma.user.findUnique({
         where: { id },
       });
 
-      // Nếu người dùng có avatar cũ thì xóa nó khỏi Cloudinary
       if (existingUser?.avatar) {
         const publicId = this.cloudinaryService.extractPublicId(existingUser.avatar);
         if (publicId) {
@@ -196,26 +194,24 @@ export class UserService {
         }
       }
 
-      // Upload ảnh mới
       const imageUpload = await this.cloudinaryService.uploadFile(avatar);
       updateData.avatar = imageUpload.url;
     }
 
-    // Cập nhật thông tin người dùng
     await this.prisma.user.update({
       where: { id },
       data: updateData,
     });
 
-    return 'ok';
+    return 'Cập nhật người dùng thành công.';
   }
 
   async becomeHost(userId: number) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
-    if (!user) throw new BadRequestException('User not found');
+    if (!user) throw new BadRequestException('Không tìm thấy người dùng.');
 
     if (user.role === UserRole.HOST) {
-      throw new BadRequestException('You are already a host');
+      throw new BadRequestException('Bạn đã là chủ nhà.');
     }
 
     await this.prisma.user.update({
@@ -223,6 +219,6 @@ export class UserService {
       data: { role: UserRole.HOST },
     });
 
-    return 'You are now a host';
+    return 'Bạn đã trở thành chủ nhà.';
   }
 }

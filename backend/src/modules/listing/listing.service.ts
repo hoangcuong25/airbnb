@@ -7,7 +7,6 @@ import { UploadApiResponse } from 'cloudinary';
 
 @Injectable()
 export class ListingService {
-
   constructor(
     private readonly prisma: PrismaService,
     private readonly cloudinary: CloudinaryService,
@@ -15,10 +14,9 @@ export class ListingService {
 
   async create(createListingDto: CreateListingDto, images: Express.Multer.File[], hostId: number) {
     if (!images || images.length === 0) {
-      throw new BadRequestException('No images provided');
+      throw new BadRequestException('Vui lòng tải lên ít nhất một ảnh');
     }
 
-    // Bước 1: Tạo listing
     const listing = await this.prisma.listing.create({
       data: {
         title: createListingDto.title,
@@ -32,7 +30,6 @@ export class ListingService {
       }
     });
 
-    // Bước 2: Upload ảnh lên Cloudinary và lưu thông tin chi tiết
     const newImageRecords = [];
 
     for (const file of images) {
@@ -44,19 +41,17 @@ export class ListingService {
           name: uploadResult.original_filename,
         });
       } catch (err) {
-        console.error("Image upload failed:", file.originalname, err);
-        // Bạn có thể throw lỗi ở đây hoặc tiếp tục bỏ qua ảnh lỗi tùy use-case
+        console.error("Tải ảnh thất bại:", file.originalname, err);
       }
     }
 
-    // Bước 3: Lưu ảnh mới vào bảng
     if (newImageRecords.length > 0) {
       await this.prisma.listingImage.createMany({
         data: newImageRecords,
       });
     }
 
-    return { message: "Listing created successfully" };
+    return { message: "Tạo bài đăng thành công" };
   }
 
   findAll() {
@@ -76,9 +71,8 @@ export class ListingService {
       include: { images: true },
     });
 
-    if (!listing) throw new NotFoundException("Listing not found");
+    if (!listing) throw new NotFoundException("Không tìm thấy bài đăng");
 
-    // 1. Xóa ảnh cũ
     if (removedImageIds) {
       const ids = Array.isArray(removedImageIds)
         ? removedImageIds
@@ -88,7 +82,6 @@ export class ListingService {
         ids.includes(img.id),
       );
 
-      // xóa trên Cloudinary
       for (const img of imagesToRemove) {
         const publicId = this.cloudinary.extractPublicId(img.url);
         if (publicId) {
@@ -104,12 +97,10 @@ export class ListingService {
       });
     }
 
-    // 2. Upload ảnh mới lên Cloudinary
     const newImageRecords = [];
 
     for (const file of images) {
       const uploadResult = await this.cloudinary.uploadFile(file);
-
       newImageRecords.push({
         listingId: id,
         url: uploadResult.secure_url,
@@ -123,43 +114,38 @@ export class ListingService {
       });
     }
 
-    // 3. Cập nhật các trường khác
     await this.prisma.listing.update({
       where: { id },
       data: updateData,
     });
 
-    return { message: "Listing updated successfully" };
+    return { message: "Cập nhật bài đăng thành công" };
   }
 
   async remove(id: number) {
-    // 1. Kiểm tra xem listing tồn tại không
     const listing = await this.prisma.listing.findUnique({
       where: { id },
       include: { images: true },
     });
 
     if (!listing) {
-      throw new BadRequestException('Listing not found');
+      throw new BadRequestException('Không tìm thấy bài đăng');
     }
 
-    // 2.  Xoá ảnh khỏi Cloudinary
     for (const image of listing.images) {
       const publicId = this.cloudinary.extractPublicId(image.url);
       await this.cloudinary.deleteFile(publicId);
     }
 
-    // 3. Xoá ảnh trong bảng listingImage
     await this.prisma.listingImage.deleteMany({
       where: { listingId: id },
     });
 
-    // 4. Xoá listing
     await this.prisma.listing.delete({
       where: { id },
     });
 
-    return 'Listing deleted successfully';
+    return 'Xoá bài đăng thành công';
   }
 
   async findMyListing(hostId: number) {
@@ -171,7 +157,7 @@ export class ListingService {
     });
 
     if (!listings || listings.length === 0) {
-      throw new NotFoundException("No listings found for this host");
+      throw new NotFoundException("Không tìm thấy bài đăng nào của chủ nhà này");
     }
 
     return listings;
@@ -180,22 +166,19 @@ export class ListingService {
   async hostUpdate(updateListingDto: UpdateListingDto, images: Express.Multer.File[], hostId: number) {
     const { id, removedImageIds, ...updateData } = updateListingDto;
 
-    // 1. Kiểm tra xem listing có tồn tại không
     const listing = await this.prisma.listing.findUnique({
       where: { id },
       include: { images: true },
     });
 
     if (!listing) {
-      throw new NotFoundException("Listing not found");
+      throw new NotFoundException("Không tìm thấy bài đăng");
     }
 
-    // 2. Kiểm tra xem hostId có khớp với host của listing không
     if (listing.hostId !== hostId) {
-      throw new BadRequestException("You are not authorized to update this listing");
+      throw new BadRequestException("Bạn không có quyền chỉnh sửa bài đăng này");
     }
 
-    // 3. Xử lý xóa ảnh cũ
     if (removedImageIds) {
       const ids = Array.isArray(removedImageIds)
         ? removedImageIds
@@ -205,7 +188,6 @@ export class ListingService {
         ids.includes(img.id),
       );
 
-      // Xóa ảnh trên Cloudinary
       for (const img of imagesToRemove) {
         const publicId = this.cloudinary.extractPublicId(img.url);
         if (publicId) {
@@ -213,7 +195,6 @@ export class ListingService {
         }
       }
 
-      // Xóa ảnh trong bảng listingImage
       await this.prisma.listingImage.deleteMany({
         where: {
           id: { in: ids },
@@ -222,12 +203,10 @@ export class ListingService {
       });
     }
 
-    // 4. Upload ảnh mới lên Cloudinary
     const newImageRecords = [];
 
     for (const file of images) {
       const uploadResult = await this.cloudinary.uploadFile(file);
-
       newImageRecords.push({
         listingId: id,
         url: uploadResult.secure_url,
@@ -241,48 +220,42 @@ export class ListingService {
       });
     }
 
-    // 5. Cập nhật các trường khác của listing
     await this.prisma.listing.update({
       where: { id },
       data: updateData,
     });
 
-    return { message: "Listing updated successfully" };
+    return { message: "Cập nhật bài đăng thành công" };
   }
 
   async hostRemove(id: number, hostId: number) {
-    // 1. Kiểm tra xem listing có tồn tại không
     const listing = await this.prisma.listing.findUnique({
       where: { id },
       include: { images: true },
     });
 
     if (!listing) {
-      throw new NotFoundException("Listing not found");
+      throw new NotFoundException("Không tìm thấy bài đăng");
     }
 
-    // 2. Kiểm tra xem hostId có khớp với host của listing không
     if (listing.hostId !== hostId) {
-      throw new BadRequestException("You are not authorized to delete this listing");
+      throw new BadRequestException("Bạn không có quyền xoá bài đăng này");
     }
 
-    // 3. Xoá ảnh khỏi Cloudinary
     for (const image of listing.images) {
       const publicId = this.cloudinary.extractPublicId(image.url);
       await this.cloudinary.deleteFile(publicId);
     }
 
-    // 4. Xoá ảnh trong bảng listingImage
     await this.prisma.listingImage.deleteMany({
       where: { listingId: id },
     });
 
-    // 5. Xoá listing
     await this.prisma.listing.delete({
       where: { id },
     });
 
-    return 'Listing deleted successfully';
+    return 'Xoá bài đăng thành công';
   }
 
   async findOne(id: number) {
@@ -300,7 +273,7 @@ export class ListingService {
     });
 
     if (!listing) {
-      throw new NotFoundException("Listing not found");
+      throw new NotFoundException("Không tìm thấy bài đăng");
     }
 
     const bookings = await this.prisma.booking.findMany({
@@ -337,11 +310,11 @@ export class ListingService {
     return await this.prisma.listing.findMany({
       where: {
         OR: [
-          { title: { contains: keyword, } },
-          { description: { contains: keyword, } },
-          { city: { contains: keyword, } },
-          { address: { contains: keyword, } },
-          { country: { contains: keyword, } },
+          { title: { contains: keyword } },
+          { description: { contains: keyword } },
+          { city: { contains: keyword } },
+          { address: { contains: keyword } },
+          { country: { contains: keyword } },
         ],
       },
       include: {
@@ -355,5 +328,4 @@ export class ListingService {
       },
     });
   }
-
 }

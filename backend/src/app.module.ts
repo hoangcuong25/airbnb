@@ -15,6 +15,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { WishlistModule } from './modules/wishlist/wishlist.module';
 import { ReviewModule } from './modules/review/review.module';
 import { ReportModule } from './modules/report/report.module';
+import { MessageModule } from './modules/message/message.module';
 
 @Module({
   imports: [
@@ -68,6 +69,7 @@ import { ReportModule } from './modules/report/report.module';
     WishlistModule,
     ReviewModule,
     ReportModule,
+    MessageModule,
   ],
   controllers: [AppController],
   providers: [AppService],

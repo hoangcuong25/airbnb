@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service'; // service Prisma
+import { PrismaService } from 'src/prisma/prisma.service';
 import { comparePasswordHelper, hashPasswordHelper } from 'src/helpers/util';
 import { JwtService } from '@nestjs/jwt';
 import { CreateAuthDto } from './dto/create-auth.dto';
@@ -40,7 +40,7 @@ export class AuthService {
   };
 
   async storeRefreshToken(userId: number, refresh_token: string) {
-    await this.redis.set(`refresh_token:${userId}`, refresh_token, 'EX', 7 * 24 * 60 * 60); // 7 days
+    await this.redis.set(`refresh_token:${userId}`, refresh_token, 'EX', 7 * 24 * 60 * 60); // 7 ngày
   }
 
   async login(user: any, response: Response) {
@@ -74,10 +74,10 @@ export class AuthService {
   async handleRegister(registerDto: CreateAuthDto) {
     const { name, email, password1, password2 } = registerDto;
 
-    if (password1 !== password2) throw new BadRequestException('Password not match');
+    if (password1 !== password2) throw new BadRequestException('Mật khẩu không trùng khớp');
 
     const existUser = await this.prisma.user.findUnique({ where: { email } });
-    if (existUser) throw new BadRequestException('Email already exists!');
+    if (existUser) throw new BadRequestException('Email đã tồn tại!');
 
     const hashPassword = await hashPasswordHelper(password1);
 
@@ -105,31 +105,30 @@ export class AuthService {
         await this.redis.del(`refresh_token:${decoded.id}`);
       }
 
-      // Xoá refresh_token trong cookie
       res.clearCookie('refresh_token', {
         httpOnly: true,
-        secure: true, // dùng nếu bạn chạy trên HTTPS
+        secure: true,
         sameSite: 'strict',
-        path: '/', // hoặc path cụ thể nếu bạn set nó khác
+        path: '/',
       });
 
       return 'ok';
     } catch {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Không có quyền xác thực');
     }
   }
 
   async refreshToken(req) {
     const refreshToken = req.cookies.refresh_token;
 
-    if (!refreshToken) throw new UnauthorizedException('No refresh token provided!!!');
+    if (!refreshToken) throw new UnauthorizedException('Không tìm thấy refresh token');
 
     const decoded = this.jwtService.verify(refreshToken, {
       secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
     });
     const storedToken = await this.redis.get(`refresh_token:${decoded.id}`);
 
-    if (storedToken !== refreshToken) throw new UnauthorizedException('Invalid refresh token');
+    if (storedToken !== refreshToken) throw new UnauthorizedException('Refresh token không hợp lệ');
 
     const user = await this.prisma.user.findUnique({ where: { id: decoded.id } });
 
@@ -149,8 +148,8 @@ export class AuthService {
 
     await this.mailerService.sendMail({
       to: user.email,
-      subject: 'Email Active Account',
-      text: 'welcome',
+      subject: 'Kích hoạt tài khoản',
+      text: 'Chào mừng bạn',
       template: 'register',
       context: {
         name: user.name,
@@ -173,11 +172,11 @@ export class AuthService {
     const user = await this.prisma.user.findUnique({ where: { id: req.id } });
 
     if (user.verificationOtp !== codeId) {
-      throw new BadRequestException('Invalid activation code');
+      throw new BadRequestException('Mã kích hoạt không chính xác');
     }
 
     if (user.verificationOtpExpires && new Date() > user.verificationOtpExpires) {
-      throw new BadRequestException('Activation code has expired');
+      throw new BadRequestException('Mã kích hoạt đã hết hạn');
     }
 
     await this.prisma.user.update({
@@ -193,10 +192,10 @@ export class AuthService {
   }
 
   async sendResetOtp(email: string) {
-    if (!email) throw new BadRequestException('Email is required');
+    if (!email) throw new BadRequestException('Vui lòng nhập email');
 
     const user = await this.prisma.user.findUnique({ where: { email } });
-    if (!user) throw new BadRequestException('User not found');
+    if (!user) throw new BadRequestException('Người dùng không tồn tại');
 
     const otp = Math.random().toString(36).substring(2, 8);
 
@@ -210,8 +209,8 @@ export class AuthService {
 
     await this.mailerService.sendMail({
       to: user.email,
-      subject: 'Reset Password',
-      text: 'Reset Your Password',
+      subject: 'Khôi phục mật khẩu',
+      text: 'Đặt lại mật khẩu của bạn',
       template: 'resetPassword',
       context: {
         name: user.name,
@@ -224,18 +223,18 @@ export class AuthService {
 
   async resetPassword(email: string, otp: string, newPassword: string) {
     if (!email || !otp || !newPassword) {
-      throw new BadRequestException('Email, OTP, and password are required');
+      throw new BadRequestException('Email, mã OTP và mật khẩu mới là bắt buộc');
     }
 
     const user = await this.prisma.user.findUnique({ where: { email } });
-    if (!user) throw new BadRequestException('User not found');
+    if (!user) throw new BadRequestException('Người dùng không tồn tại');
 
     if (!user.resetOtp || user.resetOtp !== otp) {
-      throw new BadRequestException('Invalid OTP');
+      throw new BadRequestException('Mã OTP không chính xác');
     }
 
     if (user.resetOtpExpires && new Date() > user.resetOtpExpires) {
-      throw new BadRequestException('OTP Expired');
+      throw new BadRequestException('Mã OTP đã hết hạn');
     }
 
     const hashPassword = await hashPasswordHelper(newPassword);
@@ -254,7 +253,7 @@ export class AuthService {
 
   async loginGoogle(firstName: string, lastName: string, email: string, image: string) {
     if (!firstName || !lastName || !email || !image) {
-      throw new BadRequestException('Please Fill In All Information');
+      throw new BadRequestException('Vui lòng nhập đầy đủ thông tin');
     }
 
     let user = await this.prisma.user.findUnique({ where: { email } });
@@ -284,9 +283,9 @@ export class AuthService {
         data: {
           name: firstName + ' ' + lastName,
           email,
-          phone: 'Unknown',
+          phone: 'Không rõ',
           password: hashedPassword,
-          dob: 'Unknown',
+          dob: 'Không rõ',
           avatar: image,
           isVerified: true,
         },
