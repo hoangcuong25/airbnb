@@ -1,11 +1,11 @@
 import { z } from "zod"
 
 export const ListingSchema = z.object({
-    title: z.string().min(1, "Title is required"),
-    description: z.string().min(1, "Description is required"),
-    pricePerNight: z.coerce.number().min(1, "Price must be at least 1"),
-    address: z.string().min(1, "Address is required"),
-    city: z.string().min(1, "City is required"),
-    country: z.string().min(1, "Country is required"),
-    maxGuests: z.coerce.number().min(1, "maxGuests must be at least 1"),
+    title: z.string().min(1, "Tiêu đề là bắt buộc"),
+    description: z.string().min(1, "Mô tả là bắt buộc"),
+    pricePerNight: z.coerce.number().min(1, "Giá mỗi đêm phải ít nhất là 1"),
+    address: z.string().min(1, "Địa chỉ là bắt buộc"),
+    city: z.string().min(1, "Thành phố là bắt buộc"),
+    country: z.string().min(1, "Quốc gia là bắt buộc"),
+    maxGuests: z.coerce.number().min(1, "Số khách tối đa phải ít nhất là 1"),
 })

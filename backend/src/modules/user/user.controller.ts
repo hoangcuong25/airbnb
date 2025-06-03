@@ -34,23 +34,16 @@ export class UserController {
   }
 
   @Patch('update-profile')
-  @ResponseMessage('update profile')
+  @ResponseMessage('Cập nhật hồ sơ')
   @UseInterceptors(FileInterceptor('image'))
   updateProfile(
     @Req() req,
-    @Body() updateUserDto: UpdateUserDto,
+    @Body(new ValidationPipe({ transform: true })) updateUserDto: UpdateUserDto,
     @UploadedFile() image: Express.Multer.File
   ) {
     return this.userService.updateProfile(req.user, updateUserDto, image)
   }
 
-  @Patch('update-phone')
-  updatePhone(
-    @Req() req,
-    @Body() reqBody: { phone: string }
-  ) {
-    return this.userService.updatePhone(req.user, reqBody.phone)
-  }
 
   @Patch('update-password')
   updatePassword(

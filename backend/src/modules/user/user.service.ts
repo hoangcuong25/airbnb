@@ -127,13 +127,26 @@ export class UserService {
     return await this.findById(req.id);
   }
 
-  async updateProfile(req: { id: number }, updateUserDto: any, image?: Express.Multer.File) {
+  async updateProfile(
+    req: { id: number },
+    updateUserDto: UpdateUserDto,
+    image?: Express.Multer.File
+  ) {
     const user = await this.findById(req.id);
     if (!user) throw new BadRequestException('Không tìm thấy người dùng.');
 
     const updateData = { ...updateUserDto };
 
     if (image) {
+      // Nếu đã có avatar cũ => xóa khỏi Cloudinary
+      if (user.avatar) {
+        const publicId = this.cloudinaryService.extractPublicId(user.avatar);
+        if (publicId) {
+          await this.cloudinaryService.deleteFile(publicId);
+        }
+      }
+
+      // Upload ảnh mới và cập nhật avatar
       const imageUpload = await this.cloudinaryService.uploadFile(image);
       updateData.avatar = imageUpload.url;
     }
@@ -143,7 +156,7 @@ export class UserService {
       data: updateData,
     });
 
-    return 'Cập nhật thành công.';
+    return 'Cập nhật hồ sơ thành công.';
   }
 
   async updatePhone(req: { id: number }, phone: string) {
