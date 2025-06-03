@@ -16,6 +16,7 @@ import { WishlistModule } from './modules/wishlist/wishlist.module';
 import { ReviewModule } from './modules/review/review.module';
 import { ReportModule } from './modules/report/report.module';
 import { MessageModule } from './modules/message/message.module';
+import { ChatGateway } from './modules/message/chat.gateway';
 
 @Module({
   imports: [
@@ -72,6 +73,6 @@ import { MessageModule } from './modules/message/message.module';
     MessageModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, ChatGateway],
 })
 export class AppModule { }

@@ -20,29 +20,33 @@ enum Gender {
 }
 
 model User {
-  id                     Int        @id @default(autoincrement())
-  name                   String     @db.VarChar(50)
-  email                  String     @unique
-  password               String     @db.VarChar(100)
-  avatar                 String     @default("https://res.cloudinary.com/dtaawt3ej/image/upload/v1747292486/q9lmgugyqgrm7q5voatw.jpg")
+  id                     Int       @id @default(autoincrement())
+  name                   String    @db.VarChar(50)
+  email                  String    @unique
+  password               String    @db.VarChar(100)
+  avatar                 String    @default("https://res.cloudinary.com/dtaawt3ej/image/upload/v1747292486/q9lmgugyqgrm7q5voatw.jpg")
   age                    Int?
   gender                 Gender?
-  dob                    DateTime?  @db.Date
+  dob                    DateTime? @db.Date
   address                String?
-  role                   UserRole   @default(USER)
+  role                   UserRole  @default(USER)
   phone                  String?
-  isVerified             Boolean    @default(false)
+  isVerified             Boolean   @default(false)
   resetOtp               String?
   resetOtpExpires        DateTime?
   verificationOtp        String?
   verificationOtpExpires DateTime?
-  createdAt              DateTime   @default(now())
-  updatedAt              DateTime   @updatedAt
-  Listing                Listing[]
-  Booking                Booking[]
-  Wishlist               Wishlist[]
-  Review                 Review[]
-  Report                 Report[]
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  Listing  Listing[]
+  Booking  Booking[]
+  Wishlist Wishlist[]
+  Review   Review[]
+  Report   Report[]
+
+  sentMessages     Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
 }
 
 model Wishlist {
@@ -146,4 +150,16 @@ model Report {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Message {
+  id         Int    @id @default(autoincrement())
+  senderId   Int
+  receiverId Int
+  content    String
+
+  sender   User @relation("SentMessages", fields: [senderId], references: [id])
+  receiver User @relation("ReceivedMessages", fields: [receiverId], references: [id])
+
+  createdAt DateTime @default(now())
 }
