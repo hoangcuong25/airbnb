@@ -6,7 +6,7 @@ import ReportDetailModal from './ReportDetailModal';
 import DeleteReportDialog from './DeleteReportDialog';
 
 const ReportManagement = () => {
-    const { reports, setReports } = useContext(AdminContext);
+    const { reports, fetchReport } = useContext(AdminContext);
 
     if (!Array.isArray(reports)) return <div>Loading or invalid data</div>;
 
@@ -61,8 +61,7 @@ const ReportManagement = () => {
 
                                     <DeleteReportDialog
                                         reportId={Number(report.id)}
-                                        reports={reports}
-                                        setReports={setReports}
+                                        fetchReport={fetchReport}
                                     />
                                 </div>
                             </div>

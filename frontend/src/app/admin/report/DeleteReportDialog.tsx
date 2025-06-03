@@ -19,12 +19,10 @@ import { toast } from 'sonner';
 
 const DeleteReportDialog = ({
     reportId,
-    reports,
-    setReports
+    fetchReport
 }: {
     reportId: number;
-    reports: ReportType[];
-    setReports?: any;
+    fetchReport: any
 }) => {
     const [loading, setLoading] = useState(false);
 
@@ -33,11 +31,7 @@ const DeleteReportDialog = ({
         try {
             await deleteReport(reportId);
             toast.success(`Đã xóa báo cáo #${reportId}`);
-
-            // Lọc ra các report khác report vừa bị xóa
-            const updatedReports = reports.filter((r: any) => r.id !== reportId);
-            setReports(updatedReports);
-
+            fetchReport()
         } catch (error: any) {
             toast.error('Xóa báo cáo thất bại');
         } finally {

@@ -1,9 +1,14 @@
 "use client";
 
-import React, { useState } from 'react';
+import { AppContext } from '@/context/AppContext';
+import React, { useContext, useState } from 'react';
+import { EditUserModal } from './EditUserModal';
 
 
 const Profile: React.FC = () => {
+
+  const { user, fetchUser } = useContext(AppContext)
+
   const [showDetails, setShowDetails] = useState(false);
   const [activeModal, setActiveModal] = useState<string | null>(null);
 
@@ -231,7 +236,20 @@ const Profile: React.FC = () => {
 
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold">Giới thiệu bản thân</h1>
-            <button className="px-4 py-2 bg-gray-300 border-none rounded-md cursor-pointer">Chỉnh sửa</button>
+            {user && (
+              <EditUserModal
+                user={{
+                  ...user,
+                  gender:
+                    user.gender === "MALE" ||
+                      user.gender === "FEMALE" ||
+                      user.gender === "OTHER"
+                      ? user.gender
+                      : undefined,
+                }}
+                fetchUser={fetchUser}
+              />
+            )}
           </div>
 
 
@@ -239,8 +257,16 @@ const Profile: React.FC = () => {
 
             <div className="flex-1 border border-gray-300 rounded-lg p-5 flex flex-col items-center text-center">
               <div className="w-20 h-20 bg-black text-white rounded-full flex justify-center items-center text-4xl mb-2.5">H</div>
-              <div className="font-bold mb-1">Huy</div>
-              <div className="text-sm text-gray-600">Khách</div>
+              <div className="font-bold mb-1">{user?.name}</div>
+              <div className="text-sm text-gray-600">
+                {user?.role === "USER" ? (
+                  <p>Khách</p>
+                ) : user?.role === "HOST" ? (
+                  <p>Host</p>
+                ) : (
+                  <p>Admin</p>
+                )}
+              </div>
             </div>
 
 
