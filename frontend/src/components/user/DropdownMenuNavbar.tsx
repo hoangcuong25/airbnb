@@ -9,7 +9,7 @@ import BecomeHost from "./BecomeHost";
 import Link from "next/link";
 
 const MenuItem = ({ icon: Icon, label, href }: { icon: any, label: string, href: string }) => (
-    <Link href={`/user/${href}`}>
+    <Link href={`/${href}`}>
         <div className='flex items-center justify-start gap-2 pb-5 w-full hover:bg-gray-100 cursor-pointer px-2 py-1 rounded'>
             <Icon className='w-5 h-5' />
             <p>{label}</p>
@@ -31,13 +31,13 @@ const HostLinks = () => (
 const AuthenticatedMenu = ({ logout }: { logout: () => void }) => (
     <div className='flex flex-col items-start justify-start text-sm'>
         <MenuItem icon={Heart} label='Danh sách yêu thích' href="wishlist" />
-        <MenuItem icon={CarTaxiFront} label='Chuyến đi' href="profile" />
-        <MenuItem icon={MessageCircle} label='Tin nhắn' href="profile" />
-        <MenuItem icon={CircleUser} label='Hồ sơ' href="profile" />
-        <MenuItem icon={Bell} label='Thông báo' href="profile" />
-        <MenuItem icon={Settings} label='Cài đặt tài khoản' href="profile" />
-        <MenuItem icon={Globe} label='Ngôn ngữ' href="profile" />
-        <MenuItem icon={CircleHelp} label='Trung tâm trợ giúp' href="profile" />
+        <MenuItem icon={CarTaxiFront} label='Chuyến đi' href="wishlist" />
+        <MenuItem icon={MessageCircle} label='Tin nhắn' href="message" />
+        <MenuItem icon={CircleUser} label='Hồ sơ' href="user/profile/about" />
+        <MenuItem icon={Bell} label='Thông báo' href="wishlist" />
+        <MenuItem icon={Settings} label='Cài đặt tài khoản' href="wishlist" />
+        <MenuItem icon={Globe} label='Ngôn ngữ' href="wishlist" />
+        <MenuItem icon={CircleHelp} label='Trung tâm trợ giúp' href="wishlist" />
         <BecomeHost />
         <HostLinks />
         <p

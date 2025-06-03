@@ -8,6 +8,8 @@ import { toast } from 'sonner'
 import { createBookingApi } from '@/api/booking.api'
 import ModalReview from './ModalReview'
 import ModalReport from './ModalReport'
+import { Button } from '@/components/ui/button'
+import Link from 'next/link'
 
 export default function ListingDetail({ listing }: { listing: ListingType }) {
 
@@ -174,14 +176,31 @@ export default function ListingDetail({ listing }: { listing: ListingType }) {
                     </select>
                 </div>
 
-                <button
-                    onClick={handleBooking}
-                    className="w-full bg-pink-800 hover:bg-pink-900 text-white rounded-lg py-3 font-semibold"
-                >
-                    Đặt phòng
-                </button>
-                <p className="text-xs text-center text-gray-500">Bạn vẫn chưa bị trừ tiền</p>
-                <ModalReport listingId={listing.id} />
+                <div className="space-y-4">
+                    {/* Đặt phòng */}
+                    <button
+                        onClick={handleBooking}
+                        className="w-full bg-pink-600 hover:bg-pink-700 text-white rounded-xl py-3 text-base font-semibold shadow-md transition duration-300"
+                    >
+                        Đặt phòng ngay
+                    </button>
+
+                    {/* Ghi chú */}
+                    <p className="text-xs text-center text-gray-500">
+                        Bạn vẫn chưa bị trừ tiền
+                    </p>
+
+                    {/* Hành động khác */}
+                    <div className="flex items-center justify-between gap-4">
+                        <ModalReport listingId={listing.id} />
+
+                        <Link href={'/message'}>
+                            <Button className="flex-1 px-4 py-2 shadow-sm">
+                                Nhắn tin với Host
+                            </Button>
+                        </Link>
+                    </div>
+                </div>
             </div>
         </div>
     )

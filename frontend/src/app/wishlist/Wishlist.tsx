@@ -7,7 +7,6 @@ import ListingCard from '@/components/ListingCard'
 const Wishlist = () => {
     const { listings, userWishlist } = useContext(AppContext)
 
-    // Lọc listings dựa trên userWishlist (giả sử userWishlist là mảng object có listingId)
     const wishlistListings = listings.filter(listing =>
         userWishlist.some((wish: any) => wish.listingId === listing.id)
     )
