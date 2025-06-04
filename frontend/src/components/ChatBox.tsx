@@ -51,7 +51,14 @@ const ChatBox = () => {
                 {textingWith ? (
                     <div className="font-semibold text-lg flex gap-3 items-center">
                         <Image src={textingWith.avatar} alt='avatar' width={50} height={50} className='rounded-full object-cover' />
-                        <p>{textingWith.name} ({textingWith.role === 'host' ? 'Chủ nhà' : 'Người dùng'})</p>
+                        <p>
+                            {textingWith.name} (
+                            {
+                                textingWith.role === 'HOST' ? 'Chủ nhà' :
+                                    textingWith.role === 'ADMIN' ? 'Quản trị viên' :
+                                        'Người dùng'
+                            })
+                        </p>
                     </div>
                 ) : (
                     <div className="text-gray-500">Đang tải thông tin người dùng...</div>

@@ -60,4 +60,38 @@ export class MessageService {
       },
     });
   }
+
+  async findContacts(userId: number) {
+    const sent = await this.prisma.message.findMany({
+      where: { senderId: userId },
+      select: { receiverId: true },
+      distinct: ['receiverId'],
+    });
+
+    const received = await this.prisma.message.findMany({
+      where: { receiverId: userId },
+      select: { senderId: true },
+      distinct: ['senderId'],
+    });
+
+    // Trích ID từ kết quả
+    const sentIds = sent.map(m => m.receiverId);
+    const receivedIds = received.map(m => m.senderId);
+
+    // Gộp và loại bỏ trùng lặp
+    const contactIds = Array.from(new Set([...sentIds, ...receivedIds]));
+
+    // Nếu bạn muốn trả về thông tin người dùng
+    return this.prisma.user.findMany({
+      where: {
+        id: { in: contactIds },
+      },
+      select: {
+        id: true,
+        name: true,
+        avatar: true, // nếu có
+        role: true,
+      },
+    });
+  }
 }

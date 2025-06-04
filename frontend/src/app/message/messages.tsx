@@ -1,6 +1,6 @@
 import NavbarUser from "@/components/user/NavbarUser";
-import ChatBox from "./ChatBox";
-import SidebarInbox from "./SidebarInbox";
+import ChatBox from "../../components/ChatBox";
+import SidebarInbox from "../../components/SidebarInbox";
 
 export default function MessagesPage() {
   const selfId = 1;   // user đăng nhập
@@ -20,7 +20,7 @@ export default function MessagesPage() {
 
         {/* Chat area: chiếm phần còn lại, full height, có padding */}
         <main className="flex-1 bg-white p-4 overflow-y-auto">
-          <ChatBox selfId={selfId} partnerId={partnerId} />
+          <ChatBox />
         </main>
       </div>
     </div>
