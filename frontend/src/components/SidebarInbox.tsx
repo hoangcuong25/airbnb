@@ -10,19 +10,11 @@ import Image from 'next/image'
 import { findContacts } from '@/api/message.api'
 import { AppContext } from '@/context/AppContext'
 
-interface Contact {
-  id: number
-  name: string
-  avatar?: string
-  role?: string
-}
-
 const SidebarInbox = () => {
 
-  const { user } = useContext(AppContext)
+  const { user, setTextingWith } = useContext(AppContext)
 
-  const [showAllMessagesList, setShowAllMessagesList] = useState(true)
-  const [contacts, setContacts] = useState<Contact[]>([])
+  const [contacts, setContacts] = useState<UserType[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -57,7 +49,7 @@ const SidebarInbox = () => {
         <p className="font-medium">Danh sách nhắn tin</p>
       </div>
 
-      {showAllMessagesList ? (
+      {contacts ? (
         <div className="flex flex-col gap-1 p-4 overflow-auto">
           {loading ? (
             <p className="text-center text-gray-400">Đang tải...</p>
@@ -66,6 +58,7 @@ const SidebarInbox = () => {
               <div
                 key={contact.id}
                 className="flex items-center p-3 rounded-lg hover:bg-gray-100 cursor-pointer"
+                onClick={() => setTextingWith(contact)}
               >
                 {contact.avatar ? (
                   <Image
@@ -73,7 +66,7 @@ const SidebarInbox = () => {
                     alt={contact.name}
                     width={40}
                     height={40}
-                    className="rounded-full mr-4"
+                    className="rounded-full mr-4 size-10"
                   />
                 ) : (
                   <div className="w-10 h-10 bg-gray-300 rounded-full mr-4" />

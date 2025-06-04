@@ -1,6 +1,6 @@
 import NavbarUser from "@/components/user/NavbarUser";
-import ChatBox from "../../components/ChatBox";
-import SidebarInbox from "../../components/SidebarInbox";
+import ChatBox from "@/components/ChatBox";
+import SidebarInbox from "@/components/SidebarInbox";
 
 export default function MessagesPage() {
   const selfId = 1;   // user đăng nhập

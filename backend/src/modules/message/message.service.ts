@@ -18,7 +18,6 @@ export class MessageService {
     });
   }
 
-  // Gợi ý: không nên dùng nếu hệ thống có nhiều message
   async findAll() {
     return await this.prisma.message.findMany({
       orderBy: { createdAt: 'desc' },
@@ -44,7 +43,7 @@ export class MessageService {
     });
   }
 
-  // ✅ Tìm tất cả tin nhắn giữa hai user
+  //  Tìm tất cả tin nhắn giữa hai user
   async findMessagesBetweenUsers(user1: number, user2: number) {
     return await this.prisma.message.findMany({
       where: {
@@ -55,8 +54,8 @@ export class MessageService {
       },
       orderBy: { createdAt: 'asc' },
       include: {
-        sender: { select: { id: true, name: true, role: true } },
-        receiver: { select: { id: true, name: true, role: true } },
+        sender: { select: { id: true, name: true, role: true, avatar: true } },
+        receiver: { select: { id: true, name: true, role: true, avatar: true } },
       },
     });
   }
@@ -89,7 +88,7 @@ export class MessageService {
       select: {
         id: true,
         name: true,
-        avatar: true, // nếu có
+        avatar: true,
         role: true,
       },
     });

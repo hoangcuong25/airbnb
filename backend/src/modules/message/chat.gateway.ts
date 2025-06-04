@@ -38,8 +38,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                 },
                 orderBy: { createdAt: 'asc' },
                 include: {
-                    sender: { select: { id: true, name: true, role: true } },
-                    receiver: { select: { id: true, name: true, role: true } },
+                    sender: { select: { id: true, name: true, role: true, avatar: true } },
+                    receiver: { select: { id: true, name: true, role: true, avatar: true } },
                 },
             });
 
