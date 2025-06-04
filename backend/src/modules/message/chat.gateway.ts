@@ -72,22 +72,22 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
             });
         });
 
-        client.on('load_conversation', async ({ userId1, userId2 }) => {
-            const messages = await this.prisma.message.findMany({
-                where: {
-                    OR: [
-                        { senderId: userId1, receiverId: userId2 },
-                        { senderId: userId2, receiverId: userId1 },
-                    ],
-                },
-                orderBy: { createdAt: 'asc' },
-                include: {
-                    sender: true,
-                    receiver: true,
-                },
-            })
-            client.emit('loadMessages', messages)
-        })
+        // client.on('load_conversation', async ({ userId1, userId2 }) => {
+        //     const messages = await this.prisma.message.findMany({
+        //         where: {
+        //             OR: [
+        //                 { senderId: userId1, receiverId: userId2 },
+        //                 { senderId: userId2, receiverId: userId1 },
+        //             ],
+        //         },
+        //         orderBy: { createdAt: 'asc' },
+        //         include: {
+        //             sender: true,
+        //             receiver: true,
+        //         },
+        //     })
+        //     client.emit('loadMessages', messages)
+        // })
     }
 
     handleDisconnect(client: Socket) {

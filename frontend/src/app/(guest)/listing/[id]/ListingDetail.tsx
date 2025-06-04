@@ -10,8 +10,11 @@ import ModalReview from './ModalReview'
 import ModalReport from './ModalReport'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import { AppContext } from '@/context/AppContext'
 
 export default function ListingDetail({ listing }: { listing: ListingType }) {
+
+    const { setTextingWith } = useContext(AppContext)
 
     const [guests, setGuests] = useState(1)
     const [showAllImages, setShowAllImages] = useState(false)
@@ -195,7 +198,10 @@ export default function ListingDetail({ listing }: { listing: ListingType }) {
                         <ModalReport listingId={listing.id} />
 
                         <Link href={'/message'}>
-                            <Button className="flex-1 px-4 py-2 shadow-sm">
+                            <Button
+                                className="flex-1 px-4 py-2 shadow-sm"
+                                onClick={() => setTextingWith(listing.host)}
+                            >
                                 Nhắn tin với Host
                             </Button>
                         </Link>
