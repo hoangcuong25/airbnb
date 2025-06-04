@@ -21,6 +21,8 @@ interface AppContextType {
     userWishlist: any
     setUserWishlist: React.Dispatch<React.SetStateAction<any>>;
     fetchUserWishlist: () => Promise<void>
+    textingWith: UserType | null;
+    setTextingWith: React.Dispatch<React.SetStateAction<UserType | null>>;
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -33,7 +35,9 @@ export const AppContext = createContext<AppContextType>({
     logout: async () => { },
     userWishlist: null,
     setUserWishlist: () => { },
-    fetchUserWishlist: async () => { }
+    fetchUserWishlist: async () => { },
+    textingWith: null,
+    setTextingWith: () => { }
 });
 
 interface AppContextProviderProps {
@@ -47,6 +51,8 @@ const AppContextProvider: React.FC<AppContextProviderProps> = ({ children }) => 
     const [user, setUser] = useState<UserType | null>(null);
     const [listings, setListings] = useState<ListingType[]>([]);
     const [userWishlist, setUserWishlist] = useState()
+
+    const [textingWith, setTextingWith] = useState<UserType | null>(null)
 
     const fetchUser = async () => {
         try {
@@ -101,7 +107,8 @@ const AppContextProvider: React.FC<AppContextProviderProps> = ({ children }) => 
         fetchAllListings,
         logout,
         userWishlist, setUserWishlist,
-        fetchUserWishlist
+        fetchUserWishlist,
+        textingWith, setTextingWith
     };
 
     useEffect(() => {

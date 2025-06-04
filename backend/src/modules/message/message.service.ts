@@ -1,26 +1,63 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateMessageDto } from './dto/create-message.dto';
-import { UpdateMessageDto } from './dto/update-message.dto';
 
 @Injectable()
 export class MessageService {
-  create(createMessageDto: CreateMessageDto) {
-    return 'This action adds a new message';
+  constructor(private readonly prisma: PrismaService) { }
+
+  async create(createMessageDto: CreateMessageDto) {
+    const { senderId, receiverId, content } = createMessageDto;
+
+    return await this.prisma.message.create({
+      data: {
+        senderId,
+        receiverId,
+        content,
+      },
+    });
   }
 
-  findAll() {
-    return `This action returns all message`;
+  // Gợi ý: không nên dùng nếu hệ thống có nhiều message
+  async findAll() {
+    return await this.prisma.message.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} message`;
+  async findOne(id: number) {
+    return await this.prisma.message.findUnique({
+      where: { id },
+    });
   }
 
-  update(id: number, updateMessageDto: UpdateMessageDto) {
-    return `This action updates a #${id} message`;
+  async update(id: number, updateMessageDto: Partial<CreateMessageDto>) {
+    return await this.prisma.message.update({
+      where: { id },
+      data: updateMessageDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} message`;
+  async remove(id: number) {
+    return await this.prisma.message.delete({
+      where: { id },
+    });
+  }
+
+  // ✅ Tìm tất cả tin nhắn giữa hai user
+  async findMessagesBetweenUsers(user1: number, user2: number) {
+    return await this.prisma.message.findMany({
+      where: {
+        OR: [
+          { senderId: user1, receiverId: user2 },
+          { senderId: user2, receiverId: user1 },
+        ],
+      },
+      orderBy: { createdAt: 'asc' },
+      include: {
+        sender: { select: { id: true, name: true, role: true } },
+        receiver: { select: { id: true, name: true, role: true } },
+      },
+    });
   }
 }
