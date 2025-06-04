@@ -1,11 +1,10 @@
 'use client';
 
 import { AppContext } from '@/context/AppContext';
-import { LayoutDashboard, LogOut } from 'lucide-react';
+import { LayoutDashboard, LogOut, MessageCircle } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useContext } from 'react';
 import {
-    FaUsers,
     FaCalendarCheck,
     FaList,
 } from 'react-icons/fa';
@@ -31,6 +30,11 @@ const SiderHost = () => {
             title: 'Quản lý danh sách',
             icon: <FaList className="w-6 h-6" />,
             path: '/host/listing'
+        },
+        {
+            title: 'Quản lý tin nhắn',
+            icon: <MessageCircle className="w-6 h-6" />,
+            path: '/host/message'
         }
     ];
 
