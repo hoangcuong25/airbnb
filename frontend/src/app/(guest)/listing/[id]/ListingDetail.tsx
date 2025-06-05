@@ -11,6 +11,7 @@ import ModalReport from './ModalReport'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { AppContext } from '@/context/AppContext'
+import Location from '@/components/Location'
 
 export default function ListingDetail({ listing }: { listing: ListingType }) {
 
@@ -208,6 +209,8 @@ export default function ListingDetail({ listing }: { listing: ListingType }) {
                     </div>
                 </div>
             </div>
+
+            <Location />
         </div>
     )
 }
