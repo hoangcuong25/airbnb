@@ -65,29 +65,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
             const room = this.getRoomName(senderId, receiverId);
             this.server.to(room).emit('receiveMessage', newMessage);
-
-            client.broadcast.emit('newNotification', {
-                userName: newMessage.sender.name,
-                message: newMessage.content,
-            });
         });
-
-        // client.on('load_conversation', async ({ userId1, userId2 }) => {
-        //     const messages = await this.prisma.message.findMany({
-        //         where: {
-        //             OR: [
-        //                 { senderId: userId1, receiverId: userId2 },
-        //                 { senderId: userId2, receiverId: userId1 },
-        //             ],
-        //         },
-        //         orderBy: { createdAt: 'asc' },
-        //         include: {
-        //             sender: true,
-        //             receiver: true,
-        //         },
-        //     })
-        //     client.emit('loadMessages', messages)
-        // })
     }
 
     handleDisconnect(client: Socket) {
