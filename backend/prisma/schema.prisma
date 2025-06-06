@@ -114,6 +114,7 @@ model Booking {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  Payment   Payment?
 }
 
 model Review {
@@ -162,4 +163,17 @@ model Message {
   receiver User @relation("ReceivedMessages", fields: [receiverId], references: [id])
 
   createdAt DateTime @default(now())
+}
+
+model Payment {
+  id        Int       @id @default(autoincrement())
+  bookingId Int       @unique
+  amount    Float
+  method    String
+  status    String    @default("PENDING")
+  paidAt    DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  booking Booking @relation(fields: [bookingId], references: [id])
 }

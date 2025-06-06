@@ -17,6 +17,7 @@ import { ReviewModule } from './modules/review/review.module';
 import { ReportModule } from './modules/report/report.module';
 import { MessageModule } from './modules/message/message.module';
 import { ChatGateway } from './modules/message/chat.gateway';
+import { PaymentModule } from './modules/payment/payment.module';
 
 @Module({
   imports: [
@@ -71,6 +72,7 @@ import { ChatGateway } from './modules/message/chat.gateway';
     ReviewModule,
     ReportModule,
     MessageModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService, ChatGateway],

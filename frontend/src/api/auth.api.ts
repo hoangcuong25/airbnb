@@ -35,6 +35,21 @@ export const LoginApi = async (payload: LoginPayload) => {
     }
 }
 
+type LoginWithGoolePayload = {
+    name: string;
+    email: string;
+    avatar: string
+}
+
+export const LoginWithGoogle = async (payload: LoginWithGoolePayload) => {
+    try {
+        const response = await axiosClient.post(process.env.NEXT_PUBLIC_BACKEND_URL + "/api/v1/auth/login-google", payload)
+        return response.data.data
+    } catch (error) {
+        throw error;
+    }
+}
+
 export const LogoutApi = async () => {
     try {
         await axiosClient.post('/api/v1/auth/logout')
