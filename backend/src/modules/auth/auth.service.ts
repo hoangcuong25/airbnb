@@ -251,62 +251,68 @@ export class AuthService {
     return 'ok';
   }
 
-  async loginGoogle(firstName: string, lastName: string, email: string, image: string) {
-    if (!firstName || !lastName || !email || !image) {
+  async loginGoogle(name: string, email: string, avatar: string, response: Response) {
+    if (!name || !email || !avatar) {
       throw new BadRequestException('Vui lòng nhập đầy đủ thông tin');
     }
 
     let user = await this.prisma.user.findUnique({ where: { email } });
 
+    const payload = {
+      sub: email,
+      iss: 'from server',
+      id: user?.id,
+      role: user?.role ?? 'USER',
+    };
+
+    const refresh_token = this.createRefreshToken(payload);
+
     if (user) {
-      const payload = {
-        sub: user.email,
-        iss: 'from server',
-        id: user.id,
-        role: user.role,
-      };
-
-      const access_token = this.jwtService.sign(payload);
-      const refresh_token = this.createRefreshToken(payload);
-
       await this.storeRefreshToken(user.id, refresh_token);
 
-      return {
-        access_token,
-        refresh_token,
-      };
+      // Lưu refresh token vào cookie
+      response.cookie('refresh_token', refresh_token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        path: '/',
+      });
+
+      const access_token = this.jwtService.sign(payload);
+
+      return { access_token, user };
     } else {
       const generatedPassword = Math.random().toString(36).slice(-8);
       const hashedPassword = await hashPasswordHelper(generatedPassword);
 
       user = await this.prisma.user.create({
         data: {
-          name: firstName + ' ' + lastName,
+          name: name,
           email,
-          phone: 'Không rõ',
           password: hashedPassword,
-          dob: 'Không rõ',
-          avatar: image,
+          avatar: avatar,
           isVerified: true,
+          role: 'USER',
         },
       });
 
-      const payload = {
-        sub: user.email,
-        iss: 'from server',
-        id: user.id,
-        role: user.role,
-      };
-
-      const access_token = this.jwtService.sign(payload);
-      const refresh_token = this.createRefreshToken(payload);
+      payload.id = user.id;
 
       await this.storeRefreshToken(user.id, refresh_token);
 
-      return {
-        access_token,
-        refresh_token,
-      };
+      // Lưu refresh token vào cookie
+      response.cookie('refresh_token', refresh_token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        path: '/',
+      });
+
+      const access_token = this.jwtService.sign(payload);
+
+      return { access_token, user };
     }
   }
 }
