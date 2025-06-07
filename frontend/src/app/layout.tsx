@@ -2,7 +2,7 @@ import { Toaster } from 'sonner';
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import AppContextProvider from '@/context/AppContext';
-import Footer from '@/components/guest/Footer';
+import Footer from '@/components/Footer';
 import FontAwesomeLoader from '@/components/FontAwesomeLoader';
 
 const geistSans = Geist({
