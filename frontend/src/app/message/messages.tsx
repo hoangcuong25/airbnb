@@ -1,5 +1,5 @@
-import NavbarUser from "@/components/user/NavbarUser";
 import ChatBox from "@/components/ChatBox";
+import NavbarGuest from "@/components/guest/NavbarGuest";
 import SidebarInbox from "@/components/SidebarInbox";
 
 export default function MessagesPage() {
@@ -9,7 +9,7 @@ export default function MessagesPage() {
   return (
     <div className="flex flex-col h-screen">
       {/* Navbar nằm trên cùng, full width */}
-      <NavbarUser />
+      <NavbarGuest />
 
       {/* Main content: sidebar + chat */}
       <div className="flex flex-1 overflow-hidden">

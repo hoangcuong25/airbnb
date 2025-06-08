@@ -1,4 +1,4 @@
-import NavbarUser from "@/components/user/NavbarUser";
+import NavbarGuest from "@/components/guest/NavbarGuest";
 import SidebarUser from "@/components/user/SidebarUser";
 import React from 'react';
 
@@ -9,7 +9,7 @@ export default function UserLayout({
 }) {
     return (
         <div>
-            <NavbarUser />
+            <NavbarGuest />
             <div className="flex">
                 <aside className="w-64 bg-white shadow-md sticky top-0 h-screen">
                     <SidebarUser />
