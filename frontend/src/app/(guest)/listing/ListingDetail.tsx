@@ -8,9 +8,11 @@ import { toast } from 'sonner'
 import { createBookingApi } from '@/api/booking.api'
 import ModalReview from './ModalReview'
 import ModalReport from './ModalReport'
+import { useRouter } from 'next/navigation'
+import { Button } from '@/components/ui/button'
 
 export default function ListingDetail({ listing }: { listing: ListingType }) {
-
+    const router = useRouter()
     const [guests, setGuests] = useState(1)
     const [showAllImages, setShowAllImages] = useState(false)
     const displayImages = showAllImages ? listing.images : listing.images.slice(0, 5)
@@ -43,6 +45,10 @@ export default function ListingDetail({ listing }: { listing: ListingType }) {
         catch (error) {
             toast.error('Đặt phòng thất bại, vui lòng thử lại sau.')
         }
+    }
+
+    const handlePayment = () => {
+        router.push(`/payment?listingId=${listing.id}&price=${listing.pricePerNight}&title=${encodeURIComponent(listing.title)}`)
     }
 
     console.log(listing)
@@ -152,36 +158,50 @@ export default function ListingDetail({ listing }: { listing: ListingType }) {
             </div>
 
             {/* Booking box */}
-            <div className="border p-4 rounded-xl shadow-md space-y-4 h-fit sticky top-24">
-                <p className="text-lg font-semibold">
-                    ₫{listing.pricePerNight.toLocaleString('vi-VN')} <span className="text-gray-500 text-sm">/ đêm</span>
-                </p>
+            <div className="lg:col-span-1">
+                <div className="sticky top-4 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
+                    <div className="flex justify-between items-center mb-4">
+                        <span className="text-2xl font-bold text-primary">
+                            {listing.pricePerNight.toLocaleString('vi-VN')} VNĐ
+                        </span>
+                        <span className="text-gray-600">/ đêm</span>
+                    </div>
 
-                <DatePicker data={data} setData={setData} blockedDates={listing.blockedDates} />
+                    <DatePicker
+                        onDateChange={(checkIn, checkOut) => {
+                            setData(prev => ({
+                                ...prev,
+                                checkInDate: checkIn,
+                                checkOutDate: checkOut,
+                                totalPrice: listing.pricePerNight
+                            }))
+                        }}
+                    />
 
-                <div>
-                    <label className="block font-medium text-sm">Số khách</label>
-                    <select
-                        className="w-full border rounded px-2 py-1"
-                        value={guests}
-                        onChange={(e) => setGuests(Number(e.target.value))}
+                    <div className="mt-4">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Số khách
+                        </label>
+                        <select
+                            value={guests}
+                            onChange={(e) => setGuests(Number(e.target.value))}
+                            className="w-full p-2 border rounded-md"
+                        >
+                            {[...Array(listing.maxGuests)].map((_, i) => (
+                                <option key={i + 1} value={i + 1}>
+                                    {i + 1} khách
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <Button 
+                        onClick={handlePayment}
+                        className="w-full mt-4 bg-primary hover:bg-primary/90"
                     >
-                        {Array.from({ length: listing.maxGuests }, (_, i) => i + 1).map(n => (
-                            <option key={n} value={n}>
-                                {n} khách
-                            </option>
-                        ))}
-                    </select>
+                        Thanh toán ngay
+                    </Button>
                 </div>
-
-                <button
-                    onClick={handleBooking}
-                    className="w-full bg-pink-800 hover:bg-pink-900 text-white rounded-lg py-3 font-semibold"
-                >
-                    Đặt phòng
-                </button>
-                <p className="text-xs text-center text-gray-500">Bạn vẫn chưa bị trừ tiền</p>
-                <ModalReport listingId={listing.id} />
             </div>
         </div>
     )
